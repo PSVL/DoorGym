@@ -1,3 +1,3 @@
 # DoorGym
 
-## DoorGym is now one your way!
+## DoorGym is now on your way!
