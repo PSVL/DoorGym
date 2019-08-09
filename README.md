@@ -1,6 +1,6 @@
 # DoorGym
 
-## DoorGym is now on it's way!
+## DoorGym is now on it's way! (ETA Aug 18 2019)
 
 Door Gym will includes follows.
 - Door knob data set (Pull knob, Lever knob, Round knob 3K each)
