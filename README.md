@@ -2,7 +2,9 @@
 
 [doorgym_video]: ./imgs/doorgym_video.gif
 
-![alt text][doorgym_video]
+<p align="center">
+  ![alt text][doorgym_video]
+</p>
 
 ## DoorGym is now on it's way! (ETA Aug 18 2019)
 
