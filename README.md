@@ -8,10 +8,9 @@
 </p>
 --->
 
-img[src$="doorgym_video"] {
-  display:block;
-  margin: 0 auto;
-}
+<p align="center">
+  <img src="./imgs/doorgym_video.gif">
+</p>
 
 ## DoorGym is now on it's way! (ETA Aug 18 2019)
 
