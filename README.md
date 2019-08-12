@@ -13,7 +13,7 @@
 </p>
 
 ## Updates
-### 8/12/2019 Door knob Dataset has been released!
+### 8/12/2019 Door knob Dataset (3K knobs for each type) has been released!
 You can download from the following URL (All tar.gz file).
 #### [Pull knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/pullknobs.tar.gz) (0.75 GB)
 #### [Lever knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/leverknobs.tar.gz) (0.77 GB)
