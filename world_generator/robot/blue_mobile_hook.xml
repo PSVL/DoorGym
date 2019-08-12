@@ -1,0 +1,92 @@
+<mujoco model="blue_mobile_gripper">
+    <compiler angle="radian" />
+    <!-- <default>
+        <default class="robot">
+            <joint damping="0.1" />
+            <motor ctrllimited="true" />
+        </default>
+    </default> -->
+    <asset> 
+        <mesh name="base_link" file="../../robot/STL/base_link.STL" />
+        <mesh name="shoulder_link" file="../../robot/STL/shoulder_link.STL"/>
+        <mesh name="shoulder_lift_link" file="../../robot/STL/shoulder_lift_link.STL"/>
+        <mesh name="upper_arm_link" file="../../robot/STL/upper_arm_link.STL"/>
+        <mesh name="upper_arm_lift_link" file="../../robot/STL/upper_arm_lift_link.STL" />
+        <mesh name="forearm_link" file="../../robot/STL/forearm_link.STL" />
+        <mesh name="wrist_lift_link" file="../../robot/STL/wrist_lift_link.STL" />
+        <mesh name="wrist_roll_link" file="../../robot/STL/hand_base_link.STL" />
+        <mesh name="hook_0" file="../../robot/STL/hook_0.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="hook_1" file="../../robot/STL/hook_1.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="hook_2" file="../../robot/STL/hook_2.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="hook_3" file="../../robot/STL/hook_3.STL" scale="0.001 0.001 0.001"/>
+        <texture builtin="flat" height="32" name="plastic" type="2d" width="32"/>
+        <material name="Plastic" shininess="0.93" specular="0.96" texture="plastic"/>
+    </asset>
+    <worldbody>
+        <body name="robotworld" pos="1.1 -0.162 1.2" euler="0 0 0">
+            <joint name="x_slider" class="robot" pos="0 0 0" axis="1 0 0" limited="true" range="-0.3 1.5" type="slide" />
+            <joint name="y_slider" class="robot" pos="0 0 0" axis="0 1 0" limited="true" range="-0.7 0.7" type="slide" />
+            <inertial pos="0 0 0" quat="0.0 0.0 0.0 0.0" mass="50" diaginertia="1.0 1.0 1.0" />
+            <body name="robotbase_link" pos="0 0 0" euler="0 -1.57 3.14">
+                <inertial pos="0.0560024 0.000189446 0.0201836" quat="-0.000530006 0.707989 0.00204572 0.70622" mass="0.284612" diaginertia="0.00239707 0.00197713 0.000716923" />
+                <geom name="link1" type="mesh" material="Plastic" rgba="0.792157 0.819608 0.933333 1" mesh="base_link" contype="1" conaffinity="28" />
+                <body name="robotshoulder_link" pos="0 0 0.054356" quat="1.34924e-11 -3.67321e-06 1 -3.67321e-06">
+                    <inertial pos="0.00434775 2.01235e-05 -0.0764683" quat="0.999953 0.000336513 -0.00963902 8.26702e-05" mass="1.80901" diaginertia="0.00919572 0.00871918 0.00387865" />
+                    <joint name="base_roll_joint" class="robot" pos="0 0 0" axis="0 0 1" limited="true" range="-2.3412 3.3999" />
+                    <geom name="link2" type="mesh" material="Plastic" rgba="0.843137 0.815686 0.752941 1" mesh="shoulder_link" contype="2" conaffinity="24" />
+                    <body name="robotshoulder_liftlink" pos="-0.01143 0 -0.21082" quat="-2.59734e-06 2.59735e-06 -0.707108 0.707105">
+                        <inertial pos="-5.00836e-06 0.000232928 -1.77451e-05" quat="0.708323 -0.00293225 -0.00290296 0.705876" mass="0.388307" diaginertia="0.000818261 0.00080429 0.000550823" />
+                        <joint name="shoulder_lift_joint" class="robot" pos="0 0 0" axis="0 0 1" limited="true" range="-2.2944 0" />
+                        <geom name="lift1" type="mesh" material="Plastic" rgba="0.792157 0.819608 0.933333 1" mesh="shoulder_lift_link" contype="0" />
+                        <body name="robotupperarm_link" pos="0 0.070147 -6.25e-05" quat="0.499124 0.499126 0.500872 -0.500874">
+                            <inertial pos="0.00526565 5.32997e-05 -0.0641726" quat="0.999909 0.000376484 0.0133407 0.0019152" mass="1.52396" diaginertia="0.00578958 0.00530315 0.00342333" />
+                            <joint name="shoulder_roll_joint" class="robot" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
+                            <geom name="link3" type="mesh" material="Plastic" rgba="1 1 1 1" mesh="upper_arm_link" contype="4" conaffinity="17" />
+                            <body name="robotupperarm_liftlink" pos="-0.01143 -4.0407e-05 -0.18056" quat="0.00123484 -0.00123484 0.707107 -0.707104">
+                                <inertial pos="9.06308e-09 -0.0023333 -1.637e-05" quat="0.707099 -0.00297056 -0.00288794 0.707102" mass="0.336088" diaginertia="0.000805057 0.000748407 0.000495706" />
+                                <joint name="elbow_lift_joint" class="robot" pos="0 0 0" axis="0 0 1" limited="true" range="-2.2944 0" />
+                                <geom name="lift2" type="mesh" material="Plastic" rgba="1 0.501961 0.501961 1" mesh="upper_arm_lift_link" contype="0" />
+                                <body name="robotforearm_link" pos="0 0.070147 -6.25e-05" quat="0.499998 0.5 -0.5 0.500002">
+                                    <inertial pos="0.00526386 2.70692e-05 -0.0641638" quat="0.99991 0.000246685 0.0133803 0.00035395" mass="1.52368" diaginertia="0.00578835 0.00530224 0.0034223" />
+                                    <joint name="elbow_roll_joint" class="robot" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
+                                    <geom name="link4" type="mesh" material="Plastic" rgba="1 1 1 1" mesh="forearm_link" contype="8" conaffinity="3" />
+                                    <body name="robotwrist_liftlink" pos="-0.01143 0 -0.18056" quat="-2.59734e-06 2.59735e-06 0.707108 -0.707105">
+                                        <inertial pos="-5.00413e-06 0.000232915 -1.77452e-05" quat="0.708323 -0.00293266 -0.00290346 0.705877" mass="0.388307" diaginertia="0.000818232 0.000804261 0.000550823" />
+                                        <joint name="wrist_lift_joint" class="robot" pos="0 0 0" axis="0 0 1" limited="true" range="-2.2944 0" />
+                                        <geom name="lift3" type="mesh" material="Plastic" rgba="0.792157 0.819608 0.933333 1" mesh="wrist_lift_link" contype="0" />
+                                        <body name="robotwrist_rolllink" pos="0 0.070147 -6.25e-05" quat="-2.59734e-06 2.59735e-06 0.707108 -0.707105">
+                                            <camera name="hand_cam" mode="fixed" fovy="45" pos="0.05 0 -0.05" euler="0 0.2 -1.57"> </camera>
+                                            <inertial pos="0.00526385736219506 2.70691865020822e-05 -0.0641638075944594" quat="0.999999 0.000484212 -0.00134643 -0.000743041" mass="0.657109755986862" fullinertia="0.0057866591250737 0.00530223654324281 0.00342399181200673 3.71515699629511e-07 -6.32890111626103e-05 8.9999884666805e-07" />
+                                            <joint name="wrist_roll_joint" class="robot" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
+                                            <geom name="link" type="mesh" material="Plastic" rgba="0.792157 0.819608 0.933333 1" mesh="wrist_roll_link" contype="16" conaffinity="7" />
+                                            <body name="robotfinger_hook" pos="0 -0.02 -0.06" euler="0 -1.57 0">
+                                                <inertial pos="0 0 0" quat="1 0 0 0" mass="0.0001" diaginertia="3.916e-5 4.278e-5 4.8095e-6"/>
+                                                <geom friction="1 1 1" type="mesh" mesh="hook_0" name="hookfinger_0" euler="0 0 0" condim="3"/>
+                                                <geom friction="1 1 1" type="mesh" mesh="hook_3" name="hookfinger_3" euler="0 0 0" condim="3"/>
+                                                <geom friction="1 1 1" type="mesh" mesh="hook_1" name="hookfinger_1" euler="0 0 0" condim="3"/>
+                                                <body name="robotfinger_hook_target">
+                                                    <geom friction="1 1 1" type="mesh" mesh="hook_2" name="hookfinger_2" euler="0 0 0" condim="3" rgba="0.1 0.1 0.1 1"/>
+                                                </body>
+                                            </body>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+    </worldbody>
+    <actuator>
+        <motor ctrlrange="-3.0 3.0" gear="7.0" joint="x_slider" />
+        <motor ctrlrange="-3.0 3.0" gear="7.0" joint="y_slider" />
+        <motor ctrlrange="-3.0 3.0" gear="7.0" joint="base_roll_joint" />
+        <motor ctrlrange="-3.0 3.0" gear="7.0" joint="shoulder_lift_joint" />
+        <motor ctrlrange="-3.0 3.0" gear="7.0" joint="shoulder_roll_joint" />
+        <motor ctrlrange="-3.0 3.0" gear="7.0" joint="elbow_lift_joint" />
+        <motor ctrlrange="-3.0 3.0" gear="7.0" joint="elbow_roll_joint" />
+        <motor ctrlrange="-2.0 2.0" gear="7.0" joint="wrist_lift_joint" />
+        <motor ctrlrange="-2.0 2.0" gear="7.0" joint="wrist_roll_joint" />
+  </actuator>
+</mujoco>

@@ -1,0 +1,36 @@
+{
+    "parameters": {
+        "plate_width": 102.21733100000002,
+        "handle_fillet": 23.2381284,
+        "plate_height": 261.2950595,
+        "handle_radius": 13.829897300000003,
+        "handle_tall": 75.3444284,
+        "handle_len_half": 80.72912700000002
+    },
+    "version": 2,
+    "model_count": 8,
+    "bounding_box": [
+        {
+            "max": [
+                51.11866544541251,
+                130.65752993808954,
+                82.27937705002631
+            ],
+            "min": [
+                -51.11866555458753,
+                -130.65752956191042,
+                -0.01
+            ]
+        }
+    ],
+    "model_names": [
+        "body_1",
+        "body_2",
+        "body_3",
+        "body_4",
+        "body_5",
+        "body_6",
+        "body_7",
+        "body_8"
+    ]
+}

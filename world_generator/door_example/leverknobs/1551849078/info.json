@@ -1,0 +1,36 @@
+{
+    "model_count": 5,
+    "parameters": {
+        "handle_length": 62.7097929,
+        "shaft_taper": 0.0715584993317675,
+        "block_rise": 8.3452988,
+        "bump_height": 3.2490201,
+        "shaft_length": 31.518569900000003,
+        "block_sink": 2.6279247999999997,
+        "handle_thickness": 19.451151700000004,
+        "shaft_diameter": 24.761951700000004,
+        "fillet_radius": 0.7823059
+    },
+    "version": 2,
+    "bounding_box": [
+        {
+            "min": [
+                -50.349092963355055,
+                -12.40097585,
+                -0.02
+            ],
+            "max": [
+                12.414475958346687,
+                12.40097585,
+                43.268884086552305
+            ]
+        }
+    ],
+    "model_names": [
+        "body_1",
+        "body_2",
+        "body_3",
+        "body_4",
+        "body_5"
+    ]
+}

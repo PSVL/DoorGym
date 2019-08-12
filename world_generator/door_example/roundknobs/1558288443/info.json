@@ -1,0 +1,30 @@
+{
+    "parameters": {
+        "shaft_height": 10.2216007,
+        "bottom_curve_height": 16.2119566,
+        "top_curve_height": 8.3116202,
+        "knob_radius": 39.4457623,
+        "curve_sink": 0.6581611,
+        "middle_curve_height": 10.2391733
+    },
+    "version": 2,
+    "bounding_box": [
+        {
+            "max": [
+                40.75990682045531,
+                40.75990682045531,
+                45.00435080000009
+            ],
+            "min": [
+                -40.75990682045531,
+                -40.75990682045531,
+                -0.010000000000001603
+            ]
+        }
+    ],
+    "model_names": [
+        "body_1",
+        "body_2"
+    ],
+    "model_count": 2
+}
