@@ -12,6 +12,13 @@
   <img width="460" height="406" src="./imgs/doorgym_video.gif">
 </p>
 
+## Updates
+### 8/12/2019 Door knob Dataset (3K knobs for each type) has been released!
+You can download from the following URL (All tar.gz file).
+#### [Pull knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/pullknobs.tar.gz) (0.75 GB)
+#### [Lever knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/leverknobs.tar.gz) (0.77 GB)
+#### [Round knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/roundknobs.tar.gz) (1.24 GB)
+
 ## DoorGym is now on it's way! (ETA Aug 18 2019)
 
 Door Gym will includes follows.
@@ -21,3 +28,5 @@ Door Gym will includes follows.
 - Door knob position vision net trainer
 - Door opening policy trainer
 
+## Paper
+https://arxiv.org/abs/1908.01887
