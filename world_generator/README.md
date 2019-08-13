@@ -1,6 +1,9 @@
 # How to use
 
 ## Step0: Download the doorknob data set
+#### [Pull knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/pullknobs.tar.gz) (0.75 GB)
+#### [Lever knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/leverknobs.tar.gz) (0.77 GB)
+#### [Round knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/roundknobs.tar.gz) (1.24 GB)
 
 ## Step1: Configure the folder structure as follow
 * Place the downloaded door knob dataset under the `door` folder (or make symlink).
