@@ -6,7 +6,7 @@
 #### [Round knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/roundknobs.tar.gz) (1.24 GB)
 
 ## Step1: Configure the folder structure as follow
-* Place the downloaded door knob dataset under the `door` folder (or make symlink).
+* Extract and place the downloaded door knob dataset under the `door` folder (or make symlink).
 * Place your favorite robots under the `robot` folder. (Blue robots are there as default)
 * `world` folder will be the output folder
 
@@ -52,7 +52,7 @@ world_generator
 ```
 
 
-## Step2: Run following
+## Step2: Run following (e.g. lever knob and hook arm combination.)
 `python3 world_generator.py --knob_type lever --robot_type blue_hook`
 
 ## Step3: Check the model by running the mujoco simulator
