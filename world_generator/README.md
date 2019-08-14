@@ -11,53 +11,57 @@
 * `world` folder will be the output folder
 
 ```bash
-world_generator
-├── world_genterator.py
-├── mjcf
-├── door
-|   ├── pullknobs
-|   ├── roundknobs
-│   └── leverknobs
-│       ├── knobfolder1
-│       |   ├── body_1.stl
-│       |   ├── body_2.stl
-│       |   |      |  
-│       |   ├── body_8.stl
-│       |   ├── info.json
-│       |   └── preview.png
-│       |          |
-│       └── knobfolder100
-│           ├── body_1.stl
-│           ├── body_2.stl
-│           |      |  
-│           ├── body_8.stl
-│           ├── info.json
-│           └── preview.png
-├── robot
-│   ├── blue_hook.xml
-│   ├── blue_gripper.xml
-│   ├── blue_floatinghook.xml
-│   ├── blue_floatinggripper.xml
-│   ├── blue_mobilehook.xml
-│   ├── blue_mobilegripper.xml
-│   └── STL folder
-│       ├── base_link.STL
-│       ├── shoulder_link.STL
-│       └── arm_link.STL
-└── world
-    ├── knobfolder0_round_blue_hook.xml
-    ├── knobfolder1_lever_blue_hook.xml
-    ├──             |    
-    └── knobfolder100_pull_blue_floatingwrist.xml
+doorgym
+└──  world_generator
+    ├── world_genterator.py
+    ├── mjcf
+    ├── door
+    |   ├── pullknobs
+    |   ├── roundknobs
+    │   └── leverknobs
+    │       ├── 1551848929
+    │       |   ├── body_1.stl
+    │       |   ├── body_2.stl
+    │       |   |      |  
+    │       |   ├── body_8.stl
+    │       |   ├── info.json
+    │       |   └── preview.png
+    │       |          |
+    │       └── 1551849078
+    │           ├── body_1.stl
+    │           ├── body_2.stl
+    │           |      |  
+    │           ├── body_8.stl
+    │           ├── info.json
+    │           └── preview.png
+    ├── robot
+    │   ├── blue_hook.xml
+    │   ├── blue_gripper.xml
+    │   ├── blue_floatinghook.xml
+    │   ├── blue_floatinggripper.xml
+    │   ├── blue_mobilehook.xml
+    │   ├── blue_mobilegripper.xml
+    │   └── STL folder
+    │       ├── base_link.STL
+    │       ├── shoulder_link.STL
+    │       └── arm_link.STL
+    └── world
+        ├── world
+        └── lever_floatinghook
+            ├── 1551848929_lever_floatinghook.xml
+            ├── 1551848946_lever_floatinghook.xml
+            ├──             |    
+            └── 1551849078_lever_floatinghook.xml
 ```
 
 
 ## Step2: Run following (e.g. lever knob and hook arm combination.)
-`python3 world_generator.py --knob_type lever --robot_type blue_hook`
+`cd path/to/DoorGym/`
+`python3 ./world_generator/world_generator.py --knob_type lever --robot_type floatinghook`
 
 ## Step3: Check the model by running the mujoco simulator
 `cd ~/.mujoco/mjpro150/bin`
-`./simulate ../path/to/DoorGym/world_generator/world/knobfolder0_lever_blue_hook.xml`
+`./simulate path/to/DoorGym/world_generator/world/lever_floatinghook/1551848929_lever_floatinghook.xml`
 
 # Reference
 This mjcf generator is powered by the following repo.
