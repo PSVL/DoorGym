@@ -30,6 +30,8 @@ Check the model by running the mujoco simulator
 
 `./simulate path/to/DoorGym/world_generator/world/lever_floatinghook/1551848929_lever_floatinghook.xml`
 
+More detailed instruction [here](./world_generator)
+
 ## DoorGym is now on it's way! (ETA Aug 18 2019)
 
 Door Gym will includes follows.
