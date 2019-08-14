@@ -12,39 +12,35 @@ def main(dataset_file):
     #Path maker
     handle_folder = os.path.join(args.input_dirname.format(knob_type), dataset_file)
     stl_path = os.path.join('door/{}knobs'.format(knob_type), dataset_file)
+    robot_path = "../../robot/{}.xml"
+    knob_stl_path = '../../{0}/body_{1}.stl'
+
     with open(os.path.join(handle_folder, 'info.json'), 'r') as f:
         params_dict = json.load(f)
-
     #STL parts number
     door_parts_n = 1
     frame_parts_n = 6
     wall_parts_n = 3
     knob_parts_n = params_dict['model_count']
-    
+
     ###################### Randomize Parameters ######################
     # Lighting property
     light_n=randrange(2,6)
 
     # Camera property
-    # camera1_pos = [1.5, -0.0, 2.0]
-    # camera1_ori = [0.0, 0.8, 1.57]
-    # camera2_pos = [0.75, 2.0, 1.0]
-    # camera2_ori = [-1.57, 0.4, 3.14]
-    # camera_fieldview = 60
-    # for i in range(len(camera1_pos)):
-    #     camera1_pos[i] += randrange(-15,15)/1000
-    #     camera2_pos[i] += randrange(-15,15)/1000
-    # for i in range(len(camera1_ori)):
-    #     camera1_ori[i] += randrange(-52,52)/1000
-    #     camera2_ori[i] += randrange(-52,52)/1000
-    # camera_poses = [camera1_pos, camera2_pos]
-    # camera_ories = [camera1_ori, camera2_ori]
-    # camera_fieldview_noise = [randrange(-100,100)/100, randrange(-100,100)/100]
+    camera_random = False
     camera1_pos = [0.99, -0.5, 1.0] #1m x 1m
     camera1_ori = [0.0, 1.57, 1.57]
     camera2_pos = [0.5, 0.0, 1.99]  #1m x 1m
     camera2_ori = [0, 0, 0]
     camera_fieldview = 60
+    if camera_random:
+        for i in range(len(camera1_pos)):
+            camera1_pos[i] += randrange(-15,15)/1000
+            camera2_pos[i] += randrange(-15,15)/1000
+        for i in range(len(camera1_ori)):
+            camera1_ori[i] += randrange(-52,52)/1000
+            camera2_ori[i] += randrange(-52,52)/1000
     camera_poses = [camera1_pos, camera2_pos]
     camera_ories = [camera1_ori, camera2_ori]
     camera_fieldview_noise = [0, 0]
@@ -60,15 +56,13 @@ def main(dataset_file):
     frame_specular = randrange(50,99)/100.0
     frame_rgba = [randrange(70,85)/100.0, randrange(70,85)/100.0, randrange(70,85)/100.0, 1.0]
 
-    # Door Frame Joint Property
-    prob_of_righthinge = 100
-    if prob_of_righthinge > randrange(0,100):
+    # Door Frame Joint Property  
+    if args.righthinge_ratio > randrange(0,100)/100.0:
         hinge_loc = "righthinge"
     else:
         hinge_loc = "lefthinge"
     
-    prob_of_pulldoor = 0
-    if prob_of_pulldoor > randrange(0,100):
+    if args.pulldoor_ratio > randrange(0,100)/100.0:
         opendir = "pull"
     else:
         opendir = "push"
@@ -100,11 +94,9 @@ def main(dataset_file):
     if hinge_loc == "righthinge":
         doorknob_pos = [0,0,0]
         knob_euler = [-1.57,1.57,0]
-    elif hinge_loc == "lefthinge":
+    else:
         doorknob_pos = [0, (0.5-knob_horizontal_location_ratio)*door_width*2, 0]
         knob_euler = [1.57,1.57,0]
-    else:
-        raise Exception("door direction undefinded")
 
     knob_mass = randrange(1,2)
     knob_shininess = randrange(50,100)/100.0
@@ -122,15 +114,8 @@ def main(dataset_file):
     else:
         gravity_vector = [0,0,-9.81]
 
-    # Stationaly Camera
+    # Stationaly Camera number
     camera_n = 2
-
-    # World Wall Joint Property
-    wall_world_armature = 0.0001
-    wall_world_damper = 100000000
-    wall_world_spring = 1000
-    wall_world_frictionloss = 0
-    wall_world_joint_pos = [0,0,0]
 
     # Wall property
     sidewall_len = 2000/1000.0
@@ -155,16 +140,6 @@ def main(dataset_file):
     frame_mass = 500
     frame_diaginertia = [0.0001, 0.0001, 0.0001]
     doorstopper_size = [door_thickness/2.0, 0.05, 0.025]
-    # if opendir == "push":
-    #     if hinge_loc == "righthinge":
-    #         doorstopper_pos = [door_thickness*2.2, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
-    #     else:
-    #         doorstopper_pos = [door_thickness*2.2, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
-    # else:
-    #     if hinge_loc == "righthinge":
-    #         doorstopper_pos = [0+door_thickness*0.1, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
-    #     else:
-    #         doorstopper_pos = [0+door_thickness*0.1, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
 
     if opendir == "push":
         if hinge_loc == "righthinge":
@@ -173,9 +148,9 @@ def main(dataset_file):
             doorstopper_pos = [door_thickness*2.3, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
     else:
         if hinge_loc == "righthinge":
-            doorstopper_pos = [0+door_thickness*0.1, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
+            doorstopper_pos = [0-door_thickness*0.7, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
         else:
-            doorstopper_pos = [0+door_thickness*0.1, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
+            doorstopper_pos = [0-door_thickness*0.7, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
 
     # Door Frame Joint Property
     door_frame_armature = 0.0001
@@ -184,11 +159,8 @@ def main(dataset_file):
 
     if hinge_loc == "righthinge":
         door_frame_joint_pos = [0,door_width-door_width*knob_horizontal_location_ratio,0]
-    elif hinge_loc == "lefthinge":
-        door_frame_joint_pos = [0,-door_width*knob_horizontal_location_ratio,0]
     else:
-        raise Exception("door direction undefinded")
-
+        door_frame_joint_pos = [0,-door_width*knob_horizontal_location_ratio,0]
     # Door property
     door_diaginertia = [door_mass/12.0*(door_height**2+door_width**2),
                         door_mass/12.0*(door_height**2+door_thickness**2),
@@ -224,22 +196,8 @@ def main(dataset_file):
     compiler = e.Compiler(
         angle="radian"
     )
-    if args.robot_type == "gripper":
-        robot_type = "blue_gripper"
-    elif args.robot_type == "hook":
-        robot_type = "blue_hook"
-    elif args.robot_type == "floatinggripper":
-        robot_type = "blue_floatinggripper"
-    elif args.robot_type == "floatinghook":
-        robot_type = "blue_floatinghook"
-    elif args.robot_type == "mobile_gripper":
-        robot_type = "blue_mobile_gripper"
-    elif args.robot_type == "mobile_hook":
-        robot_type = "blue_mobile_hook"
-    else:
-        raise Exception("robot type not recognized")
 
-    include = e.Include(file="../../robot/{}.xml".format(robot_type))
+    include = e.Include(file=robot_path.format(robot_type))
     option = e.Option(gravity=gravity_vector, timestep=0.001)
     visual = e.Visual()
     asset = e.Asset()
@@ -288,11 +246,10 @@ def main(dataset_file):
     else:
         knob_scale = [0.001, 0.001, 0.001]
     mesh_knob = []
-    fname = '../../{0}/body_{1}.stl'
     name = 'door_knob_{}'
     for i in range(1,knob_parts_n+1):
         mesh_knob.append(e.Mesh(
-            file=fname.format(stl_path,i),
+            file=knob_stl_path.format(stl_path,i),
             name=name.format(i),
             scale=knob_scale))
 
@@ -628,8 +585,7 @@ def main(dataset_file):
     mesh = 'door_knob_{}'
     doorknob_material = material_name_list[randrange(0,3)]
     knobparts_start_idx = 1
-    # if knob_type == "pull":
-    #     knobparts_start_idx = 2
+
     for i in range(knobparts_start_idx ,knob_parts_n+1):
         body4_geoms.append(e.Geom(
             name=name.format(i),
@@ -656,16 +612,17 @@ def main(dataset_file):
         diaginertia=knob_diaginertia)
 
     body4_children_list = body4_geoms 
-    # body4_children_list.extend([body4_joints])
     if knob_type != "pull":
         body4_children_list.extend([body4_inertial])
     body4.add_children(body4_children_list)
-    # body4.add_children([body5])
     
     ######## Write file to Output folder ########
     model_xml = mujoco.xml()
     name = '{0}_{1}_{2}.xml'
-    output_path = os.path.join(args.output_dirname, '{0}_{1}_push'.format(knob_type, args.robot_type))
+    if args.one_dir:
+        output_path = args.output_dirname + '/world'
+    else:
+        output_path = os.path.join(args.output_dirname, '{0}_{1}'.format(knob_type, args.robot_type))
     try:
         os.makedirs(output_path)
     except OSError:
@@ -681,15 +638,40 @@ def main(dataset_file):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Arguments for random generator')
-    parser.add_argument('--knob_type', default='', help='Choose from lever, round or pull')
-    parser.add_argument('--robot_type', default='floatinghook', help='Choose from "gripper","hook","floatinghook","floatinggripper", "mobile_gripper", "mobile_hook" ')
-    parser.add_argument('--input_dirname', type=str, default='./door/{}knobs', help='knob path')
-    parser.add_argument('--output_dirname', type=str, default='./world', help='world path')
+    parser.add_argument('--knob-type', default='', help='Choose from "lever", "round" or "pull". If no arg, it use all types.')
+    parser.add_argument('--robot-type', default='floatinghook', help='Choose from "gripper","hook","floatinghook","floatinggripper", "mobile_gripper", "mobile_hook". ')
+    parser.add_argument('--input-dirname', type=str, default='./world_generator/door/{}knobs', help='knob path.')
+    parser.add_argument('--output-dirname', type=str, default='./world_generator/world', help='world path.')
+    parser.add_argument('--one-dir', action="store_true", default=False, help='Save everything into one dir, or save into separate dir by its robot and knob types')
+    parser.add_argument('--pulldoor-ratio', type=float, default=1.0, help='ratio of door that opens by pulling.')
+    parser.add_argument('--righthinge-ratio', type=float, default=1.0, help='ratio of door that has hinge on right side.')
     args = parser.parse_args()
+
+    robot_dict = dict(
+        gripper = "blue_gripper",
+        hook = "blue_hook",
+        floatinggripper = "blue_floatinggripper",
+        floatinghook = "blue_floatinghook",
+        mobilegripper = "blue_mobile_gripper",
+        mobilehook = "blue_mobile_hook"
+    )
+    try:
+        robot_type = robot_dict[args.robot_type]
+    except:
+        raise Exception("robot type not recognized")
 
     # Generate the ordered knob if argument for "knob_type"
     if args.knob_type:
-        knob_type = args.knob_type
+        knob_dict = dict(
+            lever = "lever",
+            pull = "pull",
+            round = "round",
+        )
+        try:
+            knob_type = knob_dict[args.knob_type]
+        except:
+            raise Exception("knob type not recognized")
+
         pbar = tqdm(os.listdir(args.input_dirname.format(args.knob_type)))
         for dataset_file in pbar:
             main(dataset_file)
