@@ -23,17 +23,11 @@
 
 | name          | options       | default   | explaination   |
 | ------------- |:-------------:| :--------:| :-------------:|
-| knob-type     | "lever", "round" or "pull" | 'If no arg, it use all types.'' ||
-| robot-type    | "gripper","hook","floatinghook","floatinggripper", "mobile_gripper" or "mobile_hook"   |   'floatinghook' |
-| one-dir       | are neat      |    $1 |
-| pulldoor-ratio       | are neat      |    $1 |
-| righthinge-ratio       | are neat      |    $1 |
---robot-type', default='floatinghook', help='Choose from "gripper","hook","floatinghook","floatinggripper", "mobile_gripper", "mobile_hook". ')
-'--input-dirname', type=str, default='./world_generator/door/{}knobs', help='knob path.')
-'--output-dirname', type=str, default='./world_generator/world', help='world path.')
-'--one-dir', action="store_true", default=False, help='Save everything into one dir, or save into separate dir by its robot and knob types')
-'--pulldoor-ratio', default=1.0, help='ratio of door that opens by pulling.')
-'--righthinge-ratio', default=1.0, help='ratio of door that has hinge on right side.')
+| knob-type     | "lever", "round" or "pull" | ' ' |If no arg, it use all types.|
+| robot-type    | "gripper","hook","floatinghook","floatinggripper", "mobile_gripper" or "mobile_hook"   | 'floatinghook' | - |
+| one-dir       | True/False      | False | Save everything into one dir, or save into separate dir by its robot and knob types|
+| pulldoor-ratio       | 0.0~1.0  |   1.0 | ratio of door that opens by pulling. |
+| righthinge-ratio     | 0.0~1.0  |   1.0 | ratio of door that has hinge on right side. |
 
 # Reference
 This mjcf generator is powered by the following repo.
