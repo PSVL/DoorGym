@@ -1,20 +1,23 @@
-# How to use
+# How to use. (Not ready yet. Please wait) 
 
 ## Step0: Download the doorknob data set
+#### [Pull knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/pullknobs.tar.gz) (0.75 GB)
+#### [Lever knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/leverknobs.tar.gz) (0.77 GB)
+#### [Round knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/roundknobs.tar.gz) (1.24 GB)
 
 ## Step1: Configure the folder structure as follow
-* Place the downloaded door knob dataset under the `door` folder.
-* Place your favorite robots under the `robot` folder. (Blue robots as default)
+* Extract and place the downloaded door knob dataset under the `door` folder (or make symlink).
+* Place your favorite robots under the `robot` folder. (Blue robots are there as default)
 * `world` folder will be the output folder
 
 ```bash
-Panasonic_DoorWorldGenerator
+world_generator
 ├── world_genterator.py
 ├── mjcf
 ├── door
-|   ├── 3000_pullknobs
-|   ├── 3000_roundknobs
-│   └── 3000_leverknobs
+|   ├── pullknobs
+|   ├── roundknobs
+│   └── leverknobs
 │       ├── knobfolder1
 │       |   ├── body_1.stl
 │       |   ├── body_2.stl
@@ -31,10 +34,12 @@ Panasonic_DoorWorldGenerator
 │           ├── info.json
 │           └── preview.png
 ├── robot
-│   ├── blue_full.xml
 │   ├── blue_hook.xml
-|   |          |
-│   ├── blue_floatingwrist.xml
+│   ├── blue_gripper.xml
+│   ├── blue_floatinghook.xml
+│   ├── blue_floatinggripper.xml
+│   ├── blue_mobilehook.xml
+│   ├── blue_mobilegripper.xml
 │   └── STL folder
 │       ├── base_link.STL
 │       ├── shoulder_link.STL
@@ -47,12 +52,12 @@ Panasonic_DoorWorldGenerator
 ```
 
 
-## Step2: Run following
+## Step2: Run following (e.g. lever knob and hook arm combination.)
 `python3 world_generator.py --knob_type lever --robot_type blue_hook`
 
 ## Step3: Check the model by running the mujoco simulator
-`cd ~/.mujoco/mujoco_pro200/bin`
-`./simulate ..../Panasonic_DoorWorldGenerator/world/knobfolder0_lever_blue_hook.xml`
+`cd ~/.mujoco/mjpro150/bin`
+`./simulate ../path/to/DoorGym/world_generator/world/knobfolder0_lever_blue_hook.xml`
 
 # Reference
 This mjcf generator is powered by the following repo.
