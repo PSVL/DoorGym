@@ -18,11 +18,17 @@
 
 ## 0. Set up the environment
 requirement:
+
 -Python3.6 or later
+
 -Mujoco
+
 -Mujoco-py
+
 -Gym
+
 -OpenAI Baseline
+
 etc.
 
 We are currently working on making requirement.txt and envronment package (Anaconda or Docker).
