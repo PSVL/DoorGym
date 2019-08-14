@@ -22,7 +22,7 @@
 ## Arguments
 
 | name          | options       | default   | explaination   |
-| ------------- |-------------| --------| :-------------:|
+| ------------- |-------------| --------| -------------|
 | knob-type     | "lever", "round" or "pull" | ' ' |If no arg, it use all types.|
 | robot-type    | "gripper","hook","floatinghook","floatinggripper", "mobile_gripper" or "mobile_hook"   | 'floatinghook' | - |
 | one-dir       | True/False      | False | Save everything into one dir, or save into separate dir by its robot and knob types|
