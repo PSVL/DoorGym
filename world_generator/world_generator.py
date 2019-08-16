@@ -105,7 +105,7 @@ def main(dataset_file):
     knob_surface_friction = [randrange(50,100)/100.0, randrange(1,5)/1000.0, randrange(1,5)/1000.0]
 
     # Robot property
-    robot_damping = randrange(9, 11)/100 #OpenAI suggest 0.1-3 loguniform
+    robot_damping = randrange(10, 30)/100 #OpenAI suggest 0.1-3 loguniform
 
     ###################### Constant Parameters ######################
     # gravity
