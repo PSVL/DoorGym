@@ -52,7 +52,7 @@ Check the model by running the mujoco simulator
 
 More detailed instruction [here](./world_generator)
 
-## DoorGym is now on it's way! (ETA Aug 18 2019)
+## DoorGym is now on it's way! (ETA Aug 25 2019)
 
 Door Gym will includes follows.
 - [x] Door knob data set (Pull knob, Lever knob, Round knob 3K each)
