@@ -49,7 +49,7 @@ def main(dataset_file):
     wall_shininess = randrange(1,50)/100.0
     wall_specular = randrange(1,50)/100.0
     wall_rgba = [randrange(1,85)/100.0, randrange(1,85)/100.0, randrange(1,85)/100.0, 1.0]
-    wall_location = [0.0, randrange(-100,100)/1000.0, 0.0]
+    wall_location = [0.0, randrange(-200,200)/1000.0, 0.0]
 
     # Frame property
     frame_shininess = randrange(70,99)/100.0
@@ -79,7 +79,7 @@ def main(dataset_file):
     # knob_height = randrange(864, 1219)/1000.0
     knob_height = randrange(990, 1010)/1000.0
     knob_horizontal_location_ratio = randrange(10,20)/100.0 #height-ratio and from-side-ratio of knob
-    door_mass = door_height*door_width*door_thickness*randrange(200,300) # (700,850) Density of MDF
+    door_mass = door_height*door_width*door_thickness*randrange(700,850) # (700,850) Density of MDF
     door_shininess = randrange(1,50)/100.0
     door_specular = randrange(1,80)/100.0
     door_rgba = [randrange(1,100)/100.0, randrange(1,100)/100.0, randrange(1,100)/100.0, 1.0]
@@ -98,7 +98,7 @@ def main(dataset_file):
         doorknob_pos = [0, (0.5-knob_horizontal_location_ratio)*door_width*2, 0]
         knob_euler = [1.57,1.57,0]
 
-    knob_mass = randrange(1,2)
+    knob_mass = randrange(4,7)
     knob_shininess = randrange(50,100)/100.0
     knob_specular = randrange(80,100)/100.0
     knob_rgba = [randrange(1,100)/100.0, randrange(1,100)/100.0, randrange(1,100)/100.0, 1.0]
