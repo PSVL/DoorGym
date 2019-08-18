@@ -539,20 +539,6 @@ def main(dataset_file):
     ######## Level3 body (Knob Wrapper) ########
     body3_joints = []
 
-    if knob_type != "pull":
-        body3_joints.append(e.Joint(
-            name='hinge1',
-            type='hinge',
-            axis=[1, 0, 0],
-            armature=knob_door_armature,
-            stiffness=knob_door_spring,
-            damping=knob_door_damper,
-            frictionloss=knob_door_frictionloss,
-            limited=knob_door_limited,
-            range=knob_door_range,
-            pos=knob_door_joint_pos
-        ))
-
     axes = [[0,1,0],[0,0,1]]
     ranges = [[-0.2, 0.3], [-0.5,0.5]]
     for i in range(2):
@@ -569,6 +555,21 @@ def main(dataset_file):
             range=ranges[i]
             )
     )
+
+
+    if knob_type != "pull":
+        body3_joints.append(e.Joint(
+            name='hinge1',
+            type='hinge',
+            axis=[1, 0, 0],
+            armature=knob_door_armature,
+            stiffness=knob_door_spring,
+            damping=knob_door_damper,
+            frictionloss=knob_door_frictionloss,
+            limited=knob_door_limited,
+            range=knob_door_range,
+            pos=knob_door_joint_pos
+        ))
 
     body3_inertial = e.Inertial(
         pos=[0, 0, 0],
