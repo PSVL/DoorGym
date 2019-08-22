@@ -676,7 +676,7 @@ def main(dataset_file):
     ######## Write file to Output folder ########
     model_xml = mujoco.xml()
     name = '{0}_{1}_{2}.xml'
-    output_path = os.path.join(args.output_dirname, '{0}_{1}{2}'.format(knob_type, args.robot_type, args.output_name))
+    output_path = os.path.join(args.output_dirname, '{0}_{1}{2}'.format(knob_type, args.robot_type, args.output_name_extention))
     try:
         os.makedirs(output_path)
     except OSError:
@@ -696,7 +696,7 @@ if __name__ == '__main__':
     parser.add_argument('--robot-type', default='floatinghook', help='Choose from "gripper","hook","floatinghook","floatinggripper", "mobile_gripper", "mobile_hook" ')
     parser.add_argument('--input-dirname', type=str, default='./door/{}knobs', help='knob path')
     parser.add_argument('--output-dirname', type=str, default='./world', help='world path')
-    parser.add_argument('--output-name', type=str, default=None, help='folder name under world path')
+    parser.add_argument('--output-name-extention', type=str, default=None, help='folder name under world path')
     parser.add_argument('--pulldoor-ratio', type=float, default=1.0, help='ratio of door that opens by pulling.')
     parser.add_argument('--righthinge-ratio', type=float, default=1.0, help='ratio of door that has hinge on right side.')
     args = parser.parse_args()
