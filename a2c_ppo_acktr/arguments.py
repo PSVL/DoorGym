@@ -135,7 +135,7 @@ def get_args():
         '--save-name',
         type=str,
         default="test",
-        help='name for changing the log and model name')
+        help='name for changing the log and model name') 
     parser.add_argument(
         '--knob-noisy',
         action='store_true',
