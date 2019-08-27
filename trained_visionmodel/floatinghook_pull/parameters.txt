@@ -1,0 +1,4 @@
+lr:0.001
+lr_scheduler:poly
+epoch:100
+description:testing
