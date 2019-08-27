@@ -13,9 +13,9 @@
 </p>
 
 ## Updates
-### 8/26/2019 Door opening agent trainer has been released!
-### 8/13/2019 Random Door knob Generator has been released!
-### 8/12/2019 Door knob Dataset (3K knobs for each type) has been released!
+#### 8/26/2019 Door opening agent trainer has been released!
+#### 8/13/2019 Random Door knob Generator has been released!
+#### 8/12/2019 Door knob Dataset (3K knobs for each type) has been released!
 
 ## 0. Set up the environment
 requirement:
@@ -75,13 +75,11 @@ Register the doorenv as the gym environment.
 `python enjoy.py --env-name doorenv-v0 --load-name trained_models/ppo/doorenv-v0_reacher-pull-floatinghook.600.pt`
 
 
-## DoorGym is now on it's way! (ETA Aug 25 2019)
-
-Door Gym will includes follows.
+DoorGym includes follows.
 - [x] Door knob data set (Pull knob, Lever knob, Round knob 3K each)
 - [x] Random Door world generator
 - [x] Door opening policy trainer
-- [ ] Mujoco-Unity Plugin
+- [ ] Mujoco-Unity Plugin (ETA Aug 27 2019)
 
 ## Paper
 https://arxiv.org/abs/1908.01887
