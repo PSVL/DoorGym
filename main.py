@@ -3,7 +3,6 @@ import sys
 import time
 import pickle
 from collections import deque
-
 import gym
 import numpy as np
 
@@ -11,7 +10,7 @@ import torch
 import torch.nn as nn
 from tensorboardX import SummaryWriter
 
-from model.visionmodel import VisionModelXYZ
+from trained_visionmodel.visionmodel import VisionModelXYZ
 from util import add_noise, load_visionmodel, prepare_trainer, prepare_env
 
 from a2c_ppo_acktr import algo, utils
@@ -332,11 +331,11 @@ if __name__ == "__main__":
             layer_size=100,
             algorithm_kwargs=dict(
                 num_epochs=6000,
-                num_eval_steps_per_epoch=2, #512
-                num_trains_per_train_loop=10, #1000
-                num_expl_steps_per_train_loop=2, #512
-                min_num_steps_before_training=2, #1000
-                max_path_length=2, #512
+                num_eval_steps_per_epoch=512, #512
+                num_trains_per_train_loop=1000, #1000
+                num_expl_steps_per_train_loop=512, #512
+                min_num_steps_before_training=512, #1000
+                max_path_length=512, #512
                 batch_size=128,
                 ),
             trainer_kwargs=dict(
@@ -356,11 +355,11 @@ if __name__ == "__main__":
             algorithm=args.algo,
             algorithm_kwargs=dict(
                 num_epochs=3000,
-                num_eval_steps_per_epoch=2,
-                num_trains_per_train_loop=10,
-                num_expl_steps_per_train_loop=2,
-                min_num_steps_before_training=2,
-                max_path_length=2,
+                num_eval_steps_per_epoch=512,
+                num_trains_per_train_loop=1000,
+                num_expl_steps_per_train_loop=512,
+                min_num_steps_before_training=512,
+                max_path_length=512,
                 batch_size=128,
             ),
             trainer_kwargs=dict(
