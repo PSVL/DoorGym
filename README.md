@@ -66,7 +66,8 @@ Register the doorenv as the gym environment.
 ### Soft Actor Critic (SAC) training
 `python main.py --env-name doorenv-v0 --algo sac --save-name ppo-test`
 
-### Twin Delayed DDPG (TD3) and Advantage Actor-Critic (A2C) can be used by `--algo td3` or `--algo a2c`.
+### Twin Delayed DDPG (TD3) and Advantage Actor-Critic (A2C) can be used as following arguments
+`--algo td3` or `--algo a2c`.
 
 ## 4. Train with vision network estimator
 ### Coming soon
@@ -83,3 +84,10 @@ DoorGym includes follows.
 
 ## Paper
 https://arxiv.org/abs/1908.01887
+
+## Reference
+This repo is powered by following excellent repos.
+- [ikostrikov/pytorch-a2c-ppo-acktr-gail](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr-gail)
+- [vitchyr/rlkit](https://github.com/vitchyr/rlkit)
+- [iandanforth/mjcf](https://github.com/iandanforth/mjcf)
+
