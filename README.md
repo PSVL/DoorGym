@@ -78,12 +78,11 @@ Register the doorenv as the gym environment.
 `--algo td3` or `--algo a2c`.
 
 ## 4. Train with vision network estimator
+Download and configure DoorGym-Unity Plugin from [here](https://github.com/PSVL/DoorGym-Unity).
 ### with Unity
 `python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --visionnet-input --unity`
 ### without Unity
 `python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --visionnet-input`
-
-Download and configure DoorGym-Unity Plugin from [here](https://github.com/PSVL/DoorGym-Unity).
 
 ## 5. Run the policy
 `python enjoy.py --env-name doorenv-v0 --load-name trained_models/ppo/doorenv-v0_reacher-pull-floatinghook.600.pt`
