@@ -13,9 +13,16 @@
 </p>
 
 ## Updates
+#### 8/30/2019 Doorgym-Unity plugin has been released!
 #### 8/26/2019 Door opening agent trainer has been released!
 #### 8/13/2019 Random Door knob Generator has been released!
 #### 8/12/2019 Door knob Dataset (3K knobs for each type) has been released!
+
+DoorGym includes follows.
+- [x] Door knob data set (Pull knob, Lever knob, Round knob 3K each)
+- [x] Random Door world generator
+- [x] Door opening policy trainer
+- [x] Mujoco-Unity Plugin ver. Doorgym
 
 ## 0. Set up the environment
 requirement:
@@ -29,6 +36,8 @@ requirement:
 -Gym 0.14.0 or later
 
 -OpenAI Baseline
+
+-Unity3D
 
 etc.
 
@@ -58,7 +67,6 @@ Register the doorenv as the gym environment.
 
 `pip install -e .`
 
-
 ## 3. train the agent on the generated door worlds (e.g. lever knob and hook arm combination.)
 ### Proximal Policy Optimization (PPO) training
 `python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test`
@@ -70,24 +78,23 @@ Register the doorenv as the gym environment.
 `--algo td3` or `--algo a2c`.
 
 ## 4. Train with vision network estimator
-### Coming soon
+### with Unity
+`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --visionnet-input --unity`
+### without Unity
+`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --visionnet-input`
+
+Download and configure DoorGym-Unity Plugin from [here](https://github.com/PSVL/DoorGym-Unity).
 
 ## 5. Run the policy
 `python enjoy.py --env-name doorenv-v0 --load-name trained_models/ppo/doorenv-v0_reacher-pull-floatinghook.600.pt`
-
-
-DoorGym includes follows.
-- [x] Door knob data set (Pull knob, Lever knob, Round knob 3K each)
-- [x] Random Door world generator
-- [x] Door opening policy trainer
-- [ ] Mujoco-Unity Plugin (ETA Aug 27 2019)
 
 ## Paper
 https://arxiv.org/abs/1908.01887
 
 ## Reference
-This repo is powered by following excellent repos.
+This repo is powered by following excellent repos and software.
 - [ikostrikov/pytorch-a2c-ppo-acktr-gail](https://github.com/ikostrikov/pytorch-a2c-ppo-acktr-gail)
 - [vitchyr/rlkit](https://github.com/vitchyr/rlkit)
 - [iandanforth/mjcf](https://github.com/iandanforth/mjcf)
+- [Mujoco-Unity Plugin](http://www.mujoco.org/book/unity.html)
 
