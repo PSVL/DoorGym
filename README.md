@@ -13,7 +13,7 @@
 </p>
 
 ## Updates
-#### 8/30/2019 Doorgym-Unity plugin has been released!
+#### 8/30/2019 [Doorgym-Unity plugin](https://github.com/PSVL/DoorGym-Unity) has been released!
 #### 8/26/2019 Door opening agent trainer has been released!
 #### 8/13/2019 Random Door knob Generator has been released!
 #### 8/12/2019 Door knob Dataset (3K knobs for each type) has been released!
@@ -78,7 +78,7 @@ Register the doorenv as the gym environment.
 `--algo td3` or `--algo a2c`.
 
 ## 4. Train with vision network estimator
-Download and configure DoorGym-Unity Plugin from [here](https://github.com/PSVL/DoorGym-Unity).
+Download and configure DoorGym-Unity Plugin from [this link](https://github.com/PSVL/DoorGym-Unity).
 ### with Unity
 `python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --visionnet-input --unity`
 ### without Unity
