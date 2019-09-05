@@ -56,6 +56,8 @@ export PYTHONPATH=$PYTHONPATH:/home/demo/doorgym/DoorGym-Unity/python_interface
 ```bash
 conda env create -n doorgym -f environment/environment.yml
 conda activate doorgym
+pip install -r requirement.txt
+pip install -r requirement.dev.txt
 ```
 
 #### Step4. Install OpenAI Baselines (0.1.6<)
