@@ -6,6 +6,7 @@ import os
 import random
 import torch
 from mjremote import mjremote
+#from doorgym.mjremote import mjremote
 import time
 import matplotlib.pyplot as plt
 
