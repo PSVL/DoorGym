@@ -41,7 +41,7 @@ requirement:
 
 etc.
 
-### Conda (Anacondam, Miniconda)
+### Conda (Anaconda, Miniconda)
 #### Step1. Install Mujoco
 Install Mujoco2.00 and place it in home/.mujoco/mujoco200 (not mujoco200_linux)
 
