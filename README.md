@@ -35,11 +35,41 @@ requirement:
 
 -Gym 0.14.0 or later
 
--OpenAI Baseline
+-OpenAI Baseline 0.1.6 or later
 
 -Unity3D
 
 etc.
+
+### Conda (Anacondam, Miniconda)
+#### Step1. Install Mujoco
+Install Mujoco2.00 and place it in home/.mujoco/mujoco200 (not mujoco200_linux)
+
+#### Step2. Set environment var. and install necessary pkgs
+```bash
+sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3 libglew-dev
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/demo/.mujoco/mujoco200/bin
+export PYTHONPATH=$PYTHONPATH:/home/demo/doorgym/DoorGym-Unity/python_interface
+```
+
+#### Step3. Create conda environment
+```bash
+conda env create -n doorgym -f environment/environment.yml
+conda activate doorgym
+```
+
+#### Step4. Install OpenAI Baselines (0.1.6<)
+```bash
+git clone https://github.com/openai/baselines
+cd baselines
+pip install -e .
+```
+
+#### Step5. Install doorenv (0.0.1)
+```bash
+cd doorgym/envs
+pip install -e .
+```
 
 We are currently working on making requirement.txt and envronment package (Anaconda or Docker).
 
