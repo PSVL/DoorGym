@@ -133,10 +133,10 @@ More detailed instruction [here](./world_generator)
 ## 3. train the agent on the generated door worlds (e.g. lever knob and hook arm combination.)
 ### Proximal Policy Optimization (PPO) training
 
-`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
+`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[abs_path/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
 
 ### Soft Actor Critic (SAC) training
-`python main.py --env-name doorenv-v0 --algo sac --save-name ppo-test --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
+`python main.py --env-name doorenv-v0 --algo sac --save-name ppo-test --world-path /[abs_path/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
 
 ### Twin Delayed DDPG (TD3) and Advantage Actor-Critic (A2C) can be used as following arguments
 `--algo td3` or `--algo a2c`.
@@ -146,12 +146,12 @@ Install [Unity3D](https://forum.unity.com) editor for Linux.
 
 Download and open the project in DoorGym-Unity Plugin from [this link](https://github.com/PSVL/DoorGym-Unity).
 ### with Unity
-`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook --visionnet-input --unity`
+`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[abs_path/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook --visionnet-input --unity`
 ### without Unity
-`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook --visionnet-input`
+`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[abs_path/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook --visionnet-input`
 
 ## 5. Run the policy
-`python enjoy.py --env-name doorenv-v0 --load-name trained_models/ppo/doorenv-v0_reacher-pull-floatinghook.600.pt --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
+`python enjoy.py --env-name doorenv-v0 --load-name trained_models/ppo/doorenv-v0_reacher-pull-floatinghook.600.pt --world-path /[abs_path/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
 
 ## Paper
 https://arxiv.org/abs/1908.01887
