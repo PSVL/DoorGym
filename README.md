@@ -86,6 +86,18 @@ cd baselines
 pip install -e .
 ```
 
+#### Step6. Import test
+Make sure that you can import pytorch and mujoco-py w/o problem.
+```bash
+Python 3.7.4 (default, Aug 13 2019, 20:35:49) 
+[GCC 7.3.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import torch
+>>> torch.cuda.is_available()
+True
+>>> import mujoco_py
+```
+
 ## 1. Download the randomized door knob dataset
 You can download from the following URL (All tar.gz file).
 #### [Pull knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/pullknobs.tar.gz) (0.75 GB)
