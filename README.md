@@ -43,9 +43,13 @@ etc.
 
 ### Conda (Anaconda, Miniconda)
 #### Step1. Install Mujoco
-Install Mujoco2.00 and place it in `home/.mujoco/mujoco200` (Not mujoco200_linux).
+1. Get the license from [MuJoCo License page](https://www.roboti.us/license.html)
 
-Check following repo for detailed installation step.
+2. Download Mujoco2.00 from [MuJoCo Product page](https://www.roboti.us/index.html).
+
+3. Extruct it and place it in under `home/.mujoco`, as `/mujoco200` (Not mujoco200_linux).
+
+Detailed installation can be checked in following page.
 https://github.com/openai/mujoco-py
 
 #### Step2. Set environment var. and install necessary pkgs
@@ -70,7 +74,7 @@ pip install -r requirement.dev.txt
 
 #### Step4. Install doorenv (0.0.1)
 ```bash
-cd DoorGym/envs
+cd envs
 pip install -e .
 ```
 
