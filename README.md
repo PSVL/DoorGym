@@ -59,6 +59,7 @@ sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3 libglew-dev
 Set following path in `~/.bashrc`.
 ```bash
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/[usr-name]/.mujoco/mujoco200/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia-[driver-ver]
 export PYTHONPATH=$PYTHONPATH:/home/[use-name]/doorgym/DoorGym-Unity/python_interface
 ```
 
@@ -97,6 +98,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 True
 >>> import mujoco_py
 ```
+
+If there is an error while importing mujoco-py, try trouble shooting according to the [mujoco-py installation guide](https://github.com/openai/mujoco-py)
 
 ## 1. Download the randomized door knob dataset
 You can download from the following URL (All tar.gz file).
