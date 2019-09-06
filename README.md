@@ -70,15 +70,12 @@ export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
 ```bash
 git clone https://github.com/PSVL/DoorGym
 cd ./DoorGym
+git submodule init
+git submodule update
 conda env create -n doorgym -f environment/environment.yml
 conda activate doorgym
 pip install -r requirements.txt
 pip install -r requirements.dev.txt
-```
-
-#### Step4. Clone DoorGym-Unity under DoorGym dir
-```
-git https://github.com/PSVL/DoorGym-Unity
 ```
 
 #### Step4. Install doorenv (0.0.1)
@@ -145,7 +142,7 @@ More detailed instruction [here](./world_generator)
 ## 4. Train with vision network estimator
 Install [Unity3D](https://forum.unity.com) editor for Linux.
 
-Download and open the project in DoorGym-Unity Plugin from [this link](https://github.com/PSVL/DoorGym-Unity).
+Open the project in DoorGym-Unity Plugin from submodule `DoorGym-Unity`.
 ### with Unity
 `python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[abs_path/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook --visionnet-input --unity`
 ### without Unity
