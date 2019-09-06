@@ -27,6 +27,8 @@ DoorGym includes follows.
 ## 0. Set up the environment
 requirement:
 
+- Ubuntu 16.04 <
+
 -Python3.6 or later
 
 -Mujoco
