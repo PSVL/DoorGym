@@ -117,7 +117,7 @@ You can download from the following URL (All tar.gz file).
 
 Check the model by running the mujoco simulator
 
-`cd ~/.mujoco/mjpro200/bin`
+`cd ~/.mujoco/mujoco200/bin`
 
 `./simulate [path/to/DoorGym]/DoorGym/world_generator/world/lever_floatinghook/1551848929_lever_floatinghook.xml`
 
