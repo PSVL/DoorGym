@@ -49,6 +49,8 @@ etc.
 
 3. Extruct it and place it in under `home/.mujoco`, as `/mujoco200` (Not mujoco200_linux).
 
+4. Put your key under both `.mujoco/` and `.mujoco/mujoco200/bin`.
+
 Detailed installation can be checked in following page.
 https://github.com/openai/mujoco-py
 
@@ -60,10 +62,10 @@ Set following path in `~/.bashrc`.
 ```bash
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/[usr-name]/.mujoco/mujoco200/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia-[driver-ver]
-export PYTHONPATH=$PYTHONPATH:/home/[use-name]/doorgym/DoorGym-Unity/python_interface
+export PYTHONPATH=$PYTHONPATH:/home/[use-name]/DoorGym/DoorGym-Unity/python_interface
 ```
 
-#### Step3. Create conda environment
+#### Step3. Clone DoorGym repo and Create conda environment
 ```bash
 git clone https://github.com/PSVL/DoorGym
 cd ./DoorGym
@@ -71,6 +73,11 @@ conda env create -n doorgym -f environment/environment.yml
 conda activate doorgym
 pip install -r requirements.txt
 pip install -r requirements.dev.txt
+```
+
+#### Step4. Clone DoorGym-Unity under DoorGym dir
+```
+git https://github.com/PSVL/DoorGym-Unity
 ```
 
 #### Step4. Install doorenv (0.0.1)
@@ -125,6 +132,7 @@ More detailed instruction [here](./world_generator)
 
 ## 3. train the agent on the generated door worlds (e.g. lever knob and hook arm combination.)
 ### Proximal Policy Optimization (PPO) training
+
 `python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
 
 ### Soft Actor Critic (SAC) training
