@@ -69,8 +69,8 @@ git clone https://github.com/PSVL/DoorGym
 cd ./DoorGym
 conda env create -n doorgym -f environment/environment.yml
 conda activate doorgym
-pip install -r requirement.txt
-pip install -r requirement.dev.txt
+pip install -r requirements.txt
+pip install -r requirements.dev.txt
 ```
 
 #### Step4. Install doorenv (0.0.1)
@@ -106,6 +106,9 @@ You can download from the following URL (All tar.gz file).
 #### [Pull knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/pullknobs.tar.gz) (0.75 GB)
 #### [Lever knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/leverknobs.tar.gz) (0.77 GB)
 #### [Round knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/roundknobs.tar.gz) (1.24 GB)
+
+* Extract and place the downloaded door knob dataset under the `world_generator/door` folder (or make a symlink).
+* Place your favorite robots under the `world_generator/robot` folder. (Blue robots are there as default)
 
 ## 2. Generate door world (e.g. lever knob and hook arm combination.)
 `cd [path/to/]DoorGym`
