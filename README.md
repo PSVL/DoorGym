@@ -63,6 +63,7 @@ Set following path in `~/.bashrc`.
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/[usr-name]/.mujoco/mujoco200/bin
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/nvidia-[driver-ver]
 export PYTHONPATH=$PYTHONPATH:/home/[use-name]/DoorGym/DoorGym-Unity/python_interface
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libGLEW.so
 ```
 
 #### Step3. Clone DoorGym repo and Create conda environment
