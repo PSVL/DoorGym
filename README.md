@@ -111,9 +111,9 @@ You can download from the following URL (All tar.gz file).
 * Place your favorite robots under the `world_generator/robot` folder. (Blue robots are there as default)
 
 ## 2. Generate door world (e.g. lever knob and hook arm combination.)
-`cd [path/to/]DoorGym`
+`cd [path/to/]DoorGym/world_generator`
 
-`python ./world_generator/world_generator.py --knob_type lever --robot_type floatinghook`
+`python world_generator.py --knob-type lever --robot-type floatinghook`
 
 Check the model by running the mujoco simulator
 
