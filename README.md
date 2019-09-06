@@ -58,8 +58,8 @@ sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3 libglew-dev
 ```
 Set following path in `~/.bashrc`.
 ```bash
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/usr-name/.mujoco/mujoco200/bin
-export PYTHONPATH=$PYTHONPATH:/home/use-name/doorgym/DoorGym-Unity/python_interface
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/[usr-name]/.mujoco/mujoco200/bin
+export PYTHONPATH=$PYTHONPATH:/home/[use-name]/doorgym/DoorGym-Unity/python_interface
 ```
 
 #### Step3. Create conda environment
@@ -105,24 +105,24 @@ You can download from the following URL (All tar.gz file).
 #### [Round knobs](https://github.com/PSVL/DoorGym/releases/download/v1.0/roundknobs.tar.gz) (1.24 GB)
 
 ## 2. Generate door world (e.g. lever knob and hook arm combination.)
-`cd path/to/DoorGym/`
+`cd [path/to/]DoorGym`
 
-`python3 ./world_generator/world_generator.py --knob_type lever --robot_type floatinghook`
+`python ./world_generator/world_generator.py --knob_type lever --robot_type floatinghook`
 
 Check the model by running the mujoco simulator
 
-`cd ~/.mujoco/mjpro150/bin`
+`cd ~/.mujoco/mjpro200/bin`
 
-`./simulate path/to/DoorGym/world_generator/world/lever_floatinghook/1551848929_lever_floatinghook.xml`
+`./simulate [path/to/DoorGym]/DoorGym/world_generator/world/lever_floatinghook/1551848929_lever_floatinghook.xml`
 
 More detailed instruction [here](./world_generator)
 
 ## 3. train the agent on the generated door worlds (e.g. lever knob and hook arm combination.)
 ### Proximal Policy Optimization (PPO) training
-`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test`
+`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
 
 ### Soft Actor Critic (SAC) training
-`python main.py --env-name doorenv-v0 --algo sac --save-name ppo-test`
+`python main.py --env-name doorenv-v0 --algo sac --save-name ppo-test --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
 
 ### Twin Delayed DDPG (TD3) and Advantage Actor-Critic (A2C) can be used as following arguments
 `--algo td3` or `--algo a2c`.
@@ -132,12 +132,12 @@ Install [Unity3D](https://forum.unity.com) editor for Linux.
 
 Download and open the project in DoorGym-Unity Plugin from [this link](https://github.com/PSVL/DoorGym-Unity).
 ### with Unity
-`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --visionnet-input --unity`
+`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook --visionnet-input --unity`
 ### without Unity
-`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --visionnet-input`
+`python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook --visionnet-input`
 
 ## 5. Run the policy
-`python enjoy.py --env-name doorenv-v0 --load-name trained_models/ppo/doorenv-v0_reacher-pull-floatinghook.600.pt`
+`python enjoy.py --env-name doorenv-v0 --load-name trained_models/ppo/doorenv-v0_reacher-pull-floatinghook.600.pt --world-path /[fullpath/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
 
 ## Paper
 https://arxiv.org/abs/1908.01887
