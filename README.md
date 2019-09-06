@@ -43,37 +43,44 @@ etc.
 
 ### Conda (Anaconda, Miniconda)
 #### Step1. Install Mujoco
-Install Mujoco2.00 and place it in home/.mujoco/mujoco200 (not mujoco200_linux)
+Install Mujoco2.00 and place it in `home/.mujoco/mujoco200` (Not mujoco200_linux).
+
+Check following repo for detailed installation step.
+https://github.com/openai/mujoco-py
 
 #### Step2. Set environment var. and install necessary pkgs
 ```bash
 sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3 libglew-dev
+```
+Set following path in `~/.bashrc`.
+```bash
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/demo/.mujoco/mujoco200/bin
 export PYTHONPATH=$PYTHONPATH:/home/demo/doorgym/DoorGym-Unity/python_interface
 ```
 
 #### Step3. Create conda environment
 ```bash
+git clone https://github.com/PSVL/DoorGym
+cd ./DoorGym
 conda env create -n doorgym -f environment/environment.yml
 conda activate doorgym
 pip install -r requirement.txt
 pip install -r requirement.dev.txt
 ```
 
-#### Step4. Install OpenAI Baselines (0.1.6<)
+#### Step4. Install doorenv (0.0.1)
 ```bash
+cd DoorGym/envs
+pip install -e .
+```
+
+#### Step5. Install OpenAI Baselines (0.1.6<)
+```bash
+cd ../..
 git clone https://github.com/openai/baselines
 cd baselines
 pip install -e .
 ```
-
-#### Step5. Install doorenv (0.0.1)
-```bash
-cd doorgym/envs
-pip install -e .
-```
-
-We are currently working on making requirement.txt and envronment package (Anaconda or Docker).
 
 ## 1. Download the randomized door knob dataset
 You can download from the following URL (All tar.gz file).
@@ -94,11 +101,6 @@ Check the model by running the mujoco simulator
 
 More detailed instruction [here](./world_generator)
 
-Register the doorenv as the gym environment.
-`cd DoorGym/envs`
-
-`pip install -e .`
-
 ## 3. train the agent on the generated door worlds (e.g. lever knob and hook arm combination.)
 ### Proximal Policy Optimization (PPO) training
 `python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test`
@@ -110,7 +112,9 @@ Register the doorenv as the gym environment.
 `--algo td3` or `--algo a2c`.
 
 ## 4. Train with vision network estimator
-Download and configure DoorGym-Unity Plugin from [this link](https://github.com/PSVL/DoorGym-Unity).
+Install [Unity3D](https://forum.unity.com) editor for Linux.
+
+Download and open the project in DoorGym-Unity Plugin from [this link](https://github.com/PSVL/DoorGym-Unity).
 ### with Unity
 `python main.py --env-name doorenv-v0 --algo ppo --num-steps 4096 --num-processes 8 --lr 1e-3 --save-name ppo-test --visionnet-input --unity`
 ### without Unity
