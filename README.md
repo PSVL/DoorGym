@@ -58,8 +58,8 @@ sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3 libglew-dev
 ```
 Set following path in `~/.bashrc`.
 ```bash
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/demo/.mujoco/mujoco200/bin
-export PYTHONPATH=$PYTHONPATH:/home/demo/doorgym/DoorGym-Unity/python_interface
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/usr-name/.mujoco/mujoco200/bin
+export PYTHONPATH=$PYTHONPATH:/home/use-name/doorgym/DoorGym-Unity/python_interface
 ```
 
 #### Step3. Create conda environment
