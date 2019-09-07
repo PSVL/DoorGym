@@ -159,7 +159,7 @@ def get_args():
     parser.add_argument(
         '--world-path',
         type=str,
-        default="/u/home/urakamiy/doorgym/world_generator/world/pull_floatinghook",
+        default="/home/demo/doorgym/world_generator/world/pull_floatinghook",
         help='load the vision network model')
     parser.add_argument(
         '--visionnet-input',

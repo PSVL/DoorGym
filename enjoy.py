@@ -8,7 +8,7 @@ import time
 from util import load_visionmodel, prepare_env
 from a2c_ppo_acktr.envs import VecPyTorch, make_vec_envs
 from a2c_ppo_acktr.utils import get_render_func, get_vec_normalize
-from model.visionmodel import VisionModelXYZ, VisionModel
+from trained_visionmodel.visionmodel import VisionModelXYZ, VisionModel
 
 from rlkit.samplers.rollout_functions import rollout
 from rlkit.torch.pytorch_util import set_gpu_mode
