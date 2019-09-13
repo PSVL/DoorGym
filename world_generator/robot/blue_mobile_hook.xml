@@ -1,5 +1,5 @@
 <mujoco model="blue_mobile_gripper">
-    <compiler angle="radian" />
+    <compiler angle="radian"/>
     <!-- <default>
         <default class="robot">
             <joint damping="0.1" />
@@ -7,6 +7,19 @@
         </default>
     </default> -->
     <asset> 
+        <!-- <mesh name="base_link" file="robot/STL/base_link.STL" />
+        <mesh name="shoulder_link" file="robot/STL/shoulder_link.STL"/>
+        <mesh name="shoulder_lift_link" file="robot/STL/shoulder_lift_link.STL"/>
+        <mesh name="upper_arm_link" file="robot/STL/upper_arm_link.STL"/>
+        <mesh name="upper_arm_lift_link" file="robot/STL/upper_arm_lift_link.STL" />
+        <mesh name="forearm_link" file="robot/STL/forearm_link.STL" />
+        <mesh name="wrist_lift_link" file="robot/STL/wrist_lift_link.STL" />
+        <mesh name="wrist_roll_link" file="robot/STL/hand_base_link.STL" />
+        <mesh name="hook_0" file="robot/STL/hook_0.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="hook_1" file="robot/STL/hook_1.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="hook_2" file="robot/STL/hook_2.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="hook_3" file="robot/STL/hook_3.STL" scale="0.001 0.001 0.001"/> -->
+
         <mesh name="base_link" file="../../robot/STL/base_link.STL" />
         <mesh name="shoulder_link" file="../../robot/STL/shoulder_link.STL"/>
         <mesh name="shoulder_lift_link" file="../../robot/STL/shoulder_lift_link.STL"/>

@@ -1,0 +1,46 @@
+<mujoco model="baxter(v1.31)">  
+<include file="../../robot/baxter.xml"/>
+
+    <!-- Torque control -->
+    <!-- <actuator>
+        <motor ctrlrange=" -1.0  1.0" gear="50.0" joint="right_s0" />
+        <motor ctrlrange=" -2.0  2.0" gear="50.0" joint="right_s1" />
+        <motor ctrlrange=" -1.0  1.0" gear="50.0" joint="right_e0" />
+        <motor ctrlrange=" -1.0  1.0" gear="50.0" joint="right_e1" />
+        <motor ctrlrange=" -1.0  1.0" gear="15.0" joint="right_w0" />
+        <motor ctrlrange=" -1.0  1.0" gear="15.0" joint="right_w1" />
+        <motor ctrlrange=" -1.0  1.0" gear="15.0" joint="right_w2" />
+        <position ctrlrange="0 0.02" gear="1.0" joint="robotfinger_actuator_joint_r"/>
+        <position ctrlrange="-0.02 0.0" gear="-1.0" joint="r_gripper_l_finger_joint" />
+        <position ctrlrange="-0.0 0.02" gear="1.0" joint="r_gripper_r_finger_joint" />
+    </actuator> -->
+
+    <!-- Position control -->
+    <actuator>
+        <position ctrlrange=" -1.70  1.70" gear="1.0" joint="right_s0" />
+        <position ctrlrange=" -2.14  1.04" gear="1.0" joint="right_s1" />
+        <position ctrlrange=" -3.00  3.05" gear="1.0" joint="right_e0" />
+        <position ctrlrange=" -0.05 -2.61" gear="1.0" joint="right_e1" />
+        <position ctrlrange=" -3.05  3.05" gear="1.0" joint="right_w0" />
+        <position ctrlrange=" -1.50  2.00" gear="1.0" joint="right_w1" />
+        <position ctrlrange=" -3.00  3.00" gear="1.0" joint="right_w2" />
+        <position ctrlrange="0 0.02" gear="1.0" joint="robotfinger_actuator_joint_r"/>
+        <position ctrlrange="-0.02 0.0" gear="-1.0" joint="r_gripper_l_finger_joint" />
+        <position ctrlrange="-0.0 0.02" gear="1.0" joint="r_gripper_r_finger_joint" />
+    </actuator>
+
+    <!-- Velocity control -->
+    <!-- <actuator>
+        <velocity ctrlrange="-1.0 1.0" gear="1.0" joint="right_s0" />
+        <velocity ctrlrange="-1.0 1.0" gear="1.0" joint="right_s1" />
+        <velocity ctrlrange="-1.0 1.0" gear="1.0" joint="right_e0" />
+        <velocity ctrlrange="-1.0 1.0" gear="1.0" joint="right_e1" />
+        <velocity ctrlrange="-1.0 1.0" gear="1.0" joint="right_w0" />
+        <velocity ctrlrange="-1.0 1.0" gear="1.0" joint="right_w1" />
+        <velocity ctrlrange="-1.0 1.0" gear="1.0" joint="right_w2" />
+        <position ctrlrange="0 0.02" gear="1.0" joint="robotfinger_actuator_joint_r"/>
+        <position ctrlrange="-0.02 0.0" gear="-1.0" joint="r_gripper_l_finger_joint" />
+        <position ctrlrange="-0.0 0.02" gear="1.0" joint="r_gripper_r_finger_joint" />
+    </actuator> -->
+
+</mujoco>

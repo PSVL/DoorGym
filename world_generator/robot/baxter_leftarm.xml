@@ -1,0 +1,22 @@
+<mujoco model="baxter(v1.31)">  
+<include file="../../robot/baxter.xml"/>
+    <actuator>
+        <motor ctrlrange=" -1.0  1.0" gear="50.0" joint="left_s0" />
+        <motor ctrlrange=" -2.0  2.0" gear="50.0" joint="left_s1" />
+        <motor ctrlrange=" -1.0  1.0" gear="50.0" joint="left_e0" />
+        <motor ctrlrange=" -1.0 -1.0" gear="50.0" joint="left_e1" />
+        <motor ctrlrange=" -1.0  1.0" gear="15.0" joint="left_w0" />
+        <motor ctrlrange=" -1.0  1.0" gear="15.0" joint="left_w1" />
+        <motor ctrlrange=" -1.0  1.0" gear="15.0" joint="left_w2" />
+        <position ctrlrange="0 0.02" gear="1.0" joint="robotfinger_actuator_joint_l"/>
+        <!-- <velocity ctrlrange="-1.5 1.5" gear="1.0" joint="left_s0" />
+        <velocity ctrlrange="-1.5 1.5" gear="1.0" joint="left_s1" />
+        <velocity ctrlrange="-1.5 1.5" gear="1.0" joint="left_e0" />
+        <velocity ctrlrange="-1.5 1.5" gear="1.0" joint="left_e1" />
+        <velocity ctrlrange="-4.0 4.0" gear="1.0" joint="left_w0" />
+        <velocity ctrlrange="-4.0 4.0" gear="1.0" joint="left_w1" />
+        <velocity ctrlrange="-4.0 4.0" gear="1.0" joint="left_w2" /> -->
+        <position ctrlrange="-0.02 0.0" gear="1.0" joint="l_gripper_l_finger_joint" />
+        <position ctrlrange="-0.0 0.02" gear="1.0" joint="l_gripper_r_finger_joint" />
+    </actuator>
+</mujoco>
