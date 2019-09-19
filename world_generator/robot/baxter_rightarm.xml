@@ -1,7 +1,6 @@
 <mujoco model="baxter(v1.31)">  
 <include file="../../robot/baxter.xml"/>
 
-    <!-- Torque control -->
     <actuator>
         <motor ctrlrange=" -2.0  2.0" gear="1.0" joint="right_s0" />
         <motor ctrlrange=" -2.0  2.0" gear="1.0" joint="right_s1" />
@@ -42,4 +41,9 @@
         <position ctrlrange="-0.02 0.0" gear="-1.0" joint="r_gripper_l_finger_joint" />
         <position ctrlrange="-0.0 0.02" gear="1.0" joint="r_gripper_r_finger_joint" />
     </actuator> -->
-</mujoco>
+
+</mujoco>  
+
+
+
+

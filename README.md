@@ -58,7 +58,7 @@ https://github.com/openai/mujoco-py
 
 #### Step2. Set environment var. and install necessary pkgs
 ```bash
-sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3 libglew-dev
+sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3 libglew-dev libopenmpi-dev patchelf
 ```
 Set following path in `~/.bashrc`.
 ```bash

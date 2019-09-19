@@ -1,4 +1,4 @@
-name: doorgym1
+name: doorgym
 channels:
   - pytorch
   - defaults
@@ -9,6 +9,7 @@ dependencies:
   - certifi=2019.6.16=py37_1
   - cffi=1.12.3=py37h2e261b9_0
   - cudatoolkit=10.0.130=0
+  - cython=0.29.13=py37he6710b0_0
   - freetype=2.9.1=h8a8886c_1
   - intel-openmp=2019.4=243
   - jpeg=9b=h024ee3a_2
@@ -28,7 +29,7 @@ dependencies:
   - numpy=1.16.4=py37h7e9f1db_0
   - numpy-base=1.16.4=py37hde5b4d6_0
   - olefile=0.46=py37_0
-  - openssl=1.1.1c=h7b6447c_1
+  - openssl=1.1.1d=h7b6447c_1
   - pillow=6.1.0=py37h34e0f95_0
   - pip=19.2.2=py37_0
   - pycparser=2.19=py37_0
@@ -57,7 +58,6 @@ dependencies:
     - click==7.0
     - cloudpickle==1.2.1
     - cycler==0.10.0
-    - cython==0.29.13
     - decorator==4.4.0
     - dill==0.3.0
     - docutils==0.15.2
@@ -136,5 +136,5 @@ dependencies:
     - wrapt==1.11.2
     - zipp==0.6.0
     - zmq==0.0.0
-prefix: /home/demo/miniconda3/envs/doorgym1
+prefix: /u/home/urakamiy/miniconda3/envs/doorgym
 
