@@ -189,8 +189,7 @@ def main(dataset_file):
             light_property_list.append(light_property)
 
     # Robot property
-    # robot_damping = randrange(9, 11)/100
-    robot_damping = randrange(5, 10)/10
+    robot_damping = randrange(9, 11)/100
 
     ###################### Constant Parameters ######################
     # gravity
@@ -233,11 +232,16 @@ def main(dataset_file):
     # Door Frame Joint Property
     door_frame_armature = 0.0001
     door_frame_limited = True
-    # door_frame_range = [-0.5, 0.5]
-    if opendir == "push":
-        door_frame_range = [0.0, 1.57]
+    if hinge_loc == "lefthinge":
+        if opendir == "push":
+            door_frame_range = [-0.03, 1.57]
+        else:
+            door_frame_range = [-1.57, 0.03]
     else:
-        door_frame_range = [-1.57, 0.0]
+        if opendir == "push":
+            door_frame_range = [-1.57, 0.03]
+        else:
+            door_frame_range = [-0.03, 1.57]
 
     if hinge_loc == "righthinge":
         door_frame_joint_pos = [0,door_width-door_width*knob_horizontal_location_ratio,0]
@@ -266,9 +270,9 @@ def main(dataset_file):
     knob_door_range = [-knob_rot_range, knob_rot_range]
     latch_thickness = 0.015
     latch_height = 0.05
-    latch_width = door_width * knob_horizontal_location_ratio + frame_width/2.0
-    latch_gap = latch_thickness*1.05
-
+    latch_width = door_width * knob_horizontal_location_ratio + frame_width/3.0
+    latch_gap = latch_thickness*1.25
+    
     # Knob property
     if knob_type == "pull":
         knob_pos = [door_thickness/2-0.006,0,0]
