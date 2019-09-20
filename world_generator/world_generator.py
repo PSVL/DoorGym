@@ -29,10 +29,16 @@ def main(dataset_file):
         robot_type = "blue_floatinggripper"
     elif args.robot_type == "floatinghook":
         robot_type = "blue_floatinghook"
-    elif args.robot_type == "mobile_gripper":
+    elif args.robot_type == "mobilegripper":
         robot_type = "blue_mobile_gripper"
-    elif args.robot_type == "mobile_hook":
+    elif args.robot_type == "mobilehook":
         robot_type = "blue_mobile_hook"
+    elif args.robot_type == "baxter-leftarm":
+        robot_type = "baxter_leftarm"
+    elif args.robot_type == "baxter-rightarm":
+        robot_type = "baxter_rightarm"
+    elif args.robot_type == "baxter-botharm":
+        robot_type = "baxter_botharm"
     else:
         raise Exception("robot type not recognized")
     
@@ -78,6 +84,10 @@ def main(dataset_file):
     metal_shininess = randrange(80,100)/100.0
     metal_specular = randrange(80,100)/100.0
 
+    #Floor color
+    floor_rgb1 = [randrange(0,50)/100.0, randrange(0,50)/100.0, randrange(0,50)/100.0]
+    floor_rgb2 = [randrange(0,50)/100.0, randrange(0,50)/100.0, randrange(0,50)/100.0]
+
     # Wall property
     wall_rgba = [randrange(1,85)/100.0, randrange(1,85)/100.0, randrange(1,85)/100.0, 1.0]
     wall_location = [0.0, randrange(-100,100)/1000.0, 0.0]
@@ -88,7 +98,7 @@ def main(dataset_file):
     frame_material = material_name_list[randrange(0,3)]
 
     # Door Frame Joint Property  
-    door_frame_damper = randrange(10, 20)/100.0
+    door_frame_damper = randrange(10, 20)/10.0
     door_frame_spring = randrange(10, 20)/100.0
     door_frame_frictionloss = randrange(0,1)
 
@@ -97,6 +107,10 @@ def main(dataset_file):
         hinge_loc = "righthinge"
     else:
         hinge_loc = "lefthinge"
+
+    # Swtich Camera1 position depending on the hinge location
+    if hinge_loc == "lefthinge":
+         camera_poses[0] = [0.99, 0.5, 1.0] #1m x 1m
     
     # Opening direction
     if args.pulldoor_ratio > randrange(0,100)/100.0:
@@ -106,9 +120,9 @@ def main(dataset_file):
 
     # Door property
     door_height = randrange(2000, 2500)/1000.0
-    door_width = randrange(800, 1200)/1000.0
+    door_width = randrange(750, 1200)/1000.0
     door_thickness = randrange(20, 30)/1000.0
-    knob_height = randrange(990, 1010)/1000.0 # legal height of the door knob is 864mm to 1219mm
+    knob_height = randrange(900, 1100)/1000.0 # legal height of the door knob is 864mm to 1219mm
     knob_horizontal_location_ratio = randrange(10,20)/100.0 #height-ratio and from-side-ratio of knob
     door_mass = door_height*door_width*door_thickness*randrange(200,300) # Density of MDF is in range of 500-1000kg/m^3 
     door_rgba = [randrange(1,100)/100.0, randrange(1,100)/100.0, randrange(1,100)/100.0, 1.0]
@@ -179,7 +193,7 @@ def main(dataset_file):
 
     ###################### Constant Parameters ######################
     # gravity
-    if args.robot_type.find("floating")>-1:
+    if args.robot_type.find("floating")>-1 or args.robot_type.find("baxter")>-1:
         gravity_vector = [0,0,0]
     else:
         gravity_vector = [0,0,-9.81]
@@ -203,7 +217,7 @@ def main(dataset_file):
     frame_wall_joint_pos = [0,0,0]
 
     # Door stopper property
-    doorstopper_size = [door_thickness/2.0, 0.05, 0.025]
+    doorstopper_size = [door_thickness, 0.10, 0.025]
     if opendir == "push":
         if hinge_loc == "righthinge":
             doorstopper_pos = [door_thickness*2.3, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
@@ -211,14 +225,24 @@ def main(dataset_file):
             doorstopper_pos = [door_thickness*2.3, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
     else:
         if hinge_loc == "righthinge":
-            doorstopper_pos = [0-door_thickness*0.7, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
+            doorstopper_pos = [0-door_thickness*1.8, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
         else:
-            doorstopper_pos = [0-door_thickness*0.7, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
+            doorstopper_pos = [0-door_thickness*1.8, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
 
     # Door Frame Joint Property
     door_frame_armature = 0.0001
-    door_frame_limited = False
-    door_frame_range = [-0.5, 0.5]
+    door_frame_limited = True
+    if hinge_loc == "lefthinge":
+        if opendir == "push":
+            door_frame_range = [-0.03, 1.57]
+        else:
+            door_frame_range = [-1.57, 0.03]
+    else:
+        if opendir == "push":
+            door_frame_range = [-1.57, 0.03]
+        else:
+            door_frame_range = [-0.03, 1.57]
+
     if hinge_loc == "righthinge":
         door_frame_joint_pos = [0,door_width-door_width*knob_horizontal_location_ratio,0]
     else:
@@ -231,25 +255,6 @@ def main(dataset_file):
     door_euler = [0,0,0]
     door_pos = [door_thickness*1.1,0,0]
 
-    # Knob Door Joint Property
-    knob_door_joint_pos = [0,0,0]
-    knob_door_armature = 0.0001
-    knob_door_limited = True
-    knob_door_range = [-knob_rot_range, knob_rot_range]
-    latch_thickness = 0.025
-    latch_height = 0.05
-    latch_width = (door_width * knob_horizontal_location_ratio) + 0.04
-    latch_gap = latch_thickness*1.05
-
-    # Knob property
-    if knob_type == "pull":
-        knob_pos = [door_thickness/2-0.006,0,0]
-    else:
-        knob_pos = [door_thickness/2,0,0]
-    knob_diaginertia = [knob_mass/12.0*(latch_height**2+latch_width**2),
-                        knob_mass/12.0*(latch_height**2+latch_thickness**2),
-                        knob_mass/12.0*(latch_width**2+latch_thickness**2)]
-
     # Frame property
     frame_width = 100/1000.0
     overlap_door_frame = 10/1000.0
@@ -257,6 +262,28 @@ def main(dataset_file):
     frame_euler = [0,0,0]
     frame_mass = 500
     frame_diaginertia = [0.0001, 0.0001, 0.0001]
+
+    # Knob Door Joint Property
+    knob_door_joint_pos = [0,0,0]
+    knob_door_armature = 0.0001
+    knob_door_limited = True
+    knob_door_range = [-knob_rot_range, knob_rot_range]
+    latch_thickness = 0.015
+    latch_height = 0.05
+    latch_width = door_width * knob_horizontal_location_ratio + frame_width/3.0
+    latch_gap = latch_thickness*1.25
+    
+    # Knob property
+    if knob_type == "pull":
+        knob_pos = [door_thickness/2-0.006,0,0]
+        # knob_pos = [door_thickness/2,0,0]
+    else:
+        knob_pos = [door_thickness/2,0,0]
+    knob_diaginertia = [knob_mass/12.0*(latch_height**2+latch_width**2),
+                        knob_mass/12.0*(latch_height**2+latch_thickness**2),
+                        knob_mass/12.0*(latch_width**2+latch_thickness**2)]
+
+    # Frame position
     frame_pos_list = [
         [0, -door_width*knob_horizontal_location_ratio-frame_width/2.0-overlap_door_frame, (door_height+frame_width)/2.0-knob_height],
         [0, door_width-door_width*knob_horizontal_location_ratio+frame_width/2.0+overlap_door_frame, (door_height+frame_width)/2.0-knob_height],
@@ -282,11 +309,13 @@ def main(dataset_file):
     wall_pos_list = [
         [0, -door_width/2.0-frame_width-sidewall_len/2.0+0.03, (door_height+frame_width)/2.0],
         [0, door_width/2.0+frame_width+sidewall_len/2.0, (door_height+frame_width)/2.0],
-        [0, 0, door_height+frame_width+topwall_width/2.0]]
+        [0, 0, door_height+frame_width+topwall_width/2.0]
+        ]
     wall_size_list = [
         [wall_thickness/2.0, sidewall_len/2.0, (door_height+frame_width)/2.0],
         [wall_thickness/2.0, sidewall_len/2.0, (door_height+frame_width)/2.0],
-        [wall_thickness/2.0, door_width/2.0+frame_width+sidewall_len, topwall_width/2.0]]
+        [wall_thickness/2.0, door_width/2.0+frame_width+sidewall_len, topwall_width/2.0]
+        ]
 
     ###################### XML Generator ######################
     # Level 1
@@ -378,9 +407,9 @@ def main(dataset_file):
     texture_list.append(e.Texture(
         name='texplane',
         type='2d',
-        builtin='checker',
-        rgb1=[0.2,0.3,0.4],
-        rgb2=[0.1,0.15,0.2],
+        builtin='gradient',
+        rgb1=floor_rgb1,
+        rgb2=floor_rgb2,
         width=512,
         height=512
     ))
@@ -411,8 +440,9 @@ def main(dataset_file):
     doorstopper_contact = e.Pair(
         geom1="doorstopper",
         geom2="door0",
-        solref="0.01 1"
+        # solref="0.01 1"
     )
+
     latch_contacts = []
     for i in range(4):
         latch_contacts.append(e.Pair(
@@ -421,8 +451,8 @@ def main(dataset_file):
             solref="0.01 1"
         ))
 
-
-    contact_list = [doorstopper_contact]
+    contact_list = []
+    # contact_list = [doorstopper_contact]
     if knob_type != "pull":
         contact_list.extend(latch_contacts)
     contact.add_children(contact_list)
@@ -467,7 +497,7 @@ def main(dataset_file):
         name='floor',
         material="Floor",
         pos=[0,0,-0.05],
-        size=[40.0,40.0,0.05],
+        size=[15.0,15.0,0.05],
         type='plane')
 
     #Camera
@@ -542,14 +572,14 @@ def main(dataset_file):
     )
 
     body1_geoms = []
-    # door stopper to define the pull/push opening direction
-    body1_geoms.append(e.Geom(
-        name='doorstopper',
-        material='Metal',
-        pos=doorstopper_pos,
-        size=doorstopper_size,
-        type='box',
-        euler=frame_euler))
+    # # door stopper to define the pull/push opening direction
+    # body1_geoms.append(e.Geom(
+    #     name='doorstopper',
+    #     material='Metal',
+    #     pos=doorstopper_pos,
+    #     size=doorstopper_size,
+    #     type='box',
+    #     euler=frame_euler))
 
     # Actual frame
     name = 'door_frame_{}'
@@ -676,12 +706,12 @@ def main(dataset_file):
     ######## Write file to Output folder ########
     model_xml = mujoco.xml()
     name = '{0}_{1}_{2}.xml'
-    output_path = os.path.join(args.output_dirname, '{0}_{1}{2}'.format(knob_type, args.robot_type, args.output_name_extention))
+    output_path = os.path.join(args.output_dirname, '{0}_{1}{2}'.format(knob_type, robot_type, args.output_name_extention))
     try:
         os.makedirs(output_path)
     except OSError:
         pass
-    output_filename = os.path.join(output_path, name.format(dataset_file, knob_type, args.robot_type))
+    output_filename = os.path.join(output_path, name.format(dataset_file, knob_type, robot_type))
     if knob_type== "lever" and knob_parts_n < 4:
         # print("parts are too less!!", dataset_file)
         pass
@@ -716,3 +746,6 @@ if __name__ == '__main__':
             pbar = tqdm(os.listdir(args.input_dirname.format(knob_type)))
             for dataset_file in pbar:
                 main(dataset_file)
+
+    
+

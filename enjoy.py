@@ -8,7 +8,7 @@ import time
 from util import load_visionmodel, prepare_env
 from a2c_ppo_acktr.envs import VecPyTorch, make_vec_envs
 from a2c_ppo_acktr.utils import get_render_func, get_vec_normalize
-from trained_visionmodel.visionmodel import VisionModelXYZ, VisionModel
+from model.visionmodel import VisionModelXYZ, VisionModel
 
 from rlkit.samplers.rollout_functions import rollout
 from rlkit.torch.pytorch_util import set_gpu_mode
@@ -40,7 +40,7 @@ def onpolicy_inference():
         env_obj.unity = None
 
     render_func = get_render_func(env)
-    if evaluation:
+    if evaluation and not render:
         render_func = None
 
     if env_kwargs['visionnet_input']:
@@ -61,6 +61,7 @@ def onpolicy_inference():
     masks = torch.zeros(1, 1)
 
     knob_noisy = args.knob_noisy
+
     def add_noise(obs, epoch=100):
         satulation = 100.
         sdv = torch.tensor([3.440133806003181, 3.192113342496682,  1.727412865751099]) /satulation  #Vision SDV for arm
@@ -70,6 +71,10 @@ def onpolicy_inference():
         return obs
 
     full_obs = env.reset()
+    print("init obs", full_obs)
+    initial_state = full_obs[:,:8]
+
+
     if args.env_name.find('doorenv')>-1 and env_obj.visionnet_input:
         obs = actor_critic.obs2inputs(full_obs, 0)
     else:
@@ -82,7 +87,9 @@ def onpolicy_inference():
         render_func('human')
 
     if args.env_name.find('doorenv')>-1:
-        if env_obj.xml_path.find("float")>-1:
+        if env_obj.xml_path.find("baxter")>-1:
+            doorhinge_idx = 20
+        elif env_obj.xml_path.find("float")>-1:
             if env_obj.xml_path.find("hook")>-1:
                 doorhinge_idx = 6
             elif env_obj.xml_path.find("gripper")>-1:
@@ -111,13 +118,22 @@ def onpolicy_inference():
     test_num = 100
 
     while True:
-        i+=1
-        epi_step += 1
         with torch.no_grad():
             value, action, _, recurrent_hidden_states = actor_critic.act(
                 obs, recurrent_hidden_states, masks, deterministic=args.det)
 
-        full_obs, reward, done, infos = env.step(action)
+        next_action = action
+
+        if i%511==0: current_state = initial_state
+
+        pos_control = False
+        if pos_control:
+            print("current:",current_state, " next:", next_action*0.0004)
+            next_action = current_state + next_action*0.0004
+
+        full_obs, reward, done, infos = env.step(next_action)
+            
+        current_state = full_obs[:,:8]
 
         if args.env_name.find('doorenv')>-1 and env_obj.visionnet_input:
             obs = actor_critic.obs2inputs(full_obs, 0)
@@ -131,6 +147,9 @@ def onpolicy_inference():
 
         if render_func is not None:
             render_func('human')
+
+        i+=1
+        epi_step += 1
 
         if args.env_name.find('doorenv')>-1:
             if not door_opened and abs(env_obj.sim.data.qpos[doorhinge_idx])>=0.2:
@@ -161,6 +180,8 @@ def onpolicy_inference():
                 device='cuda:0',
                 allow_early_resets=False,
                 env_kwargs=env_kwargs,)
+                if render:
+                    render_func = get_render_func(env)
                 env_obj = env.venv.venv.envs[0].env.env
                 if args.env_name.find('doorenv')<=-1:
                     env_obj.unity = None
@@ -185,7 +206,6 @@ def offpolicy_inference():
 
     env, _, _ = prepare_env(args.env_name, args.visionmodel_path, **env_kwargs)
 
-    print("before snapshot")
 
     snapshot = torch.load(args.load_name)
     policy = snapshot['evaluation/policy']
@@ -283,6 +303,11 @@ if __name__ == "__main__":
         default=False,
         help="Measure the opening ratio among 100 trials")
     parser.add_argument(
+        '--render',
+        action='store_true',
+        default=False,
+        help="force rendering")
+    parser.add_argument(
         '--knob-noisy',
         action='store_true',
         default=False,
@@ -316,6 +341,7 @@ if __name__ == "__main__":
 
     args.det = not args.non_det
     evaluation = args.eval
+    render = args.render
 
     env_kwargs = dict(port = args.port,
                     visionnet_input = args.visionnet_input,
