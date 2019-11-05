@@ -13,6 +13,7 @@
 </p>
 
 ## Updates
+#### 11/3/2019 Now you can choose Baxter as a robot!
 #### 8/30/2019 [Doorgym-Unity plugin](https://github.com/PSVL/DoorGym-Unity) has been released!
 #### 8/26/2019 Door opening agent trainer has been released!
 #### 8/13/2019 Random Door knob Generator has been released!
