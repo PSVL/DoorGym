@@ -7,12 +7,13 @@
   ![alt text][doorgym_video]
 </p>
 --->
-
 <p align="center">
-  <img width="460" height="406" src="./imgs/doorgym_video.gif">
+  <img width="345" height="304" src="./imgs/doorgym_video.gif">
+  <img width="345" height="304" src="./imgs/baxter.gif">
 </p>
 
 ## Updates
+#### 11/3/2019 Now you can choose Baxter as a robot!
 #### 8/30/2019 [Doorgym-Unity plugin](https://github.com/PSVL/DoorGym-Unity) has been released!
 #### 8/26/2019 Door opening agent trainer has been released!
 #### 8/13/2019 Random Door knob Generator has been released!
@@ -58,7 +59,7 @@ https://github.com/openai/mujoco-py
 
 #### Step2. Set environment var. and install necessary pkgs
 ```bash
-sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3 libglew-dev
+sudo apt install libosmesa6-dev libgl1-mesa-glx libglfw3 libglew-dev libopenmpi-dev patchelf
 ```
 Set following path in `~/.bashrc`.
 ```bash

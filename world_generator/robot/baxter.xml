@@ -18,9 +18,11 @@
 
 <mujoco model="baxter(v1.31)">
     <compiler coordinate="local" angle="radian" meshdir="../../robot/meshes/" strippath="false" />
+    <!-- <compiler coordinate="local" angle="radian" strippath="false" /> -->
     <size njmax="795" nconmax="250" nstack="631875" />
    
    <asset>
+
         <mesh name="base_link" file="torso/base_link.STL"/>
 		<mesh name="base_link_collision" file="torso/base_link_collision.STL"/>
         <mesh name="PEDESTAL" file="base/PEDESTAL.STL"/>
@@ -100,7 +102,7 @@
                 </body>-->
                 <body name="pedestal" pos="0 0 0">
                     <inertial pos="0 0 0" quat="0.659267 -0.259505 -0.260945 0.655692" mass="60.864" diaginertia="6.0869 5.81635 4.20915" />
-                    <geom class="viz" rgba="0.2 0.2 0.2 1"mesh="PEDESTAL"/>
+                    <geom class="viz" rgba="0.2 0.2 0.2 1" mesh="PEDESTAL"/>
                     <!--<geom rgba="0.2 0.2 0.2 1" type="mesh" mesh="pedestal_link_collision"/>-->
 					<geom pos="-.04 0 -.8" rgba="0.2 0.2 0.2 1" type="box" size=".46 .425 .16"/>
 					<geom pos="0 0 -.35" rgba="0.2 0.2 0.2 1" type="capsule" size=".165 .25"/>

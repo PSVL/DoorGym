@@ -6,7 +6,6 @@ import os
 import random
 import torch
 from mjremote import mjremote
-#from doorgym.mjremote import mjremote
 import time
 import matplotlib.pyplot as plt
 
@@ -21,7 +20,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.first_img = None
         self.init_done = False
         self.hook_ratio = -1 #-1:all non_hooked, 100:all hooked
-        self.untucked_ratio = 0 #-1:all non-untucked, 100:all untucked
+        self.untucked_ratio = -1 #-1:all non-untucked, 100:all untucked
         self.switch_avg = 0.0
         self.imgsize = 256
         self.visionnet_input = visionnet_input
@@ -151,22 +150,36 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 # print("init qpos",self.init_qpos.shape)
                 # print("init qvel",self.init_qvel.shape)
                 qpos = self.init_qpos
+                # qpos[:20] = np.array([0.08, -1.00, 1.19, 1.94, -0.67, 1.03, 0.5, 0.02, 0.0, 0.0,\
+                #                 -0.08, -1.00, -1.19, 1.94, 0.67, 1.03, -0.5, 0.0, 0.0, 0.0])
                 qpos[:20] = np.array([0.08, -1.00, 1.19, 1.94, -0.67, 1.03, 0.5, 0.02, 0.0, 0.0,\
-                                -0.08, -1.00, -1.19, 1.94, 0.67, 1.03, -0.5, 0.0, 0.0, 0.0])
+                    1.15, 1.05, -0.10, 0.50, -1.00, 0.01, -1.92, 0.0, 0.0, 0.0])
                 # print("this qpos", qpos.shape)
             else:
                 qpos = self.init_qpos
                 # if self.xml_path.find('both')>-1:
-                qpos[0] =  -1.15 #+ random.uniform(-1.70168, 1.70168)    # right_s0
-                qpos[1] =   1.05 #+ random.uniform(-2.147, 1.047)        # right_s1
-                qpos[2] =   0.10 #+ random.uniform(-3.05418, 3.05418)    # right_e0
-                qpos[3] =   0.50 #+ random.uniform(-0.05, 2.618)         # right_e1
-                qpos[4] =   1.00 #+ random.uniform(-3.059, 3.059)        # right_w0
-                qpos[5] =  -0.01 #+ random.uniform(-1.5708, 2.094)       # right_w1
-                qpos[6] =   1.92 #+ random.uniform(-3.059, 3.059)        # right_w2
-                qpos[7] =   0.00 #+ random.uniform(0, 0.020833)          # robotfinger_actuator_joint_r
-                qpos[8] =   0.00 #+ random.uniform(-0.02, 0)            # r_gripper_l_finger_joint
-                qpos[9] =   0.00 #+ random.uniform( 0, 0.02)            # r_gripper_r_finger_joint
+                qpos[0] = random.uniform(-1.65, 1.65)    # right_s0
+                qpos[1] = random.uniform(-2.10, 1.00)    # right_s1
+                qpos[2] = random.uniform(-3.00, 3.00)    # right_e0
+                qpos[3] = random.uniform(-0.05, 2.50)    # right_e1
+                qpos[4] = random.uniform(-3.00, 3.00)    # right_w0
+                qpos[5] = random.uniform(-1.55, 2.00)       # right_w1
+                qpos[6] = random.uniform(-3.00, 3.00)        # right_w2
+                qpos[7] = random.uniform(0, 0.02)          # robotfinger_actuator_joint_r
+                qpos[8] = random.uniform(-0.02, 0)            # r_gripper_l_finger_joint
+                qpos[9] = random.uniform( 0, 0.02)            # r_gripper_r_finger_joint
+
+                # qpos[0] =  -1.15 + random.uniform(-0.1, 0.1)    # right_s0
+                # qpos[1] =   1.05 + random.uniform(-0.1, 0.1)        # right_s1
+                # qpos[2] =   0.10 + random.uniform(-0.1, 0.1)    # right_e0
+                # qpos[3] =   0.50 + random.uniform(-0.1, 0.1)         # right_e1
+                # qpos[4] =   1.00 + random.uniform(-0.1, 0.1)        # right_w0
+                # qpos[5] =  -0.01 + random.uniform(-0.1, 0.1)       # right_w1
+                # qpos[6] =   1.92 + random.uniform(-0.1, 0.1)        # right_w2
+                # qpos[7] =   0.00 + random.uniform(0, 0.020833)          # robotfinger_actuator_joint_r
+                # qpos[8] =   0.00 + random.uniform(-0.02, 0)            # r_gripper_l_finger_joint
+                # qpos[9] =   0.00 + random.uniform( 0, 0.02)            # r_gripper_r_finger_joint
+
                 qpos[10] =  1.15 #+ random.uniform(-0.2, 0.2)   # left_s0
                 qpos[11] =  1.05 #+ random.uniform(-0.2, 0.2)   # left_s1
                 qpos[12] = -0.10 #+ random.uniform(-0.2, 0.2)   # left_e0
@@ -205,14 +218,17 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
 
         if self.xml_path.find("pull")>-1:
-            self.goal = self.np_random.uniform(low=-.15, high=-.15, size=gg)
+            self.goal = self.np_random.uniform(low=-.0, high=-.15, size=gg)
+            # self.goal = self.np_random.uniform(low=-.15, high=-.15, size=gg)
             if self.xml_path.find("lefthinge")>-1:
                 self.goal[0] = np.random.uniform(-0.15,0.05)
             else:
                 # print("not right or left")
-                self.goal[0] = np.random.uniform(-0.00,0.15)
+                # self.goal[0] = np.random.uniform(-0.00,0.15)
+                self.goal[0] = np.random.uniform(-0.10,0.15)
         else:
             self.goal = np.zeros(gg)
+
             self.goal[0] = np.random.uniform(-0.15,0.15)
 
         # if self.xml_path.find('baxter')>-1 and not self.xml_path.find('both')>-1:
@@ -288,8 +304,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return self._get_obs()
 
     def _get_obs(self):
-        print("finger",self.get_finger_target())
-        print("door",self.get_knob_target())
+        # print("finger",self.get_finger_target())
+        # print("door",self.get_knob_target())
         if self.visionnet_input:
             return np.concatenate([
                 self.get_robot_joints(),
@@ -474,12 +490,16 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         elif camera_type == 'global_cam':
             cam_type = 0
         DEFAULT_CAMERA_CONFIG = {
-        'distance': 4.0,
-        'azimuth': 140.0,
-        'elevation': -30.0,
+        'distance': 1.75,
+        'azimuth': 245.0,
+        'elevation': -13.0,
         'type': cam_type,
         'fixedcamid': camera_select
         }
+
+        # self.viewer._run_speed = 0.075
+
+        # print(self.viewer._run_speed)
 
         for key, value in DEFAULT_CAMERA_CONFIG.items():
             if isinstance(value, np.ndarray):
