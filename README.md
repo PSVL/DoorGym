@@ -21,6 +21,7 @@
 
 DoorGym includes follows.
 - [x] Door knob data set (Pull knob, Lever knob, Round knob 3K each)
+- [x] Robot xml (UC Berkeley's BLUE, Rethinkrobot's Baxter)
 - [x] Random Door world generator
 - [x] Door opening policy trainer
 - [x] Mujoco-Unity Plugin ver. Doorgym
