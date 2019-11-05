@@ -238,7 +238,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.set_state(qpos, qvel)
 
         if hooked:
-            if self.xml_path.find("float")>-1:
+            if self.xml_path.find("float")>-1:untuck
                 robot_origin = np.array([1.0, 0, 1.2])
                 if self.xml_path.find("lever")>-1:
                     goal_in_xyz = self.sim.data.get_geom_xpos("door_knob_4") - robot_origin
