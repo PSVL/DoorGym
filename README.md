@@ -9,7 +9,7 @@
 --->
 <p align="center">
   <img width="345" height="304" src="./imgs/doorgym_video.gif">
-  <img width="345" height="304" src="./imgs/doorgym_video.gif">
+  <img width="345" height="304" src="./imgs/baxter.gif">
 </p>
 
 ## Updates
