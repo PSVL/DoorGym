@@ -7,12 +7,13 @@
   ![alt text][doorgym_video]
 </p>
 --->
-
 <p align="center">
-  <img width="460" height="406" src="./imgs/doorgym_video.gif">
+  <img width="345" height="304" src="./imgs/doorgym_video.gif">
+  <img width="345" height="304" src="./imgs/baxter.gif">
 </p>
 
 ## Updates
+#### 11/3/2019 Now you can choose Baxter as a robot!
 #### 8/30/2019 [Doorgym-Unity plugin](https://github.com/PSVL/DoorGym-Unity) has been released!
 #### 8/26/2019 Door opening agent trainer has been released!
 #### 8/13/2019 Random Door knob Generator has been released!
@@ -20,6 +21,7 @@
 
 DoorGym includes follows.
 - [x] Door knob data set (Pull knob, Lever knob, Round knob 3K each)
+- [x] Robot xml (UC Berkeley's BLUE, Rethinkrobot's Baxter)
 - [x] Random Door world generator
 - [x] Door opening policy trainer
 - [x] Mujoco-Unity Plugin ver. Doorgym
