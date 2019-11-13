@@ -190,6 +190,7 @@ def main(dataset_file):
 
     # Robot property
     robot_damping = randrange(9, 11)/100
+    # robot_damping = randrange(5, 10)/10
 
     ###################### Constant Parameters ######################
     # gravity
@@ -234,14 +235,14 @@ def main(dataset_file):
     door_frame_limited = True
     if hinge_loc == "lefthinge":
         if opendir == "push":
-            door_frame_range = [-0.03, 1.57]
+            door_frame_range = [-0.00, 1.57]
         else:
-            door_frame_range = [-1.57, 0.03]
+            door_frame_range = [-1.57, 0.00]
     else:
         if opendir == "push":
-            door_frame_range = [-1.57, 0.03]
+            door_frame_range = [-1.57, 0.00]
         else:
-            door_frame_range = [-0.03, 1.57]
+            door_frame_range = [-0.00, 1.57]
 
     if hinge_loc == "righthinge":
         door_frame_joint_pos = [0,door_width-door_width*knob_horizontal_location_ratio,0]
@@ -271,7 +272,7 @@ def main(dataset_file):
     latch_thickness = 0.015
     latch_height = 0.05
     latch_width = door_width * knob_horizontal_location_ratio + frame_width/3.0
-    latch_gap = latch_thickness*1.25
+    latch_gap = latch_thickness*1.3
     
     # Knob property
     if knob_type == "pull":
@@ -689,7 +690,7 @@ def main(dataset_file):
             e.Geom(
             name='knob_latch',
             material=material_name_list[randrange(0,3)],
-            pos=[-(latch_gap/2.0+door_thickness*1.5), 0, 0],
+            pos=[-(latch_gap/2.0+door_thickness*2.1), 0, 0],
             size=[latch_thickness/2.0, latch_width, latch_height],
             type="box",
             euler=[0,0,0]))
