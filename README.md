@@ -13,8 +13,7 @@
 </p>
 
 ## Updates
-#### 12/14/2019 Presenting poster at [Deep RL workshop at NeurIPS 2019](https://sites.google.com/view/deep-rl-workshop-neurips-2019/home)!
-[paper](https://drive.google.com/file/d/1rC9wpd-4AMBgDMq8skAQIdTER8wSARMs/view)
+#### 12/14/2019 Presenting poster at [Deep RL workshop at NeurIPS 2019](https://sites.google.com/view/deep-rl-workshop-neurips-2019/home)! ([paper](https://drive.google.com/file/d/1rC9wpd-4AMBgDMq8skAQIdTER8wSARMs/view))
 #### 11/3/2019 Now you can choose Baxter as a robot!
 #### 8/30/2019 [Doorgym-Unity plugin](https://github.com/PSVL/DoorGym-Unity) has been released!
 #### 8/26/2019 Door opening agent trainer has been released!
