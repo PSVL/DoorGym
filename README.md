@@ -13,6 +13,7 @@
 </p>
 
 ## Updates
+#### 12/14/2019 Presenting poster at [Deep RL workshop at NeurIPS 2019](https://sites.google.com/view/deep-rl-workshop-neurips-2019/home)!
 #### 11/3/2019 Now you can choose Baxter as a robot!
 #### 8/30/2019 [Doorgym-Unity plugin](https://github.com/PSVL/DoorGym-Unity) has been released!
 #### 8/26/2019 Door opening agent trainer has been released!
@@ -156,7 +157,8 @@ Open the project in DoorGym-Unity Plugin from submodule `DoorGym-Unity`.
 `python enjoy.py --env-name doorenv-v0 --load-name trained_models/ppo/doorenv-v0_reacher-pull-floatinghook.600.pt --world-path /[abs_path/to/DoorGym/]DoorGym/world_generator/world/pull_floatinghook`
 
 ## Paper
-https://arxiv.org/abs/1908.01887
+Newer paper with Sim2Real ([NeurIPS workshop](https://drive.google.com/file/d/1rC9wpd-4AMBgDMq8skAQIdTER8wSARMs/view)).
+Arxiv paper: https://arxiv.org/abs/1908.01887
 
 ## Reference
 This repo is powered by following excellent repos and software.
