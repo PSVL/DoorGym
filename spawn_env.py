@@ -5,7 +5,7 @@ from glfw import get_framebuffer_size
 import numpy as np
 import random
 
-env = gym.make('doorenv-v0', world_path='/u/home/urakamiy/pytorch-a2c-ppo-acktr-gail/random_world/world/pull_baxter_rightarm_lefthinge/')
+env = gym.make('doorenv-v0', world_path='/home/demo/doorgym/world_generator/world/lever_baxter_rightarm')
 env.env.init(0)
 env.env.change_model(env.env.xml_path)
 
