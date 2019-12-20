@@ -52,7 +52,7 @@ def onpolicy_inference():
     if env_kwargs['visionnet_input'] and args.env_name.find('doorenv')>-1:
         actor_critic.visionmodel = visionmodel
         actor_critic.visionnet_input = env_obj.visionnet_input
-    actor_critic.to("cuda:0")p
+    actor_critic.to("cuda:0")
 
     if args.env_name.find('doorenv')>-1:
         actor_critic.nn = env_obj.nn
