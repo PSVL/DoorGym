@@ -113,6 +113,8 @@ def onpolicy_main():
                               actor_critic.recurrent_hidden_state_size)
 
     full_obs = envs.reset()
+    initial_state = full_obs[:,:envs.action_space.shape[0]]
+
     if args.env_name.find('doorenv')>-1 and visionnet_input:
         obs = actor_critic.obs2inputs(full_obs, 0)
     else:
@@ -137,6 +139,7 @@ def onpolicy_main():
             utils.update_linear_schedule(
                 agent.optimizer, j, num_updates, args.lr)
 
+        pos_control = False
         total_switches = 0
         prev_selection = ""
         for step in range(args.num_steps):
@@ -144,9 +147,18 @@ def onpolicy_main():
                 value, action, action_log_prob, recurrent_hidden_states = actor_critic.act(
                     rollouts.obs[step], rollouts.recurrent_hidden_states[step],
                     rollouts.masks[step])
-                _action = action 
+                next_action = action 
 
-            full_obs, reward, done, infos = envs.step(_action)
+            if pos_control:
+                frame_skip = 2
+                if step%(512/frame_skip-1)==0: current_state = initial_state
+                next_action = current_state + next_action
+                for kk in range(frame_skip):
+                    full_obs, reward, done, infos = envs.step(next_action)
+                    
+                current_state = full_obs[:,:envs.action_space.shape[0]]
+            else:
+                full_obs, reward, done, infos = envs.step(next_action)
 
             # convert img to obs if door_env and using visionnet 
             if args.env_name.find('doorenv')>-1 and visionnet_input:

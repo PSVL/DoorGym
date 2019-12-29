@@ -103,6 +103,10 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         else:
             reward_ctrl = - np.mean(np.square(a))
 
+        position_ctrl = True
+        if position_ctrl:
+            reward_ctrl = 0
+
         if self.xml_path.find("lever")>-1 or self.xml_path.find("round")>-1:
             reward_doorknob = abs(self.sim.data.get_joint_qpos("hinge1")) * 50
             reward = reward_door + reward_doorknob + reward_ctrl + reward_ori + reward_dist + reward_log_dist
@@ -228,15 +232,14 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 self.goal[0] = np.random.uniform(-0.10,0.15)
         else:
             self.goal = np.zeros(gg)
-
             self.goal[0] = np.random.uniform(-0.15,0.15)
 
-        # if self.xml_path.find('baxter')>-1 and not self.xml_path.find('both')>-1:
-        #     qpos[(self.all_joints*2):-gg] = 0
-        # elif self.xml_path.find('baxter')>-1:
-        #     qpos[self.all_joints:-gg] = 0
-        # else:
-        #     qpos[self.nn:-gg] = 0
+        if self.xml_path.find('baxter')>-1 and not self.xml_path.find('both')>-1:
+            qpos[(self.all_joints*2):-gg] = 0
+        elif self.xml_path.find('baxter')>-1:
+            qpos[self.all_joints:-gg] = 0
+        else:
+            qpos[self.nn:-gg] = 0
 
         if self.xml_path.find('baxter')>-1:
             if self.xml_path.find('both')>-1:

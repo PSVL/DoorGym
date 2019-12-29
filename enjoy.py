@@ -16,6 +16,8 @@ from rlkit.core import logger
 from rlkit.envs.wrappers import NormalizedBoxEnv
 import uuid
 
+import doorenv
+
 def eval_print(dooropen_counter, counter, start_time, total_time):
     opening_rate = dooropen_counter/counter *100
     if dooropen_counter != 0:
@@ -71,8 +73,8 @@ def onpolicy_inference():
         return obs
 
     full_obs = env.reset()
-    print("init obs", full_obs)
-    initial_state = full_obs[:,:8]
+    # print("init obs", full_obs)
+    initial_state = full_obs[:,2:2+env.action_space.shape[0]]
 
 
     if args.env_name.find('doorenv')>-1 and env_obj.visionnet_input:
@@ -128,12 +130,15 @@ def onpolicy_inference():
 
         pos_control = False
         if pos_control:
-            print("current:",current_state, " next:", next_action*0.0004)
-            next_action = current_state + next_action*0.0004
-
-        full_obs, reward, done, infos = env.step(next_action)
+            frame_skip = 1
+            if i%(512/frame_skip-1)==0: current_state = initial_state
+            next_action = current_state + next_action
+            for kk in range(frame_skip):
+                full_obs, reward, done, infos = env.step(next_action)
+        else:
+            full_obs, reward, done, infos = env.step(next_action)
             
-        current_state = full_obs[:,:8]
+        current_state = full_obs[:,2:2+env.action_space.shape[0]]
 
         if args.env_name.find('doorenv')>-1 and env_obj.visionnet_input:
             obs = actor_critic.obs2inputs(full_obs, 0)
