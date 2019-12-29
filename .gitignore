@@ -3,6 +3,14 @@
 
 #led / optimized / DLL files
 __pycache__/
+#rlkit/__pycache__/
+#rlkit/core/__pycache__/
+#rlkit/data_management/__pycache__/
+#rlkit/envs/__pycache__/
+#rlkit/exploration_strategies/__pycache__/
+#rlkit/policies/__pycache__/
+#rlkit/samplers/__pycache__/
+
 *.py[cod]
 *$py.class
 
@@ -107,3 +115,4 @@ data/
 .fuse_hidden*
 spawn_env.py
 MUJOCO_LOG.TXT
+logs/
