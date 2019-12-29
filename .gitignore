@@ -106,3 +106,4 @@ venv.bak/
 data/
 .fuse_hidden*
 spawn_env.py
+MUJOCO_LOG.TXT
