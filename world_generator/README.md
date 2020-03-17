@@ -12,7 +12,7 @@
 ## Step2: Run following (e.g. lever knob and hook arm combination.)
 `cd path/to/DoorGym/`
 
-`python3 ./world_generator/world_generator.py --knob_type lever --robot_type floatinghook`
+`python3 ./world_generator/world_generator.py --knob-type lever --robot-type floatinghook`
 
 ## Step3: Check the model by running the mujoco simulator
 `cd ~/.mujoco/mjpro150/bin`
