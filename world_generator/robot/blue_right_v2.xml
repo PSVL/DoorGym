@@ -28,34 +28,34 @@
         <geom name="pedestal_top" type="box" size="0.25 0.25 0.01" pos="0 0 0" quat="1 0 0 0"  rgba="1 1 1 1" condim="1"/>
         <geom name="pedestal_bottom" type="cylinder" size="0.05 0.5" pos="0 0 -0.5" quat="1 0 0 0"  rgba="1 1 1 1" condim="1"/> -->
 
-        <body name="right_base_link" pos="0.6 0.0 1">
+        <body name="robotbase_link" pos="0.6 0.0 1">
             <inertial pos="0.107964 -0.000118075 0.0740607" quat="-0.00144458 0.606987 0.000927747 0.79471" mass="3.45161" diaginertia="0.0175534 0.0157386 0.00730286" />
             <geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="arm_base_link_v2" contype="1" conaffinity="28" />
-            <body name="right_shoulder_roll_link" pos="0 0 0.083499" quat="0 1 0 0">
+            <body name="robotshoulder_link" pos="0 0 0.083499" quat="0 1 0 0">
                 <inertial pos="0.00796478 6.88165e-07 -0.101495" quat="0.712797 -0.021542 -0.0203263 0.700745" mass="2.21396" diaginertia="0.00680774 0.00679994 0.00633497" />
                 <joint name="right_base_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-3.3999 2.3412" />
                 <geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="roll_link_v2" contype="2" conaffinity="24" />
-                <body name="right_shoulder_lift_link" pos="-0.012 0 -0.232779" quat="0.707107 -0.707107 0 0">
+                <body name="robotshoulder_liftlink" pos="-0.012 0 -0.232779" quat="0.707107 -0.707107 0 0">
                     <inertial pos="-1.3238e-05 0.00162984 3.71222e-05" quat="0.714714 -0.00266942 -0.00304239 0.699405" mass="0.415577" diaginertia="0.000846898 0.000835923 0.000571351" />
                     <joint name="right_shoulder_lift_joint" pos="0 0 0" axis="0 0 -1" limited="true" range="-2.2944 0" />
                     <geom type="mesh" rgba="0.116747 0.862745 1 1" mesh="lift_link_v2" contype="0" />
-                    <body name="right_elbow_roll_link" pos="0 0.0359532 0" quat="0.500704 0.500704 0.499295 -0.499295">
+                    <body name="robotupperarm_link" pos="0 0.0359532 0" quat="0.500704 0.500704 0.499295 -0.499295">
                         <inertial pos="0.00796478 6.88165e-07 -0.101495" quat="0.712797 -0.021542 -0.0203263 0.700745" mass="2.21396" diaginertia="0.00680774 0.00679994 0.00633497" />
                         <joint name="right_shoulder_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
                         <geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="roll_link_v2" contype="4" conaffinity="17" />
-                        <body name="right_elbow_lift_link" pos="-0.012 0 -0.232779" quat="0.707107 -0.707107 0 0">
+                        <body name="robotupperarm_liftlink" pos="-0.012 0 -0.232779" quat="0.707107 -0.707107 0 0">
                             <inertial pos="-1.3238e-05 0.00162984 3.71222e-05" quat="0.714714 -0.00266942 -0.00304239 0.699405" mass="0.415577" diaginertia="0.000846898 0.000835923 0.000571351" />
                             <joint name="right_elbow_lift_joint" pos="0 0 0" axis="0 0 -1" limited="true" range="-2.2944 0" />
                             <geom type="mesh" rgba="0.116747 0.862745 1 1" mesh="lift_link_v2" contype="0" />
-                            <body name="right_wrist_roll_link" pos="0 0.0359532 0" quat="0.500704 0.500704 -0.499295 0.499295">
+                            <body name="robotforearm_link" pos="0 0.0359532 0" quat="0.500704 0.500704 -0.499295 0.499295">
                                 <inertial pos="0.00796478 6.88165e-07 -0.101495" quat="0.712797 -0.021542 -0.0203263 0.700745" mass="1.71368" diaginertia="0.00680774 0.00679994 0.00633497" />
                                 <joint name="right_elbow_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
                                 <geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="roll_link_v2" contype="8" conaffinity="3" />
-                                <body name="right_wrist_lift_link" pos="-0.012 0 -0.232779" quat="0.707107 -0.707107 0 0">
+                                <body name="robotwrist_liftlink" pos="-0.012 0 -0.232779" quat="0.707107 -0.707107 0 0">
                                     <inertial pos="-1.3238e-05 0.00162984 3.71222e-05" quat="0.714714 -0.00266942 -0.00304239 0.699405" mass="0.415577" diaginertia="0.000846898 0.000835923 0.000571351" />
                                     <joint name="right_wrist_lift_joint" pos="0 0 0" axis="0 0 -1" limited="true" range="-2.2944 0" />
                                     <geom type="mesh" rgba="0.116747 0.862745 1 1" mesh="lift_link_v2" contype="0" />
-                                    <body name="right_end_roll_link" pos="0 0.0701432 0" quat="0.707107 0.707107 0 0">
+                                    <body name="robotwrist_rolllink" pos="0 0.0701432 0" quat="0.707107 0.707107 0 0">
                                         <inertial pos="0.00526386 2.70692e-05 -0.0641638" quat="0.99991 0.000246685 0.0133803 0.00035395" mass="0.65711" diaginertia="0.00578835 0.00530224 0.0034223" />
                                         <joint name="right_wrist_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
                                         <geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="hand_base_link" contype="16" conaffinity="7" />
@@ -63,24 +63,24 @@
                                             <inertial pos="-7.00549e-05 2.51272e-05 -0.0523671" quat="1 5.54202e-05 -0.000544908 -0.000762021" mass="0.00471098" diaginertia="0.000916889 0.000877269 0.000293332" />
                                             <joint name="right_gripper_joint" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.05" />
                                         </body>
-                                        <body name="right_r_finger_link" pos="0 0.030703 -0.071979" quat="0.631851 -0.317432 -0.631853 0.317432">
+                                        <body name="robotfingerlimb_rightlink" pos="0 0.030703 -0.071979" quat="0.631851 -0.317432 -0.631853 0.317432">
                                             <inertial pos="0.000467332 0.0122666 1.16453e-07" quat="0.705809 0.705807 -0.042877 -0.0427953" mass="0.0384621" diaginertia="1.95846e-05 1.92561e-05 5.02091e-06" />
                                             <joint name="right_r_finger_joint" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.1" />
                                             <geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="finger_limb_link" contype="16" conaffinity="7" />
-                                            <body name="right_r_finger_tip_link" pos="0 0.06 0" quat="0.222329 0.222329 -0.671246 -0.671244">
+                                            <body name="robotfingertip_rightlink" pos="0 0.06 0" quat="0.222329 0.222329 -0.671246 -0.671244">
                                                 <inertial pos="0.000428096 -6.39629e-08 0.016281" quat="0.982245 -0.000139751 0.187603 -0.000716219" mass="0.00964245" diaginertia="1.96342e-06 1.95368e-06 4.76554e-07" />
                                                 <joint name="right_r_finger_tip_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-1.1 0" />
-                                                <geom type="mesh" rgba="0.116747 0.862745 1 1" mesh="finger_tip_link" contype="1" conaffinity="1" />
+                                                <geom name="fingerright2" type="mesh" rgba="0.116747 0.862745 1 1" mesh="finger_tip_link" contype="1" conaffinity="1" />
                                             </body>
                                         </body>
-                                        <body name="right_l_finger_link" pos="0 -0.030703 -0.071979" quat="0.31743 -0.631852 0.317435 -0.631852">
+                                        <body name="robotfingerlimb_leftlink" pos="0 -0.030703 -0.071979" quat="0.31743 -0.631852 0.317435 -0.631852">
                                             <inertial pos="0.000467332 0.0122666 1.16453e-07" quat="0.705809 0.705807 -0.042877 -0.0427953" mass="0.0384621" diaginertia="1.95846e-05 1.92561e-05 5.02091e-06" />
                                             <joint name="right_l_finger_joint" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.1"/>
                                             <geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="finger_limb_link" contype="16" conaffinity="7" />
-                                            <body name="right_l_finger_tip_link" pos="0 0.06 0" quat="0.222329 0.222329 -0.671246 -0.671244">
+                                            <body name="robotfingertip_leftlink" pos="0 0.06 0" quat="0.222329 0.222329 -0.671246 -0.671244">
                                                 <inertial pos="0.000428096 -6.39629e-08 0.016281" quat="0.982245 -0.000139751 0.187603 -0.000716219" mass="0.00964245" diaginertia="1.96342e-06 1.95368e-06 4.76554e-07" />
                                                 <joint name="right_l_finger_tip_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-1.1 0" />
-                                                <geom type="mesh" rgba="0.116747 0.862745 1 1" mesh="finger_tip_link" contype="1" conaffinity="1" />
+                                                <geom name="fingerleft2" type="mesh" rgba="0.116747 0.862745 1 1" mesh="finger_tip_link" contype="1" conaffinity="1" />
                                             </body>
                                         </body>
                                         <body name="right_gripper_finger_link" pos="0 0 -0.18" quat="0.707107 -1.29867e-06 0.707107 -1.29867e-06">

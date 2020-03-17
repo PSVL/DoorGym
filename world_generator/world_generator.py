@@ -42,9 +42,9 @@ def main(dataset_file):
     elif args.robot_type == "baxter-botharm":
         robot_type = "baxter_botharm"
     elif args.robot_type == "b2-pos":
-        robot_type = "blue_right_v2_position"
+        robot_type = "blue_right_v2_gripper_position"
     elif args.robot_type == "b2-motor":
-        robot_type = "blue_right_v2_motor"
+        robot_type = "blue_right_v2_gripper_motor"
     else:
         raise Exception("robot type not recognized")
     

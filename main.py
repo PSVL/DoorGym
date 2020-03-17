@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 from tensorboardX import SummaryWriter
 
-from model.visionmodel import VisionModelXYZ
+from trained_visionmodel.visionmodel import VisionModelXYZ
 from enjoy import onpolicy_inference, offpolicy_inference
 from util import add_vision_noise, add_joint_noise,load_visionmodel, prepare_trainer, prepare_env
 

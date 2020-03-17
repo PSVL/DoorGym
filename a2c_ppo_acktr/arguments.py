@@ -186,7 +186,7 @@ def get_args():
         type=int,
         default=1050,
         help='port number to connect to Unity. (Only for SAC)')
-            parser.add_argument(
+    parser.add_argument(
         '--step-skip',
         type=int,
         default=4,

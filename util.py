@@ -13,12 +13,21 @@ from rlkit.torch.sac.sac import SACTrainer
 from rlkit.torch.td3.td3 import TD3Trainer
 
 
-def add_noise(obs, epoch):
+def add_vision_noise(obs, epoch):
         satulation = 100.
         sdv = torch.tensor([3.440133806003181, 3.192113342496682, 1.727412865751099]) /100.  #Vision SDV for arm
         noise = torch.distributions.Normal(torch.tensor([0.0, 0.0, 0.0]), sdv).sample().cuda()
         noise *= min(1., epoch/satulation)
         obs[:,-3:] += noise
+        return obs
+
+def add_joint_noise(obs):
+        sdv = torch.ones(obs.size(1))*0.03
+        # print("joint_sdv", sdv.size()
+        noise = torch.distributions.Normal(torch.zeros(sdv.size()), sdv).sample().cuda()
+        # print("noise", noise.size(), noise)
+        obs[:] += noise
+        # print("obs", obs)
         return obs
 
 def load_visionmodel(xml_path, model_path, visionmodel):

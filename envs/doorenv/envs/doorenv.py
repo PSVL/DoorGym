@@ -471,11 +471,12 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             assert "not sure about the door knob type"
 
     def get_finger_target(self):
-        if self.xml_path.find("hook")>-1:
-            return self.sim.data.get_geom_xpos("hookfinger_2")
-        elif self.xml_path.find("gripper")>-1:
-            return (self.sim.data.get_geom_xpos("fingerleft2") \
-                + self.sim.data.get_geom_xpos("fingerright2"))/2.0
+        if self.xml_path.find("blue")>-1:
+            if self.xml_path.find("hook")>-1:
+                return self.sim.data.get_geom_xpos("hookfinger_2")
+            elif self.xml_path.find("gripper")>-1:
+                return (self.sim.data.get_geom_xpos("fingerleft2") \
+                    + self.sim.data.get_geom_xpos("fingerright2"))/2.0
         elif self.xml_path.find("baxter")>-1:
             if self.xml_path.find("leftarm")>-1:
                 return (self.sim.data.get_body_xpos("l_gripper_l_finger_tip") \
@@ -491,10 +492,11 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return self.get_finger_target() - self.get_knob_target()
 
     def get_finger_ori(self):
-        if self.xml_path.find("hook")>-1:
-            return quat2euler(self.sim.data.get_body_xquat("robotfinger_hook_target"))
-        elif self.xml_path.find("gripper")>-1:
-            return quat2euler(self.sim.data.get_body_xquat("robotwrist_rolllink"))
+        if self.xml_path.find("blue")>-1:
+            if self.xml_path.find("hook")>-1:
+                return quat2euler(self.sim.data.get_body_xquat("robotfinger_hook_target"))
+            elif self.xml_path.find("gripper")>-1:
+                return quat2euler(self.sim.data.get_body_xquat("robotwrist_rolllink"))
         elif self.xml_path.find("baxter")>-1:
             if self.xml_path.find("leftarm")>-1:
                 return quat2euler(self.sim.data.get_body_xquat("left_wrist"))
@@ -504,10 +506,11 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             assert "not sure about the end-effector type"
     
     def get_finger_quat(self):
-        if self.xml_path.find("hook")>-1:
-            return self.sim.data.get_body_xquat("robotfinger_hook_target")
-        elif self.xml_path.find("gripper")>-1:
-            return self.sim.data.get_body_xquat("robotwrist_rolllink")
+        if self.xml_path.find("blue")>-1:
+            if self.xml_path.find("hook")>-1:
+                return self.sim.data.get_body_xquat("robotfinger_hook_target")
+            elif self.xml_path.find("gripper")>-1:
+                return self.sim.data.get_body_xquat("robotwrist_rolllink")
         elif self.xml_path.find("baxter")>-1:
             if self.xml_path.find("leftarm")>-1:
                 return self.sim.data.get_body_xquat("left_wrist")
