@@ -186,19 +186,19 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return log_sample*property_array
 
     def _reset_model(self, gg=2, hooked=False, untucked=False):
-        
+        qpos = self.init_qpos
         if self.xml_path.find('baxter')>-1:
             if untucked:
                 # print("init qpos",self.init_qpos.shape)
                 # print("init qvel",self.init_qvel.shape)
-                qpos = self.init_qpos
+                # qpos = self.init_qpos
                 # qpos[:20] = np.array([0.08, -1.00, 1.19, 1.94, -0.67, 1.03, 0.5, 0.02, 0.0, 0.0,\
                 #                 -0.08, -1.00, -1.19, 1.94, 0.67, 1.03, -0.5, 0.0, 0.0, 0.0])
                 qpos[:20] = np.array([0.08, -1.00, 1.19, 1.94, -0.67, 1.03, 0.5, 0.02, 0.0, 0.0,\
                     1.15, 1.05, -0.10, 0.50, -1.00, 0.01, -1.92, 0.0, 0.0, 0.0])
                 # print("this qpos", qpos.shape)
             else:
-                qpos = self.init_qpos
+                # qpos = self.init_qpos
                 # if self.xml_path.find('both')>-1:
                 # qpos[0] = random.uniform(-1.65, 1.65)    # right_s0
                 # qpos[1] = random.uniform(-2.10, 1.00)    # right_s1
@@ -243,32 +243,33 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 qpos[17] =  0.00 #+ random.uniform( 0, 0.02)    # robotfinger_actuator_joint_l
                 qpos[18] =  0.00 #+ random.uniform(-0.02, 0)    # l_gripper_l_finger_joint
                 qpos[19] =  0.00 #+ random.uniform( 0, 0.02)    # l_gripper_r_finger_joint
-        elif self.xml_path.find("float")>-1:
-            qpos = self.np_random.uniform(low=-0.3, high=0.3, size=self.model.nq) + self.init_qpos
-            if self.xml_path.find("hook")>-1:
-                qpos[self.nn-1] = np.random.uniform(0.0,3.13)
-            if self.xml_path.find("gripper")>-1:
-                qpos[self.nn-2] = np.random.uniform(0.0,3.13)
-        elif self.xml_path.find("mobile")>-1:
-            qpos = self.init_qpos
-            qpos[0] = 0.0 + random.uniform(-0.0, 0.0)           # x_slider
-            qpos[1] = 0.0 + random.uniform(-0.0, -0.0)          # y_slider
-            qpos[2] = 0.0 + random.uniform(-2.3412, 3.3999)     # base_roll_joint
-            qpos[3] = 0.0 + random.uniform(-2.2944, 0)          # shoulder_lift_joint
-            qpos[4] = 0.0 + random.uniform(-2.6761, 2.6761)     # shoulder_roll_joint
-            qpos[5] = 1.0 + random.uniform(-2.2944, 0)          # elbow_lift_joint
-            qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # elbow_roll_joint
-            qpos[7] = 1.0 + random.uniform(-2.2944, 0)          # wrist_lift_joint
-            qpos[8] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
-        else:
-            qpos = self.init_qpos
-            qpos[0] = 0.0 + random.uniform(-1.57, 1.57)         # base_roll_joint
-            qpos[1] = -1.57 + random.uniform(-0.3, 0.3)         # shoulder_lift_joint
-            qpos[2] = 0.0 + random.uniform(-2.6761, 2.6761)     # shoulder_roll_joint
-            qpos[3] = 1.0 + random.uniform(-0.6, 0)             # elbow_lift_joint
-            qpos[4] = 0.0 + random.uniform(-2.6761, 2.6761)     # elbow_roll_joint
-            qpos[5] = 1.0 + random.uniform(-0.6, 0)             # wrist_lift_joint
-            qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
+        elif self.xml_path.find('blue')>-1:
+            if self.xml_path.find("float")>-1:
+                qpos = self.np_random.uniform(low=-0.3, high=0.3, size=self.model.nq) + self.init_qpos
+                if self.xml_path.find("hook")>-1:
+                    qpos[self.nn-1] = np.random.uniform(0.0,3.13)
+                if self.xml_path.find("gripper")>-1:
+                    qpos[self.nn-2] = np.random.uniform(0.0,3.13)
+            elif self.xml_path.find("mobile")>-1:
+                # qpos = self.init_qpos
+                qpos[0] = 0.0 + random.uniform(-0.0, 0.0)           # x_slider
+                qpos[1] = 0.0 + random.uniform(-0.0, -0.0)          # y_slider
+                qpos[2] = 0.0 + random.uniform(-2.3412, 3.3999)     # base_roll_joint
+                qpos[3] = 0.0 + random.uniform(-2.2944, 0)          # shoulder_lift_joint
+                qpos[4] = 0.0 + random.uniform(-2.6761, 2.6761)     # shoulder_roll_joint
+                qpos[5] = 1.0 + random.uniform(-2.2944, 0)          # elbow_lift_joint
+                qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # elbow_roll_joint
+                qpos[7] = 1.0 + random.uniform(-2.2944, 0)          # wrist_lift_joint
+                qpos[8] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
+            else:
+                qpos = self.init_qpos
+                # qpos[0] = 0.0 + random.uniform(-1.57, 1.57)         # base_roll_joint
+                # qpos[1] = -1.57 + random.uniform(-0.3, 0.3)         # shoulder_lift_joint
+                # qpos[2] = 0.0 + random.uniform(-2.6761, 2.6761)     # shoulder_roll_joint
+                # qpos[3] = 1.0 + random.uniform(-0.6, 0)             # elbow_lift_joint
+                # qpos[4] = 0.0 + random.uniform(-2.6761, 2.6761)     # elbow_roll_joint
+                # qpos[5] = 1.0 + random.uniform(-0.6, 0)             # wrist_lift_joint
+                # qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
 
         if self.xml_path.find("pull")>-1:
             self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)

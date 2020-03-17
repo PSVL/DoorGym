@@ -207,7 +207,7 @@ def onpolicy_inference(
                 env.reset()
                 if verbose:
                     print("{} ep end >>>>>>>>>>>>>>>>>>>>>>>>".format(epi_counter))
-                eval_print(dooropen_counter, epi_counter, start_time, total_time)
+                    eval_print(dooropen_counter, epi_counter, start_time, total_time)
                 epi_counter += 1
                 epi_step = 0
                 door_opened = False
@@ -216,7 +216,7 @@ def onpolicy_inference(
         if i>=512/step_skip*test_num:
             if verbose:
                 print( "dooropening counter:",dooropen_counter, " epi counter:", epi_counter)
-            eval_print(dooropen_counter, epi_counter-1, start_time, total_time)
+                eval_print(dooropen_counter, epi_counter-1, start_time, total_time)
             break
 
     opening_rate, opening_timeavg = eval_print(dooropen_counter, epi_counter-1, start_time, total_time)

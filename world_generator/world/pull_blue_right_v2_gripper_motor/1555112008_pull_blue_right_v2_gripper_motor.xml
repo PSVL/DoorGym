@@ -2,7 +2,7 @@
 <mujoco model="door_knob">
 	<compiler angle="radian"/>
 	<include file="../../robot/blue_right_v2_gripper_motor.xml"/>
-	<option gravity="0 0 -9.81" timestep="0.001"/>
+	<option gravity="0 0 0" timestep="0.001"/>
 	<visual>
 		<map fogend="5" fogstart="3" force="0.1" zfar="10" znear="0.01"/>
 		<quality shadowsize="2048"/>
@@ -22,68 +22,71 @@
 		<texture builtin="flat" height="32" name="door_geom" type="2d" width="32"/>
 		<texture builtin="flat" height="32" name="knob_geom" type="2d" width="32"/>
 		<texture builtin="gradient" height="128" rgb1="0.4 0.6 0.8" rgb2="0 0 0" type="skybox" width="128"/>
-		<texture builtin="gradient" height="512" name="texplane" rgb1="0.34 0.05 0.42" rgb2="0.36 0.08 0.05" type="2d" width="512"/>
-		<material name="Paint" shininess="0.35" specular="0.45" texture="wall_geom"/>
-		<material name="Wood" shininess="0.11" specular="0.02" texture="frame_geom"/>
-		<material name="Carpet" shininess="0.02" specular="0.04" texture="door_geom"/>
-		<material name="Metal" shininess="0.85" specular="0.9" texture="knob_geom"/>
+		<texture builtin="gradient" height="512" name="texplane" rgb1="0.16 0.06 0.34" rgb2="0.14 0.08 0.29" type="2d" width="512"/>
+		<material name="Paint" shininess="0.01" specular="0.01" texture="wall_geom"/>
+		<material name="Wood" shininess="0.04" specular="0.13" texture="frame_geom"/>
+		<material name="Carpet" shininess="0.02" specular="0.01" texture="door_geom"/>
+		<material name="Metal" shininess="0.81" specular="0.87" texture="knob_geom"/>
 		<material name="Floor" texture="texplane"/>
 	</asset>
 	<contact/>
 	<default>
 		<joint armature="1" damping="1" limited="true"/>
 		<default class="wall">
-			<geom rgba="0.74 0.31 0.15 1.0" type="mesh"/>
+			<geom rgba="0.5 0.57 0.52 1.0" type="mesh"/>
 		</default>
 		<default class="frame">
-			<geom rgba="0.73 0.82 0.75 1.0" type="mesh"/>
+			<geom rgba="0.78 0.76 0.84 1.0" type="mesh"/>
 		</default>
 		<default class="door">
-			<geom rgba="0.86 0.92 0.54 1.0" type="mesh"/>
+			<geom rgba="0.46 0.31 0.36 1.0" type="mesh"/>
 		</default>
 		<default class="door_knob">
-			<geom condim="4" rgba="0.41 0.36 0.48 1.0" type="mesh"/>
+			<geom condim="4" rgba="0.94 0.02 0.8 1.0" type="mesh"/>
 		</default>
 		<default class="robot">
 			<joint damping="0.09"/>
 		</default>
 	</default>
 	<worldbody>
-		<light diffuse="1.0 1.0 1.0" dir="-0.26 0.23 -0.3" directional="true" pos="1.69 3.84 5.94"/>
-		<light diffuse="0.9 1.0 0.9" dir="0.34 -0.21 -0.28" directional="true" pos="3.49 -3.24 5.41"/>
+		<light diffuse="1.0 1.0 1.0" dir="-0.21 -0.32 -0.39" directional="true" pos="4.13 0.79 4.86"/>
+		<light diffuse="1.0 0.9 0.9" dir="0.25 -0.24 -0.41" directional="true" pos="3.08 -2.82 4.38"/>
+		<light diffuse="1.0 1.0 1.0" dir="0.4 -0.18 -0.49" directional="true" pos="0.16 -1.61 4.47"/>
+		<light diffuse="1.0 0.9 1.0" dir="-0.34 0.16 -0.42" directional="true" pos="2.19 -4.62 6.62"/>
+		<light diffuse="0.9 0.9 1.0" dir="0.47 0.0 -0.47" directional="true" pos="0.18 -0.2 3.48"/>
 		<geom material="Floor" name="floor" pos="0 0 -0.05" size="15.0 15.0 0.05" type="plane"/>
 		<camera fovy="60" mode="fixed" name="camera1" pos="0.99 -0.5 1.0" euler="0.0 1.57 1.57"/>
 		<camera fovy="60" mode="fixed" name="camera2" pos="0.5 0.0 1.99" euler="0 0 0"/>
-		<body childclass="wall" name="wall_link" pos="0.0 -0.014 0.0">
+		<body childclass="wall" name="wall_link" pos="0.0 0.025 0.0">
 			<inertial mass="100" pos="0 0 0" diaginertia="0.0001 0.0001 0.0001"/>
-			<geom material="Carpet" name="wall_0" pos="-0.15 -1.5285 1.099" size="0.15 1.0 1.099" type="box" euler="0 0 0"/>
-			<geom material="Carpet" name="wall_1" pos="-0.15 1.5585 1.099" size="0.15 1.0 1.099" type="box" euler="0 0 0"/>
-			<geom material="Carpet" name="wall_2" pos="-0.15 0 2.698" size="0.15 2.5585 0.5" type="box" euler="0 0 0"/>
-			<body childclass="frame" name="frame_link" pos="0 -0.31178 0.924">
+			<geom material="Carpet" name="wall_0" pos="-0.15 -1.6104999999999998 1.1380000000000001" size="0.15 1.0 1.1380000000000001" type="box" euler="0 0 0"/>
+			<geom material="Carpet" name="wall_1" pos="-0.15 1.6404999999999998 1.1380000000000001" size="0.15 1.0 1.1380000000000001" type="box" euler="0 0 0"/>
+			<geom material="Carpet" name="wall_2" pos="-0.15 0 2.7760000000000002" size="0.15 2.6405 0.5" type="box" euler="0 0 0"/>
+			<body childclass="frame" name="frame_link" pos="0 -0.37834999999999996 1.077">
 				<inertial mass="500" pos="0 0 0" diaginertia="0.0001 0.0001 0.0001"/>
-				<geom material="Carpet" name="door_frame_0" pos="0 -0.20672000000000001 0.17499999999999993" size="0.014 0.05 1.099" type="box" euler="0 0 0"/>
-				<geom material="Carpet" name="door_frame_1" pos="0 0.8302800000000001 0.17499999999999993" size="0.014 0.05 1.099" type="box" euler="0 0 0"/>
-				<geom material="Carpet" name="door_frame_2" pos="0 0.31178 1.224" size="0.014 0.5585 0.05" type="box" euler="0 0 0"/>
-				<geom material="Carpet" name="door_frame_3" pos="-0.0475 -0.20672000000000001 0.17499999999999993" size="0.014 0.05 1.099" type="box" euler="0 0 0"/>
-				<geom material="Carpet" name="door_frame_4" pos="-0.0475 0.8302800000000001 0.17499999999999993" size="0.014 0.05 1.099" type="box" euler="0 0 0"/>
-				<geom material="Carpet" name="door_frame_5" pos="-0.0475 0.31178 1.224" size="0.014 0.5585 0.05" type="box" euler="0 0 0"/>
+				<geom material="Carpet" name="door_frame_0" pos="0 -0.22215000000000001 0.061000000000000165" size="0.011 0.05 1.1380000000000001" type="box" euler="0 0 0"/>
+				<geom material="Carpet" name="door_frame_1" pos="0 0.97885 0.061000000000000165" size="0.011 0.05 1.1380000000000001" type="box" euler="0 0 0"/>
+				<geom material="Carpet" name="door_frame_2" pos="0 0.37834999999999996 1.1490000000000002" size="0.011 0.6405 0.05" type="box" euler="0 0 0"/>
+				<geom material="Carpet" name="door_frame_3" pos="-0.041499999999999995 -0.22215000000000001 0.061000000000000165" size="0.011 0.05 1.1380000000000001" type="box" euler="0 0 0"/>
+				<geom material="Carpet" name="door_frame_4" pos="-0.041499999999999995 0.97885 0.061000000000000165" size="0.011 0.05 1.1380000000000001" type="box" euler="0 0 0"/>
+				<geom material="Carpet" name="door_frame_5" pos="-0.041499999999999995 0.37834999999999996 1.1490000000000002" size="0.011 0.6405 0.05" type="box" euler="0 0 0"/>
 				<body childclass="door" name="door_link" pos="0 0 0">
-					<joint armature="0.0001" axis="0 0 1" damping="1.1" frictionloss="0" limited="true" name="hinge0" pos="0 0.7702800000000001 0" range="-0.0 1.57" stiffness="0.12" type="hinge"/>
-					<geom material="Paint" name="door0" pos="0 0.31178 0.12499999999999989" size="0.014 0.4585 1.0385099999999998" type="box" euler="0 0 0"/>
-					<inertial mass="50.690021368" pos="0 0.31178 0.12499999999999989" diaginertia="22.145173515965865 18.596428482518895 3.5553685295723887"/>
+					<joint armature="0.0001" axis="0 0 1" damping="1.4" frictionloss="0" limited="true" name="hinge0" pos="0 0.91885 0" range="-0.0 1.57" stiffness="0.15" type="hinge"/>
+					<geom material="Paint" name="door0" pos="0 0.37834999999999996 0.01100000000000012" size="0.011 0.5405 1.07712" type="box" euler="0 0 0"/>
+					<inertial mass="49.834895616" pos="0 0.37834999999999996 0.01100000000000012" diaginertia="24.516845846682816 19.665929566145284 4.8549362954505595"/>
 					<body childclass="door_knob" name="knob_link" pos="0 0 0">
 						<inertial mass="1" pos="0 0 0" diaginertia="0.001 0.001 0.001"/>
 						<joint armature="0" axis="0 1 0" damping="30000" frictionloss="0" limited="true" name="target0" range="-0.2 0.3" stiffness="0" type="slide"/>
 						<joint armature="0" axis="0 0 1" damping="30000" frictionloss="0" limited="true" name="target1" range="-0.5 0.5" stiffness="0" type="slide"/>
-						<body childclass="door_knob" name="pullknob_link" pos="0.008 0 0">
-							<geom friction="0.63 0.002 0.002" material="Carpet" mesh="door_knob_1" name="door_knob_1" euler="-1.57 1.57 0"/>
-							<geom friction="0.63 0.002 0.002" material="Carpet" mesh="door_knob_2" name="door_knob_2" euler="-1.57 1.57 0"/>
-							<geom friction="0.63 0.002 0.002" material="Carpet" mesh="door_knob_3" name="door_knob_3" euler="-1.57 1.57 0"/>
-							<geom friction="0.63 0.002 0.002" material="Carpet" mesh="door_knob_4" name="door_knob_4" euler="-1.57 1.57 0"/>
-							<geom friction="0.63 0.002 0.002" material="Carpet" mesh="door_knob_5" name="door_knob_5" euler="-1.57 1.57 0"/>
-							<geom friction="0.63 0.002 0.002" material="Carpet" mesh="door_knob_6" name="door_knob_6" euler="-1.57 1.57 0"/>
-							<geom friction="0.63 0.002 0.002" material="Carpet" mesh="door_knob_7" name="door_knob_7" euler="-1.57 1.57 0"/>
-							<geom friction="0.63 0.002 0.002" material="Carpet" mesh="door_knob_8" name="door_knob_8" euler="-1.57 1.57 0"/>
+						<body childclass="door_knob" name="pullknob_link" pos="0.004999999999999999 0 0">
+							<geom friction="0.8 0.003 0.001" material="Paint" mesh="door_knob_1" name="door_knob_1" euler="-1.57 1.57 0"/>
+							<geom friction="0.8 0.003 0.001" material="Paint" mesh="door_knob_2" name="door_knob_2" euler="-1.57 1.57 0"/>
+							<geom friction="0.8 0.003 0.001" material="Paint" mesh="door_knob_3" name="door_knob_3" euler="-1.57 1.57 0"/>
+							<geom friction="0.8 0.003 0.001" material="Paint" mesh="door_knob_4" name="door_knob_4" euler="-1.57 1.57 0"/>
+							<geom friction="0.8 0.003 0.001" material="Paint" mesh="door_knob_5" name="door_knob_5" euler="-1.57 1.57 0"/>
+							<geom friction="0.8 0.003 0.001" material="Paint" mesh="door_knob_6" name="door_knob_6" euler="-1.57 1.57 0"/>
+							<geom friction="0.8 0.003 0.001" material="Paint" mesh="door_knob_7" name="door_knob_7" euler="-1.57 1.57 0"/>
+							<geom friction="0.8 0.003 0.001" material="Paint" mesh="door_knob_8" name="door_knob_8" euler="-1.57 1.57 0"/>
 						</body>
 					</body>
 				</body>

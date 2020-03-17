@@ -200,7 +200,7 @@ def main(dataset_file):
 
     ###################### Constant Parameters ######################
     # gravity
-    if args.robot_type.find("floating")>-1 or args.robot_type.find("baxter")>-1:
+    if args.robot_type.find("floating")>-1 or args.robot_type.find("baxter")>-1 or args.robot_type.find("b2")>-1:
         gravity_vector = [0,0,0]
     else:
         gravity_vector = [0,0,-9.81]
