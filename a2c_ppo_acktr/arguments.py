@@ -92,7 +92,7 @@ def get_args():
     parser.add_argument(
         '--eval-interval',
         type=int,
-        default=None,
+        default=5,
         help='eval interval, one eval per n updates (default: None)')
     parser.add_argument(
         '--num-env-steps',
@@ -142,6 +142,11 @@ def get_args():
         default=False,
         help='add noise to knob position to resemble the noise from the visionnet')
     parser.add_argument(
+        '--obs-noisy',
+        action='store_true',
+        default=False,
+        help='add noise to entire observation signal')
+    parser.add_argument(
         '--pretrained-policy-load',
         type=str,
         default=None,
@@ -162,6 +167,11 @@ def get_args():
         default="/home/demo/doorgym/world_generator/world/pull_floatinghook",
         help='load the vision network model')
     parser.add_argument(
+        '--val-path',
+        type=str,
+        default=None,
+        help='load the vision network model')
+    parser.add_argument(
         '--visionnet-input',
         action="store_true",
         default=False,
@@ -176,6 +186,16 @@ def get_args():
         type=int,
         default=1050,
         help='port number to connect to Unity. (Only for SAC)')
+            parser.add_argument(
+        '--step-skip',
+        type=int,
+        default=4,
+        help='number of step skip in pos control')
+    parser.add_argument(
+        '--pos-control',
+        action="store_true",
+        default=False,
+        help='Turn on pos control')
 
     args = parser.parse_args()
 

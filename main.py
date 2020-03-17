@@ -10,8 +10,9 @@ import torch
 import torch.nn as nn
 from tensorboardX import SummaryWriter
 
-from trained_visionmodel.visionmodel import VisionModelXYZ
-from util import add_noise, load_visionmodel, prepare_trainer, prepare_env
+from model.visionmodel import VisionModelXYZ
+from enjoy import onpolicy_inference, offpolicy_inference
+from util import add_vision_noise, add_joint_noise,load_visionmodel, prepare_trainer, prepare_env
 
 from a2c_ppo_acktr import algo, utils
 from a2c_ppo_acktr.arguments import get_args
@@ -78,7 +79,7 @@ def onpolicy_main():
             base_kwargs={'recurrent': args.recurrent_policy})
     
     if visionnet_input: 
-            visionmodel = load_visionmodel(env_name, args.visionmodel_path, VisionModelXYZ())  
+            visionmodel = load_visionmodel(save_name, args.visionmodel_path, VisionModelXYZ())  
             actor_critic.visionmodel = visionmodel.eval()
     actor_critic.nn = nn
     actor_critic.to(device)
@@ -119,7 +120,9 @@ def onpolicy_main():
         obs = actor_critic.obs2inputs(full_obs, 0)
     else:
         if knob_noisy:
-            obs = add_noise(full_obs, 0)
+            obs = add_vision_noise(full_obs, 0)
+        elif obs_noisy:
+            obs = add_joint_noise(full_obs)
         else:
             obs = full_obs
 
@@ -139,7 +142,6 @@ def onpolicy_main():
             utils.update_linear_schedule(
                 agent.optimizer, j, num_updates, args.lr)
 
-        pos_control = False
         total_switches = 0
         prev_selection = ""
         for step in range(args.num_steps):
@@ -149,23 +151,26 @@ def onpolicy_main():
                     rollouts.masks[step])
                 next_action = action 
 
-            if pos_control:
-                frame_skip = 2
-                if step%(512/frame_skip-1)==0: current_state = initial_state
+            if args.pos_control:
+                # print("main step_skip",args.step_skip)
+                if step%(512/args.step_skip-1)==0: current_state = initial_state
                 next_action = current_state + next_action
-                for kk in range(frame_skip):
+                for kk in range(args.step_skip):
                     full_obs, reward, done, infos = envs.step(next_action)
                     
                 current_state = full_obs[:,:envs.action_space.shape[0]]
             else:
-                full_obs, reward, done, infos = envs.step(next_action)
+                for kk in range(args.step_skip):
+                    full_obs, reward, done, infos = envs.step(next_action)
 
             # convert img to obs if door_env and using visionnet 
             if args.env_name.find('doorenv')>-1 and visionnet_input:
                 obs = actor_critic.obs2inputs(full_obs, j)
             else:
                 if knob_noisy:
-                    obs = add_noise(full_obs, j)
+                    obs = add_vision_noise(full_obs, j)
+                elif obs_noisy:
+                    obs = add_joint_noise(full_obs)
                 else:
                     obs = full_obs
 
@@ -192,6 +197,9 @@ def onpolicy_main():
         value_loss, action_loss, dist_entropy = agent.update(rollouts)
         rollouts.after_update()
 
+        # Get total number of timesteps
+        total_num_steps = (j + 1) * args.num_processes * args.num_steps
+
         writer.add_scalar("Value loss", value_loss, j)
         writer.add_scalar("action loss", action_loss, j)
         writer.add_scalar("dist entropy loss", dist_entropy, j)
@@ -211,7 +219,6 @@ def onpolicy_main():
             ], os.path.join(save_path, args.env_name + "_{}.{}.pt".format(args.save_name,j)))
 
         if j % args.log_interval == 0 and len(episode_rewards) > 1:
-            total_num_steps = (j + 1) * args.num_processes * args.num_steps
             end = time.time()
             print(
                 "Updates {}, num timesteps {}, FPS {} \n Last {} training episodes: mean/median reward {:.1f}/{:.1f}, min/max reward {:.1f}/{:.1f}\n"
@@ -224,9 +231,25 @@ def onpolicy_main():
 
         if (args.eval_interval is not None and len(episode_rewards) > 1
                 and j % args.eval_interval == 0):
-            ob_rms = utils.get_vec_normalize(envs).ob_rms
-            evaluate(actor_critic, ob_rms, args.env_name, args.seed,
-                     args.num_processes, eval_log_dir, device)
+
+            opening_rate, opening_timeavg = onpolicy_inference(
+                                                seed=args.seed, 
+                                                env_name=args.env_name, 
+                                                det=True, 
+                                                load_name=args.save_name, 
+                                                evaluation=True, 
+                                                render=False, 
+                                                knob_noisy=args.knob_noisy, 
+                                                visionnet_input=args.visionnet_input, 
+                                                env_kwargs=env_kwargs_val,
+                                                actor_critic=actor_critic,
+                                                verbose=False,
+                                                pos_control=args.pos_control,
+                                                step_skip=args.step_skip)
+
+            print("{}th update. {}th timestep. opening rate {}%. Average time to open is {}.".format(j, total_num_steps, opening_rate, opening_timeavg))
+            writer.add_scalar("Opening rate per envstep", opening_rate, total_num_steps)
+            writer.add_scalar("Opening rate per update", opening_rate, j)
 
         DR=True #Domain Randomization
         ################## for multiprocess world change ######################
@@ -330,11 +353,16 @@ if __name__ == "__main__":
     args = get_args()
 
     knob_noisy = args.knob_noisy
+    obs_noisy = args.obs_noisy
     pretrained_policy_load = args.pretrained_policy_load
     env_kwargs = dict(port = args.port,
                     visionnet_input = args.visionnet_input,
                     unity = args.unity,
-                    world_path = args.world_path)
+                    world_path = args.world_path,
+                    pos_control = args.pos_control)
+
+    env_kwargs_val = env_kwargs.copy()
+    env_kwargs_val['world_path'] = args.val_path
 
     if args.algo == 'sac':
         variant = dict(
@@ -394,4 +422,3 @@ if __name__ == "__main__":
         onpolicy_main()
     else:
         raise Exception("unknown algorithm")
-

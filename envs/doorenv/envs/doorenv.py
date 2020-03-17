@@ -11,18 +11,24 @@ import matplotlib.pyplot as plt
 
 class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     static_nn = 0
-    def __init__(self, port=1050, unity=False, visionnet_input=False,\
-                world_path='/u/home/urakamiy/doorgym/world_generator/world/pull_floatinghook'):
+    def __init__(self,
+                port=1050,
+                unity=False,visionnet_input=False,
+                world_path='/home/demo/DoorGym/world_generator/world/pull_floatinghook',
+                pos_control=False):
         self.tt = 0
         self.port = port
         self.hooked = True
         self.untucked = True
         self.first_img = None
         self.init_done = False
+        self.pos_control = pos_control
         self.hook_ratio = -1 #-1:all non_hooked, 100:all hooked
         self.untucked_ratio = -1 #-1:all non-untucked, 100:all untucked
         self.switch_avg = 0.0
-        self.imgsize = 256
+        # self.imgsize = 256
+        self.imgsize_h = 640
+        self.imgsize_w = 640
         self.visionnet_input = visionnet_input
         self.gripper_action = np.zeros(4)
         self.xml_path = self.random_world(world_path)
@@ -56,7 +62,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.unity = unity
         if self.visionnet_input:
             if self.unity:
-                self.b = bytearray(3*self.imgsize*self.imgsize)
+                self.b = bytearray(3*self.imgsize_h*self.imgsize_w)
                 self.no_viewer = False
             else:
                 self.no_viewer = True
@@ -74,6 +80,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
             self.gripper_action = self.sim.data.qpos[-gripper_space:]
         self.init_done = True
+        self.model_origin = self.model
 
     def __delete__(self):
         self.disconnet_to_unity()
@@ -96,19 +103,20 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         reward_dist = -np.linalg.norm(self.get_dist_vec())
         reward_log_dist = -np.log(np.square(np.linalg.norm(reward_dist))+5e-3) - 5.0 
         reward_ori = - np.linalg.norm(self.get_ori_diff_no_xaxis())
-        reward_door = abs(self.sim.data.get_joint_qpos("hinge0")) * 30
+        reward_door = abs(self.sim.data.get_joint_qpos("hinge0")) *30 #*30
 
         if self.xml_path.find("gripper")>-1:
             reward_ctrl = - np.mean(np.square(a[:-2]))
         else:
             reward_ctrl = - np.mean(np.square(a))
 
-        position_ctrl = True
-        if position_ctrl:
+        # position_ctrl = True
+        if self.pos_control:
+            # print('entered pos_control')
             reward_ctrl = 0
 
         if self.xml_path.find("lever")>-1 or self.xml_path.find("round")>-1:
-            reward_doorknob = abs(self.sim.data.get_joint_qpos("hinge1")) * 50
+            reward_doorknob = abs(self.sim.data.get_joint_qpos("hinge1")) * 50 #*50
             reward = reward_door + reward_doorknob + reward_ctrl + reward_ori + reward_dist + reward_log_dist
         else:
             reward = reward_door + reward_ctrl + reward_ori + reward_dist + reward_log_dist
@@ -137,6 +145,9 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return ob, reward, done, dict(reward_dist=reward_dist, reward_ctrl=reward_ctrl)
 
     def reset_model(self, gg=2):
+        if self.init_done:
+            self.randomized_property()
+            
         # self.hooked = True
         hooked_chance = np.random.randint(100)
         untucked_chance = np.random.randint(100)
@@ -146,6 +157,33 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         if untucked_chance>=self.untucked_ratio:
             self.untucked = False
         return self._reset_model(gg=gg, hooked=self.hooked, untucked=self.untucked)
+
+    def randomized_property(self):
+        # import pprint as pp
+        # pp.pprint(dir(self.model), width=1)
+        # print(">>>>>before>>>>>>>")
+        # pp.pprint(self.model.actuator_gainprm)
+
+        self.model.body_mass[10:16] = self.sample_gaussiannormal(self.model_origin.body_mass[10:16], 0.2) # gaussiannormal x original_mass
+        self.model.dof_damping[0:10] = self.sample_gaussiannormal(self.model_origin.dof_damping[0:10], 0.2) # gaussiannormal x original_damping
+        self.model.actuator_gainprm[:,0] = self.sample_gaussiannormal(self.model_origin.actuator_gainprm[:,0], 0.1) # gaussiannormal x original_damping
+
+        # self.model.body_mass[10:16] = self.sample_lognormal(self.model_origin.body_mass[10:16], 0.1, 0.4) # lognormal [0.4, 4.0] x original_mass
+        # self.model.dof_damping[0:10] = self.sample_lognormal(self.model_origin.dof_damping[0:10], 0.3, 1.0) # lognormal [0.4, 20.0] x original_damping
+        # self.model.actuator_gainprm[:,0] = self.sample_lognormal(self.model_origin.actuator_gainprm[:,0], 0.1, 0.2) # lognormal [0.5, 2.0] x original_damping
+
+        # print(">>>>>after>>>>>>>")
+        # pp.pprint(self.model.actuator_gainprm)
+
+    def sample_gaussiannormal(self, property_array, sigma):
+        shape = property_array.shape
+        gaussian_sample = np.random.normal(1.0, sigma, shape)
+        return gaussian_sample*property_array
+
+    def sample_lognormal(self, property_array, mu, sigma):
+        shape = property_array.shape
+        log_sample = np.random.lognormal(mu, sigma, shape)
+        return log_sample*property_array
 
     def _reset_model(self, gg=2, hooked=False, untucked=False):
         
@@ -162,24 +200,35 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             else:
                 qpos = self.init_qpos
                 # if self.xml_path.find('both')>-1:
-                qpos[0] = random.uniform(-1.65, 1.65)    # right_s0
-                qpos[1] = random.uniform(-2.10, 1.00)    # right_s1
-                qpos[2] = random.uniform(-3.00, 3.00)    # right_e0
-                qpos[3] = random.uniform(-0.05, 2.50)    # right_e1
-                qpos[4] = random.uniform(-3.00, 3.00)    # right_w0
-                qpos[5] = random.uniform(-1.55, 2.00)       # right_w1
-                qpos[6] = random.uniform(-3.00, 3.00)        # right_w2
-                qpos[7] = random.uniform(0, 0.02)          # robotfinger_actuator_joint_r
-                qpos[8] = random.uniform(-0.02, 0)            # r_gripper_l_finger_joint
-                qpos[9] = random.uniform( 0, 0.02)            # r_gripper_r_finger_joint
+                # qpos[0] = random.uniform(-1.65, 1.65)    # right_s0
+                # qpos[1] = random.uniform(-2.10, 1.00)    # right_s1
+                # qpos[2] = random.uniform(-3.00, 3.00)    # right_e0
+                # qpos[3] = random.uniform(-0.05, 2.50)    # right_e1
+                # qpos[4] = random.uniform(-3.00, 3.00)    # right_w0
+                # qpos[5] = random.uniform(-1.55, 2.00)       # right_w1
+                # qpos[6] = random.uniform(-3.00, 3.00)        # right_w2
+                # qpos[7] = random.uniform(0, 0.02)          # robotfinger_actuator_joint_r
+                # qpos[8] = random.uniform(-0.02, 0)            # r_gripper_l_finger_joint
+                # qpos[9] = random.uniform( 0, 0.02)            # r_gripper_r_finger_joint
 
-                # qpos[0] =  -1.15 + random.uniform(-0.1, 0.1)    # right_s0
-                # qpos[1] =   1.05 + random.uniform(-0.1, 0.1)        # right_s1
-                # qpos[2] =   0.10 + random.uniform(-0.1, 0.1)    # right_e0
-                # qpos[3] =   0.50 + random.uniform(-0.1, 0.1)         # right_e1
+                qpos[0] =  -1.15 + random.uniform(-0.1, 0.1)    # right_s0
+                qpos[1] =   1.05 + random.uniform(-0.1, 0.1)        # right_s1
+                qpos[2] =   0.10 + random.uniform(-0.1, 0.1)    # right_e0
+                qpos[3] =   0.50 + random.uniform(-0.1, 0.1)         # right_e1
+                qpos[4] =   1.00 + random.uniform(-0.1, 0.1)        # right_w0
+                qpos[5] =  -0.01 + random.uniform(-0.1, 0.1)       # right_w1
+                qpos[6] =   1.92 + random.uniform(-0.1, 0.1)        # right_w2
+                qpos[7] =   0.00 + random.uniform(0, 0.020833)          # robotfinger_actuator_joint_r
+                qpos[8] =   0.00 + random.uniform(-0.02, 0)            # r_gripper_l_finger_joint
+                qpos[9] =   0.00 + random.uniform( 0, 0.02)            # r_gripper_r_finger_joint
+
+                # qpos[0] =  -1.28 + random.uniform(-0.1, 0.1)    # right_s0
+                # qpos[1] =  -1.40 + random.uniform(-0.1, 0.1)        # right_s1
+                # qpos[2] =   0.93 + random.uniform(-0.1, 0.1)    # right_e0
+                # qpos[3] =   0.68 + random.uniform(-0.1, 0.1)         # right_e1
                 # qpos[4] =   1.00 + random.uniform(-0.1, 0.1)        # right_w0
-                # qpos[5] =  -0.01 + random.uniform(-0.1, 0.1)       # right_w1
-                # qpos[6] =   1.92 + random.uniform(-0.1, 0.1)        # right_w2
+                # qpos[5] =   2.09 + random.uniform(-0.1, 0.1)       # right_w1
+                # qpos[6] =   0.90 + random.uniform(-0.1, 0.1)        # right_w2
                 # qpos[7] =   0.00 + random.uniform(0, 0.020833)          # robotfinger_actuator_joint_r
                 # qpos[8] =   0.00 + random.uniform(-0.02, 0)            # r_gripper_l_finger_joint
                 # qpos[9] =   0.00 + random.uniform( 0, 0.02)            # r_gripper_r_finger_joint
@@ -222,14 +271,13 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
 
         if self.xml_path.find("pull")>-1:
-            self.goal = self.np_random.uniform(low=-.0, high=-.15, size=gg)
-            # self.goal = self.np_random.uniform(low=-.15, high=-.15, size=gg)
+            self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)
             if self.xml_path.find("lefthinge")>-1:
                 self.goal[0] = np.random.uniform(-0.15,0.05)
+                self.goal[1] = np.random.uniform(-0.15,0.15)
             else:
-                # print("not right or left")
-                # self.goal[0] = np.random.uniform(-0.00,0.15)
-                self.goal[0] = np.random.uniform(-0.10,0.15)
+                self.goal[0] = np.random.uniform(-0.05,0.15)
+                self.goal[1] = np.random.uniform(-0.15,0.15)
         else:
             self.goal = np.zeros(gg)
             self.goal[0] = np.random.uniform(-0.15,0.15)
@@ -382,9 +430,9 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 self.remote.setcamera(1)
                 time.sleep(0.05)
                 self.remote.getimage(self.b)
-                img = np.reshape(self.b, (self.imgsize, self.imgsize, 3))
+                img = np.reshape(self.b, (self.imgsize_h, self.imgsize_w, 3))
             else:
-                img = np.reshape(self.b, (self.imgsize, self.imgsize, 3))
+                img = np.reshape(self.b, (self.imgsize_h, self.imgsize_w, 3))
         else:
             img = self.sim.render(width=self.imgsize,
                                   height=self.imgsize,
@@ -394,7 +442,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         img = self.normalizer(img)
         img = np.transpose(img, (2,0,1))
-        img = np.reshape(img, (3*self.imgsize*self.imgsize))
+        img = np.reshape(img, (3*self.imgsize_h*self.imgsize_w))
         return img
 
     def get_robot_joints(self):
@@ -416,8 +464,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         elif self.xml_path.find("round")>-1:
             return self.sim.data.get_geom_xpos("door_knob_2")
         elif self.xml_path.find("pull")>-1:
-            knob_upper = self.sim.data.get_geom_xpos("door_knob_5")
-            knob_lower = self.sim.data.get_geom_xpos("door_knob_8")
+            knob_upper = self.sim.data.get_geom_xpos("door_knob_2")
+            knob_lower = self.sim.data.get_geom_xpos("door_knob_3")
             return (knob_upper+knob_lower)/2.0
         else:
             assert "not sure about the door knob type"
@@ -493,7 +541,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         elif camera_type == 'global_cam':
             cam_type = 0
         DEFAULT_CAMERA_CONFIG = {
-        'distance': 1.75,
+        'distance': 3.50,
         'azimuth': 245.0,
         'elevation': -13.0,
         'type': cam_type,

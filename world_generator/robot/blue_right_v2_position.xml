@@ -1,14 +1,14 @@
 <mujoco model="blue_descriptions_right">
     <include file="../../robot/blue_right_v2.xml"/>
     <actuator>
-        <position gear="1.0" joint="right_base_roll_joint" />
-        <position gear="1.0" joint="right_shoulder_lift_joint" />
-        <position gear="1.0" joint="right_shoulder_roll_joint" />
-        <position gear="1.0" joint="right_elbow_lift_joint" />
-        <position gear="1.0" joint="right_elbow_roll_joint" />
-        <position gear="1.0" joint="right_wrist_lift_joint" />
-        <position gear="1.0" joint="right_wrist_roll_joint" />
-        <position ctrllimited="true" ctrlrange="0 1.05" gear="1.0" joint="right_gripper_joint" />
+        <position kp="20.0" gear="1.0" joint="right_base_roll_joint" />
+        <position kp="20.0" gear="1.0" joint="right_shoulder_lift_joint" />
+        <position kp="20.0" gear="1.0" joint="right_shoulder_roll_joint" />
+        <position kp="20.0" gear="1.0" joint="right_elbow_lift_joint" />
+        <position kp="20.0" gear="1.0" joint="right_elbow_roll_joint" />
+        <position kp="20.0" gear="1.0" joint="right_wrist_lift_joint" />
+        <position kp="20.0" gear="1.0" joint="right_wrist_roll_joint" />
+        <position ctrllimited="true" kp="1.0" ctrlrange="0 1.05" gear="1.0" joint="right_gripper_joint" />
         <position ctrllimited="true" kp="1.0" ctrlrange="0 1.05" joint="right_r_finger_joint" />
         <position ctrllimited="true" kp="1.0" ctrlrange="-1.05 0" joint="right_r_finger_tip_joint" />
         <position ctrllimited="true" kp="1.0" ctrlrange="0 1.05" joint="right_l_finger_joint" />

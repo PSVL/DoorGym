@@ -111,6 +111,7 @@ def rollout(
         render=False,
         render_kwargs=None,
         evaluate=False,
+        verbose=True,
         doorenv=True,
         epoch=0,
 ):
@@ -202,7 +203,8 @@ def rollout(
         if doorenv:
             if evaluate and not door_opened and abs(env_obj.sim.data.qpos[doorhinge_idx])>=0.2:
                 opening_time = path_length/50
-                print("door opened! opening time is {}".format(opening_time))
+                if verbose:
+                    print("door opened! opening time is {}".format(opening_time))
                 door_opened = True
             
     actions = np.array(actions)

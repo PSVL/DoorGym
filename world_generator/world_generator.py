@@ -21,24 +21,30 @@ def main(dataset_file):
     wall_parts_n = 3
     knob_parts_n = params_dict['model_count']
 
-    if args.robot_type == "gripper":
+    if args.robot_type == "b1-gripper":
         robot_type = "blue_gripper"
-    elif args.robot_type == "hook":
+    elif args.robot_type == "b1-hook":
         robot_type = "blue_hook"
-    elif args.robot_type == "floatinggripper":
+    elif args.robot_type == "b1-floatinggripper":
         robot_type = "blue_floatinggripper"
-    elif args.robot_type == "floatinghook":
+    elif args.robot_type == "b1-floatinghook":
         robot_type = "blue_floatinghook"
-    elif args.robot_type == "mobilegripper":
+    elif args.robot_type == "b1-mobilegripper":
         robot_type = "blue_mobile_gripper"
-    elif args.robot_type == "mobilehook":
+    elif args.robot_type == "b1-mobilehook":
         robot_type = "blue_mobile_hook"
     elif args.robot_type == "baxter-leftarm":
         robot_type = "baxter_leftarm"
     elif args.robot_type == "baxter-rightarm":
         robot_type = "baxter_rightarm"
+    elif args.robot_type == "baxter-rightarm-pos":
+        robot_type = "baxter_rightarm_pos"
     elif args.robot_type == "baxter-botharm":
         robot_type = "baxter_botharm"
+    elif args.robot_type == "b2-pos":
+        robot_type = "blue_right_v2_position"
+    elif args.robot_type == "b2-motor":
+        robot_type = "blue_right_v2_motor"
     else:
         raise Exception("robot type not recognized")
     
@@ -124,13 +130,13 @@ def main(dataset_file):
     door_thickness = randrange(20, 30)/1000.0
     knob_height = randrange(900, 1100)/1000.0 # legal height of the door knob is 864mm to 1219mm
     knob_horizontal_location_ratio = randrange(10,20)/100.0 #height-ratio and from-side-ratio of knob
-    door_mass = door_height*door_width*door_thickness*randrange(200,300) # Density of MDF is in range of 500-1000kg/m^3 
+    door_mass = door_height*door_width*door_thickness*randrange(900,1000) # Density of MDF is in range of 500-1000kg/m^3. Easy mode is (200, 300)
     door_rgba = [randrange(1,100)/100.0, randrange(1,100)/100.0, randrange(1,100)/100.0, 1.0]
     door_material = material_name_list[randrange(0,3)]
 
     # Knob Door Joint Property
-    knob_door_damper = randrange(10, 20)/100.0
-    knob_door_spring = randrange(10, 15)/100.0
+    knob_door_damper = randrange(100, 200)/100.0 #191103 easy mode is (10, 20) 
+    knob_door_spring = randrange(100, 150)/100.0 #191103 easy mode is (10, 15)
     knob_door_frictionloss = randrange(0, 1)
     knob_rot_range = randrange(75, 80)*3.14/180
 
@@ -250,11 +256,13 @@ def main(dataset_file):
         door_frame_joint_pos = [0,-door_width*knob_horizontal_location_ratio,0]
     
     # Door property
+    door_front_frame = True
     door_diaginertia = [door_mass/12.0*(door_height**2+door_width**2),
                         door_mass/12.0*(door_height**2+door_thickness**2),
                         door_mass/12.0*(door_width**2+door_thickness**2)]
     door_euler = [0,0,0]
-    door_pos = [door_thickness*1.1,0,0]
+    # door_pos = [door_thickness*1.1,0,0]
+    door_pos = [0,0,0]
 
     # Frame property
     frame_width = 100/1000.0
@@ -307,11 +315,20 @@ def main(dataset_file):
     wall_euler = [0,0,0]
     wall_mass = 100
     wall_diaginertia = [0.0001, 0.0001, 0.0001]
-    wall_pos_list = [
-        [0, -door_width/2.0-frame_width-sidewall_len/2.0+0.03, (door_height+frame_width)/2.0],
-        [0, door_width/2.0+frame_width+sidewall_len/2.0, (door_height+frame_width)/2.0],
-        [0, 0, door_height+frame_width+topwall_width/2.0]
-        ]
+    # wall_pos_list = [
+    #     [0, -door_width/2.0-frame_width-sidewall_len/2.0+0.03, (door_height+frame_width)/2.0],
+    #     [0, door_width/2.0+frame_width+sidewall_len/2.0, (door_height+frame_width)/2.0],
+    #     [0, 0, door_height+frame_width+topwall_width/2.0]
+    #     ]
+    if door_front_frame:
+        wall_pos_list = [[-wall_thickness/2.0, -door_width/2.0-frame_width-sidewall_len/2.0+0.03, (door_height+frame_width)/2.0],
+                        [-wall_thickness/2.0, door_width/2.0+frame_width+sidewall_len/2.0, (door_height+frame_width)/2.0],
+                        [-wall_thickness/2.0, 0, door_height+frame_width+topwall_width/2.0]]
+    else:
+        wall_pos_list = [[0, -door_width/2.0-frame_width-sidewall_len/2.0+0.03, (door_height+frame_width)/2.0],
+                        [0, door_width/2.0+frame_width+sidewall_len/2.0, (door_height+frame_width)/2.0],
+                        [0, 0, door_height+frame_width+topwall_width/2.0]]
+
     wall_size_list = [
         [wall_thickness/2.0, sidewall_len/2.0, (door_height+frame_width)/2.0],
         [wall_thickness/2.0, sidewall_len/2.0, (door_height+frame_width)/2.0],
@@ -438,11 +455,11 @@ def main(dataset_file):
 
 
     #Contact
-    doorstopper_contact = e.Pair(
-        geom1="doorstopper",
-        geom2="door0",
-        # solref="0.01 1"
-    )
+    # doorstopper_contact = e.Pair(
+    #     geom1="doorstopper",
+    #     geom2="door0",
+    #     # solref="0.01 1"
+    # )
 
     latch_contacts = []
     for i in range(4):
@@ -686,11 +703,16 @@ def main(dataset_file):
             euler=knob_euler,
             friction=knob_surface_friction))    
     if knob_type != "pull":
+        # if door_front_frame:
+        #     pos_=[-(latch_gap/2.0+door_thickness*2.1), 0, 0]
+        # else:
+        #     pos_=[-(latch_gap/2.0+door_thickness*1.1), 0, 0]
+        pos_=[-(latch_gap/2.0+door_thickness*1.0), 0, 0]
         body4_geoms.append(
             e.Geom(
             name='knob_latch',
             material=material_name_list[randrange(0,3)],
-            pos=[-(latch_gap/2.0+door_thickness*2.1), 0, 0],
+            pos=pos_,
             size=[latch_thickness/2.0, latch_width, latch_height],
             type="box",
             euler=[0,0,0]))
@@ -724,7 +746,18 @@ def main(dataset_file):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Arguments for random generator')
     parser.add_argument('--knob-type', default='', help='Choose from lever, round or pull')
-    parser.add_argument('--robot-type', default='floatinghook', help='Choose from "gripper","hook","floatinghook","floatinggripper", "mobile_gripper", "mobile_hook" ')
+    parser.add_argument('--robot-type', default='floatinghook', help='Choose from "b1-gripper",\
+                                                                                    "b1-hook",\
+                                                                                    "b1-floatinghook",\
+                                                                                    "b1-floatinggripper",\
+                                                                                    "b1-mobile_gripper",\
+                                                                                    "b1-mobile_hook",\
+                                                                                    "baxter_rightarm",\
+                                                                                    "baxter_rightarm_pos",\
+                                                                                    "baxter_botharm",\
+                                                                                    "b2-pos",\
+                                                                                    "b2-motor",\
+                                                                                    ')
     parser.add_argument('--input-dirname', type=str, default='./door/{}knobs', help='knob path')
     parser.add_argument('--output-dirname', type=str, default='./world', help='world path')
     parser.add_argument('--output-name-extention', type=str, default="", help='folder name under world path')
