@@ -1,12 +1,12 @@
 <mujoco model="blue_wrist">
-    <compiler angle="radian"/>
+    <compiler angle="radian" meshdir="../../robot/meshes_blue_v1/" strippath="false"/>
     <option gravity="0 0 0"/>
     <asset> 
-        <mesh name="wrist_roll_link" file="../../robot/STL/hand_base_link.STL" />
-        <mesh name="rightfingerlimb_link" file="../../robot/STL/finger_limb_link.STL"/>
-        <mesh name="leftfingerlimb_link" file="../../robot/STL/finger_limb_link.STL"/>
-        <mesh name="rightfingertip_link" file="../../robot/STL/finger_tip_link.STL"/>
-        <mesh name="leftfingertip_link" file="../../robot/STL/finger_tip_link.STL"/>
+        <mesh name="wrist_roll_link" file="hand_base_link.STL" />
+        <mesh name="rightfingerlimb_link" file="finger_limb_link.STL"/>
+        <mesh name="leftfingerlimb_link" file="finger_limb_link.STL"/>
+        <mesh name="rightfingertip_link" file="finger_tip_link.STL"/>
+        <mesh name="leftfingertip_link" file="finger_tip_link.STL"/>
         <texture builtin="flat" height="32" name="plastic" type="2d" width="32"/>
         <texture builtin="flat" height="32" name="metal" type="2d" width="32"/>
         <material name="Plastic" shininess="0.3" specular="0.3" texture="plastic"/>

@@ -17,7 +17,7 @@
 ====================================================== -->
 
 <mujoco model="baxter(v1.31)">
-    <compiler coordinate="local" angle="radian" meshdir="../../robot/meshes/" strippath="false" />
+    <compiler coordinate="local" angle="radian" meshdir="../../robot/meshes_baxter/" strippath="false" />
     <!-- <compiler coordinate="local" angle="radian" strippath="false" /> -->
     <size njmax="795" nconmax="250" nstack="631875" />
    

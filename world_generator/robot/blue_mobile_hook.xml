@@ -1,37 +1,18 @@
 <mujoco model="blue_mobile_gripper">
-    <compiler angle="radian"/>
-    <!-- <default>
-        <default class="robot">
-            <joint damping="0.1" />
-            <motor ctrllimited="true" />
-        </default>
-    </default> -->
+    <compiler angle="radian" meshdir="../../robot/meshes_blue_v1/" strippath="false"/>
     <asset> 
-        <!-- <mesh name="base_link" file="robot/STL/base_link.STL" />
-        <mesh name="shoulder_link" file="robot/STL/shoulder_link.STL"/>
-        <mesh name="shoulder_lift_link" file="robot/STL/shoulder_lift_link.STL"/>
-        <mesh name="upper_arm_link" file="robot/STL/upper_arm_link.STL"/>
-        <mesh name="upper_arm_lift_link" file="robot/STL/upper_arm_lift_link.STL" />
-        <mesh name="forearm_link" file="robot/STL/forearm_link.STL" />
-        <mesh name="wrist_lift_link" file="robot/STL/wrist_lift_link.STL" />
-        <mesh name="wrist_roll_link" file="robot/STL/hand_base_link.STL" />
-        <mesh name="hook_0" file="robot/STL/hook_0.STL" scale="0.001 0.001 0.001"/>
-        <mesh name="hook_1" file="robot/STL/hook_1.STL" scale="0.001 0.001 0.001"/>
-        <mesh name="hook_2" file="robot/STL/hook_2.STL" scale="0.001 0.001 0.001"/>
-        <mesh name="hook_3" file="robot/STL/hook_3.STL" scale="0.001 0.001 0.001"/> -->
-
-        <mesh name="base_link" file="../../robot/STL/base_link.STL" />
-        <mesh name="shoulder_link" file="../../robot/STL/shoulder_link.STL"/>
-        <mesh name="shoulder_lift_link" file="../../robot/STL/shoulder_lift_link.STL"/>
-        <mesh name="upper_arm_link" file="../../robot/STL/upper_arm_link.STL"/>
-        <mesh name="upper_arm_lift_link" file="../../robot/STL/upper_arm_lift_link.STL" />
-        <mesh name="forearm_link" file="../../robot/STL/forearm_link.STL" />
-        <mesh name="wrist_lift_link" file="../../robot/STL/wrist_lift_link.STL" />
-        <mesh name="wrist_roll_link" file="../../robot/STL/hand_base_link.STL" />
-        <mesh name="hook_0" file="../../robot/STL/hook_0.STL" scale="0.001 0.001 0.001"/>
-        <mesh name="hook_1" file="../../robot/STL/hook_1.STL" scale="0.001 0.001 0.001"/>
-        <mesh name="hook_2" file="../../robot/STL/hook_2.STL" scale="0.001 0.001 0.001"/>
-        <mesh name="hook_3" file="../../robot/STL/hook_3.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="base_link" file="base_link.STL" />
+        <mesh name="shoulder_link" file="shoulder_link.STL"/>
+        <mesh name="shoulder_lift_link" file="shoulder_lift_link.STL"/>
+        <mesh name="upper_arm_link" file="upper_arm_link.STL"/>
+        <mesh name="upper_arm_lift_link" file="upper_arm_lift_link.STL" />
+        <mesh name="forearm_link" file="forearm_link.STL" />
+        <mesh name="wrist_lift_link" file="wrist_lift_link.STL" />
+        <mesh name="wrist_roll_link" file="hand_base_link.STL" />
+        <mesh name="hook_0" file="hook_0.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="hook_1" file="hook_1.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="hook_2" file="hook_2.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="hook_3" file="hook_3.STL" scale="0.001 0.001 0.001"/>
         <texture builtin="flat" height="32" name="plastic" type="2d" width="32"/>
         <material name="Plastic" shininess="0.93" specular="0.96" texture="plastic"/>
     </asset>

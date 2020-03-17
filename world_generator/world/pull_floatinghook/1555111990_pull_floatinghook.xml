@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mujoco model="door_knob">
 	<compiler angle="radian"/>
-	<include file="../../robot/blue_floatinghook.xml"/>
+	<!-- <include file="../../robot/blue_right_v2_position.xml"/> -->
+	<include file="../../robot/blue_right_v2_motor.xml"/>
+	<!-- <include file="../../robot/blue_floatinghook.xml"/> -->
 	<option gravity="0 0 0" timestep="0.001"/>
 	<visual>
 		<map fogend="5" fogstart="3" force="0.1" zfar="10" znear="0.01"/>
