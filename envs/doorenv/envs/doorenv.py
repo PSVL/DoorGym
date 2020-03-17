@@ -145,7 +145,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return ob, reward, done, dict(reward_dist=reward_dist, reward_ctrl=reward_ctrl)
 
     def reset_model(self, gg=2):
-        property_DR = True
+        property_DR = False
         if property_DR:
             if self.init_done:
                 self.randomized_property()
