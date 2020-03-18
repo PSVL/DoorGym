@@ -17,6 +17,8 @@ from rlkit.envs.wrappers import NormalizedBoxEnv
 import uuid
 
 import doorenv
+import doorenv2
+
 mujoco_timestep = 0.02
 def eval_print(dooropen_counter, counter, start_time, total_time):
     opening_rate = dooropen_counter/counter *100

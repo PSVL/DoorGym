@@ -41,9 +41,9 @@
         <mesh name="extended_narrow" file="electric_gripper/fingers/extended_narrow.STL"/>
         <mesh name="paddle_tip" file="electric_gripper/fingers/paddle_tip.STL"/>
         <!-- Original fingers -->
-        <mesh name="finger_0" file="../STL/finger_0.STL" scale="0.001 0.001 0.001"/>
-        <mesh name="finger_1" file="../STL/finger_1.STL" scale="0.001 0.001 0.001"/>
-        <mesh name="finger_2" file="../STL/finger_2.STL" scale="0.001 0.001 0.001"/>     
+        <mesh name="finger_0" file="finger/finger_0.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="finger_1" file="finger/finger_1.STL" scale="0.001 0.001 0.001"/>
+        <mesh name="finger_2" file="finger/finger_2.STL" scale="0.001 0.001 0.001"/>     
    </asset>
 
 	<visual>

@@ -28,6 +28,7 @@ from rlkit.samplers.data_collector import MdpPathCollector
 from rlkit.torch.torch_rl_algorithm import TorchBatchRLAlgorithm
 
 import doorenv
+import doorenv2
 
 def onpolicy_main():
     print("onpolicy main")
