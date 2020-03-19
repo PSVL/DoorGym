@@ -116,13 +116,14 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
             qpos[7] = 1.0 + random.uniform(-2.2944, 0)          # wrist_lift_joint
             qpos[8] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
         else:
-            qpos[0] = 0.0 + random.uniform(-1.57, 1.57)         # base_roll_joint
-            qpos[1] = -1.57 + random.uniform(-0.3, 0.3)         # shoulder_lift_joint
-            qpos[2] = 0.0 + random.uniform(-2.6761, 2.6761)     # shoulder_roll_joint
-            qpos[3] = 1.0 + random.uniform(-0.6, 0)             # elbow_lift_joint
-            qpos[4] = 0.0 + random.uniform(-2.6761, 2.6761)     # elbow_roll_joint
-            qpos[5] = 1.0 + random.uniform(-0.6, 0)             # wrist_lift_joint
-            qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
+            qpos = self.init_qpos
+            qpos[0] = 0.0 + random.uniform(-0.1, 0.1)     # base_roll_joint
+            qpos[1] = 0.0 + random.uniform(-0.1, 0.1)     # shoulder_lift_joint
+            qpos[2] = 0.0 + random.uniform(-0.1, 0.1)     # shoulder_roll_joint
+            qpos[3] = 0.0 + random.uniform(-0.1, 0.1)     # elbow_lift_joint
+            qpos[4] = 0.0 + random.uniform(-0.1, 0.1)     # elbow_roll_joint
+            qpos[5] = 0.0 + random.uniform(-0.1, 0.1)     # wrist_lift_joint
+            qpos[6] = 0.0 + random.uniform(-0.1, 0.1)     # wrist_roll_joint
 
         if self.xml_path.find("pull")>-1:
             self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)
@@ -138,8 +139,8 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
 
         qpos[self.nn:-gg] = 0
         qpos[-gg:] = self.goal
-        qvel = self.init_qvel
-        self.set_state(qpos, qvel)
+        # qvel = self.init_qvel
+        # self.set_state(qpos, qvel)
 
         if hooked:
             if self.xml_path.find("float")>-1:
@@ -182,8 +183,8 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
                     qpos[0] -= 0.02
                     qpos[self.nn: self.nn+4] = np.array([1.0,-1.0,1.0,-1.0]) 
             
-                qvel = self.init_qvel 
-                self.set_state(qpos, qvel)
+        qvel = self.init_qvel 
+        self.set_state(qpos, qvel)
 
         if self.unity:
             self.remote.setqpos(self.sim.data.qpos)
@@ -204,10 +205,6 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
         else:
             assert "not sure about the end-effector type"
 
-    def get_dist_vec(self):
-        # print("finger pos", self.get_finger_target(), "knob pos", self.get_knob_target())
-        return self.get_finger_target() - self.get_knob_target()
-
     def get_finger_ori(self):
         if self.xml_path.find("hook")>-1:
             return quat2euler(self.sim.data.get_body_xquat("robotfinger_hook_target"))
@@ -223,3 +220,91 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
             return self.sim.data.get_body_xquat("robotwrist_rolllink")
         else:
             assert "not sure about the end-effector type"
+
+
+class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
+    def __init__(self,
+                port=1050,
+                unity=False,visionnet_input=False,
+                world_path='/home/demo/DoorGym/world_generator/world/pull_floatinghook',
+                pos_control=False
+        ):
+        super().__init__(
+            port=port,
+            unity=unity,
+            visionnet_input=visionnet_input,
+            world_path=world_path,
+            pos_control=pos_control,
+        )
+        utils.EzPickle.__init__(self)
+
+    def gripper_action_gen(self, a):
+            self.gripper_action = np.array([a[-1],-a[-1],a[-1],-a[-1]])
+            return np.concatenate((a,self.gripper_action))
+
+    def randomized_property(self):
+        # import pprint as pp
+        # pp.pprint(dir(self.model), width=1)
+        # print(">>>>>before>>>>>>>")
+        # pp.pprint(self.model.actuator_gainprm)
+
+        # print("mass", self.model.body_mass)
+        # print("damping", self.model.dof_damping)
+        # print("damping", self.model.actuator_gainprm)
+
+        self.model.body_mass[10:16] = self.sample_gaussiannormal(self.model_origin.body_mass[10:16], 0.2) # gaussiannormal x original_mass
+        self.model.dof_damping[0:10] = self.sample_gaussiannormal(self.model_origin.dof_damping[0:10], 0.2) # gaussiannormal x original_damping
+        self.model.actuator_gainprm[:,0] = self.sample_gaussiannormal(self.model_origin.actuator_gainprm[:,0], 0.1) # gaussiannormal x original_damping
+
+        # self.model.body_mass[10:16] = self.sample_lognormal(self.model_origin.body_mass[10:16], 0.1, 0.4) # lognormal [0.4, 4.0] x original_mass
+        # self.model.dof_damping[0:10] = self.sample_lognormal(self.model_origin.dof_damping[0:10], 0.3, 1.0) # lognormal [0.4, 20.0] x original_damping
+        # self.model.actuator_gainprm[:,0] = self.sample_lognormal(self.model_origin.actuator_gainprm[:,0], 0.1, 0.2) # lognormal [0.5, 2.0] x original_damping
+
+        # print(">>>>>after>>>>>>>")
+        # pp.pprint(self.model.actuator_gainprm)
+
+    def _reset_model(self, gg=2, hooked=False, untucked=False):
+        qpos = self.init_qpos
+        qpos[0] = 0.0 + random.uniform(-0.1, 0.1)     # base_roll_joint
+        qpos[1] = 0.0 + random.uniform(-0.1, 0.1)     # shoulder_lift_joint
+        qpos[2] = 0.0 + random.uniform(-0.1, 0.1)     # shoulder_roll_joint
+        qpos[3] = 0.0 + random.uniform(-0.1, 0.1)     # elbow_lift_joint
+        qpos[4] = 0.0 + random.uniform(-0.1, 0.1)     # elbow_roll_joint
+        qpos[5] = 0.0 + random.uniform(-0.1, 0.1)     # wrist_lift_joint
+        qpos[6] = 0.0 + random.uniform(-0.1, 0.1)     # wrist_roll_joint
+
+        if self.xml_path.find("pull")>-1:
+            self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)
+            if self.xml_path.find("lefthinge")>-1:
+                self.goal[0] = np.random.uniform(-0.15,0.05)
+                self.goal[1] = np.random.uniform(-0.15,0.15)
+            else:
+                self.goal[0] = np.random.uniform(-0.05,0.15)
+                self.goal[1] = np.random.uniform(-0.15,0.15)
+        else:
+            self.goal = np.zeros(gg)
+            self.goal[0] = np.random.uniform(-0.15,0.15)
+
+        qpos[self.nn:-gg] = 0
+        qpos[-gg:] = self.goal
+        qvel = self.init_qvel 
+        self.set_state(qpos, qvel)
+
+        if self.unity:
+            self.remote.setqpos(self.sim.data.qpos)
+        return self._get_obs()
+
+    def get_robot_joints(self):
+        return np.concatenate([
+            self.sim.data.qpos.flat[:self.nn],
+            self.sim.data.qvel.flat[:self.nn]])
+
+    def get_finger_target(self):
+        return (self.sim.data.get_geom_xpos("fingerleft2") \
+            + self.sim.data.get_geom_xpos("fingerright2"))/2.0
+
+    def get_finger_ori(self):
+        return quat2euler(self.sim.data.get_body_xquat("robotwrist_rolllink"))
+    
+    def get_finger_quat(self):
+        return self.sim.data.get_body_xquat("robotwrist_rolllink")

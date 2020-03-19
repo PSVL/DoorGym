@@ -67,7 +67,7 @@ class DoorEnv(mujoco_env.MujocoEnv):
         mujoco_env.MujocoEnv.__init__(self, self.xml_path, frame_skip)
         gripper_space = self.gripper_action.shape[0]
         # print("gripper space", gripper_space)
-        if self.xml_path.find("gripper")>-1 or self.xml_path.find('baxter')>-1:
+        if self.xml_path.find("gripper")>-1:
             bounds = self.model.actuator_ctrlrange.copy()
             low, high = bounds.T
             low, high = low[:-gripper_space], high[:-gripper_space] # four joints for finger is a dependant of finger inertial joint
@@ -188,7 +188,8 @@ class DoorEnv(mujoco_env.MujocoEnv):
                 time.sleep(1)
     
     def disconnet_to_unity(self):
-        self.remote.close()
+        if hasattr(self,'remote'):
+            self.remote.close()
 
     def unity_init(self, port):
         print("making unity remote connecting to {}".format(port))

@@ -59,7 +59,7 @@ class ShmemVecEnv_DR(ShmemVecEnv):
             with logger.scoped_configure(format_strs=[]):
                 dummy = env_fns[0]()
                 observation_space, action_space = dummy.observation_space, dummy.action_space
-                # dummy.close()
+                dummy.close()
                 try:
                     self.visionnet_input = dummy.env.env.env.visionnet_input
                     self.nn = dummy.env.env.env.nn
@@ -67,7 +67,8 @@ class ShmemVecEnv_DR(ShmemVecEnv):
                     if dummy.env.env.env.unity:
                         dummy.env.env.env.close() ## HACK>>>
                 except Exception as e:
-                   pass
+                    print(e)
+                    pass
                 del dummy
 
         VecEnv.__init__(self, len(env_fns), observation_space, action_space)
