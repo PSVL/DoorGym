@@ -8,7 +8,7 @@ register(
 
 register(
     id='blue-doorenv-v2',
-    entry_point='doorenv.envs:DoorEnvBlueV2',
+    entry_point='doorenv2.envs:DoorEnvBlueV2',
     max_episode_steps=512,
 )
 

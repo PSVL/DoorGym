@@ -130,7 +130,7 @@ class DoorEnv(mujoco_env.MujocoEnv):
         raise NotImplementedError()
 
     def reset_model(self, gg=2):
-        property_DR = False
+        property_DR = True
         if property_DR:
             if self.init_done:
                 self.randomized_property()
@@ -239,8 +239,8 @@ class DoorEnv(mujoco_env.MujocoEnv):
             else:
                 img = np.reshape(self.b, (self.imgsize_h, self.imgsize_w, 3))
         else:
-            img = self.sim.render(width=self.imgsize,
-                                  height=self.imgsize,
+            img = self.sim.render(width=self.imgsize_h,
+                                  height=self.imgsize_w,
                                   mode='offscreen',
                                   camera_name="camera{}".format(cam_num))
         img = img[::-1,:,:]

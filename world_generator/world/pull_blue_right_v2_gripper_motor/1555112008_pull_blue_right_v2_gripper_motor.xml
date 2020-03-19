@@ -44,9 +44,9 @@
 		<default class="door_knob">
 			<geom condim="4" rgba="0.94 0.02 0.8 1.0" type="mesh"/>
 		</default>
-		<default class="robot">
+		<!-- <default class="robot">
 			<joint damping="0.09"/>
-		</default>
+		</default> -->
 	</default>
 	<worldbody>
 		<light diffuse="1.0 1.0 1.0" dir="-0.21 -0.32 -0.39" directional="true" pos="4.13 0.79 4.86"/>

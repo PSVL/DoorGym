@@ -29,7 +29,6 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
         # self.pos_control = pos_control
         # self.hook_ratio = -1 #-1:all non_hooked, 100:all hooked
         # self.untucked_ratio = -1 #-1:all non-untucked, 100:all untucked
-        # self.switch_avg = 0.0
         # self.imgsize_h = 640
         # self.imgsize_w = 640
         # self.visionnet_input = visionnet_input
@@ -243,18 +242,41 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
             return np.concatenate((a,self.gripper_action))
 
     def randomized_property(self):
-        # import pprint as pp
+        import pprint as pp
+        import sys
+        from random import randrange
         # pp.pprint(dir(self.model), width=1)
-        # print(">>>>>before>>>>>>>")
-        # pp.pprint(self.model.actuator_gainprm)
+        # sys.exit(1)
+        print(">>>>>before>>>>>>>")
+        pp.pprint(self.model.light_pos)
+        # pp.pprint(self.model.light_pos.shape[0])
+        # sys.exit(1)
+        mb = np.array(self.model.light_pos)
+
+        light_n=randrange(2,6)
+        light_pos= []
+        for i in range(light_n):
+            light_pos.append([randrange(0,500)/100.0, randrange(-500,500)/100.0, randrange(300,700)/100.0])
+            # light_property = dict(
+            #     light_diffuse=[randrange(9,11)/10, randrange(9,11)/10, randrange(9,11)/10],
+            #     light_pos=[randrange(0,500)/100.0, randrange(-500,500)/100.0, randrange(300,700)/100.0],
+            #     light_dir=[randrange(-50,50)/100.0, randrange(-50,50)/100.0, randrange(-50,-25)/100.0]
+            # )
+            # light_property_list.append(light_property)
+        # mb = np.array(light_pos)
+        self.model.light_pos = mb
+        print(">>>>>after>>>>>>>")
+        pp.pprint(self.model.light_pos)
+        sys.exit(1)
 
         # print("mass", self.model.body_mass)
         # print("damping", self.model.dof_damping)
-        # print("damping", self.model.actuator_gainprm)
-
-        self.model.body_mass[10:16] = self.sample_gaussiannormal(self.model_origin.body_mass[10:16], 0.2) # gaussiannormal x original_mass
-        self.model.dof_damping[0:10] = self.sample_gaussiannormal(self.model_origin.dof_damping[0:10], 0.2) # gaussiannormal x original_damping
-        self.model.actuator_gainprm[:,0] = self.sample_gaussiannormal(self.model_origin.actuator_gainprm[:,0], 0.1) # gaussiannormal x original_damping
+        # print("control gain", self.model.actuator_gainprm)
+        phys_random = False
+        if phys_random:
+            self.model.body_mass[1:18] = self.sample_gaussiannormal(self.model_origin.body_mass[1:18], 0.2) # gaussiannormal x original_mass
+            self.model.dof_damping[0:12] = self.sample_gaussiannormal(self.model_origin.dof_damping[0:12], 0.2) # gaussiannormal x original_damping
+            self.model.actuator_gainprm[:,0] = self.sample_gaussiannormal(self.model_origin.actuator_gainprm[:,0], 0.1) # gaussiannormal x original_damping
 
         # self.model.body_mass[10:16] = self.sample_lognormal(self.model_origin.body_mass[10:16], 0.1, 0.4) # lognormal [0.4, 4.0] x original_mass
         # self.model.dof_damping[0:10] = self.sample_lognormal(self.model_origin.dof_damping[0:10], 0.3, 1.0) # lognormal [0.4, 20.0] x original_damping

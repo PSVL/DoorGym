@@ -9,7 +9,6 @@ import time
 from doorenv2.envs.doorenv import DoorEnv
 
 class DoorEnvBaxter(DoorEnv, utils.EzPickle):
-    static_nn = 0
     def __init__(self,
                 port=1050,
                 unity=False,visionnet_input=False,
@@ -23,11 +22,9 @@ class DoorEnvBaxter(DoorEnv, utils.EzPickle):
             world_path=world_path,
             pos_control=pos_control,
         )
-        # self.tt = 0
         # self.port = port
         # self.hooked = True
         # self.untucked = True
-        # self.first_img = None
         # self.init_done = False
         # self.pos_control = pos_control
         # self.hook_ratio = -1 #-1:all non_hooked, 100:all hooked
@@ -97,9 +94,11 @@ class DoorEnvBaxter(DoorEnv, utils.EzPickle):
         qpos = self.init_qpos
         
         if untucked:
+            # print("untucked position")
             qpos[:20] = np.array([0.08, -1.00, 1.19, 1.94, -0.67, 1.03, 0.5, 0.02, 0.0, 0.0,\
                 1.15, 1.05, -0.10, 0.50, -1.00, 0.01, -1.92, 0.0, 0.0, 0.0])
         else:
+            # print("randomized position")
             # qpos[0] = random.uniform(-1.65, 1.65)    # right_s0
             # qpos[1] = random.uniform(-2.10, 1.00)    # right_s1
             # qpos[2] = random.uniform(-3.00, 3.00)    # right_e0
