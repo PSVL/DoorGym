@@ -65,6 +65,7 @@ class DoorEnvBaxter(DoorEnv, utils.EzPickle):
         #     self.gripper_action = self.sim.data.qpos[-gripper_space:]
         # self.init_done = True
         # self.model_origin = self.model
+        # print("its me mario")
 
     def gripper_action_gen(self, a):
         if self.xml_path.find("both")>-1:

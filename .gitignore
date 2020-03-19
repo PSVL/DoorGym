@@ -116,3 +116,4 @@ data/
 spawn_env.py
 MUJOCO_LOG.TXT
 logs/
+trained_models/

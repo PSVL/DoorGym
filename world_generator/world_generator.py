@@ -96,7 +96,8 @@ def main(dataset_file):
 
     # Wall property
     wall_rgba = [randrange(1,85)/100.0, randrange(1,85)/100.0, randrange(1,85)/100.0, 1.0]
-    wall_location = [0.0, randrange(-100,100)/1000.0, 0.0]
+    wall_location = [0.0, 0.0, 0.0]
+    # wall_location = [0.0, randrange(-100,100)/1000.0, 0.0]
     wall_material = material_name_list[randrange(0,3)]
 
     # Frame property
@@ -126,11 +127,11 @@ def main(dataset_file):
 
     # Door property
     door_height = randrange(2000, 2500)/1000.0
-    door_width = randrange(750, 1200)/1000.0
+    door_width = 1 #randrange(750, 1200)/1000.0
     door_thickness = randrange(20, 30)/1000.0
-    knob_height = randrange(900, 1100)/1000.0 # legal height of the door knob is 864mm to 1219mm
-    knob_horizontal_location_ratio = randrange(10,20)/100.0 #height-ratio and from-side-ratio of knob
-    door_mass = door_height*door_width*door_thickness*randrange(900,1000) # Density of MDF is in range of 500-1000kg/m^3. Easy mode is (200, 300)
+    knob_height = 1 #randrange(900, 1100)/1000.0 # legal height of the door knob is 864mm to 1219mm
+    knob_horizontal_location_ratio = 0.15 #randrange(10,20)/100.0 #height-ratio and from-side-ratio of knob
+    door_mass = door_height*door_width*door_thickness*300 #*randrange(900,1000) # Density of MDF is in range of 500-1000kg/m^3. Easy mode is (200, 300)
     door_rgba = [randrange(1,100)/100.0, randrange(1,100)/100.0, randrange(1,100)/100.0, 1.0]
     door_material = material_name_list[randrange(0,3)]
 
@@ -223,18 +224,18 @@ def main(dataset_file):
     frame_wall_frictionloss = 0
     frame_wall_joint_pos = [0,0,0]
 
-    # Door stopper property
-    doorstopper_size = [door_thickness, 0.10, 0.025]
-    if opendir == "push":
-        if hinge_loc == "righthinge":
-            doorstopper_pos = [door_thickness*2.3, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
-        else:
-            doorstopper_pos = [door_thickness*2.3, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
-    else:
-        if hinge_loc == "righthinge":
-            doorstopper_pos = [0-door_thickness*1.8, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
-        else:
-            doorstopper_pos = [0-door_thickness*1.8, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
+    # # Door stopper property
+    # doorstopper_size = [door_thickness, 0.10, 0.025]
+    # if opendir == "push":
+    #     if hinge_loc == "righthinge":
+    #         doorstopper_pos = [door_thickness*2.3, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
+    #     else:
+    #         doorstopper_pos = [door_thickness*2.3, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
+    # else:
+    #     if hinge_loc == "righthinge":
+    #         doorstopper_pos = [0-door_thickness*1.8, -door_width*knob_horizontal_location_ratio+0.15, door_height-knob_height-0.05]
+    #     else:
+    #         doorstopper_pos = [0-door_thickness*1.8, door_width-door_width*knob_horizontal_location_ratio-0.15, door_height-knob_height-0.05]
 
     # Door Frame Joint Property
     door_frame_armature = 0.0001

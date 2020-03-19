@@ -284,6 +284,20 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
 
         # print(">>>>>after>>>>>>>")
         # pp.pprint(self.model.actuator_gainprm)
+    
+    def set_base_pos(self):
+        # import pprint as pp
+        # import sys
+        # pp.pprint(dir(self.model.body_pos), width=1)
+        # print(">>>>>before>>>>>>>")
+        pos_list = [0.5, 0, 0.7]
+        # pp.pprint(self.model.body_pos)
+        for i,x in enumerate(pos_list):
+            self.model.body_pos[1,i] = x
+
+        # print(">>>>>after>>>>>>>")
+        # pp.pprint(self.model.body_pos)
+        # sys.exit(1)
 
     def _reset_model(self, gg=2, hooked=False, untucked=False):
         qpos = self.init_qpos

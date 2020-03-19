@@ -80,7 +80,7 @@ def onpolicy_main():
             base_kwargs={'recurrent': args.recurrent_policy})
     
     if visionnet_input: 
-            visionmodel = load_visionmodel(save_name, args.visionmodel_path, VisionModelXYZ())  
+            visionmodel = load_visionmodel(args.save_name, args.visionmodel_path, VisionModelXYZ())  
             actor_critic.visionmodel = visionmodel.eval()
     actor_critic.nn = nn
     actor_critic.to(device)
@@ -143,8 +143,8 @@ def onpolicy_main():
             utils.update_linear_schedule(
                 agent.optimizer, j, num_updates, args.lr)
 
-        total_switches = 0
-        prev_selection = ""
+        # total_switches = 0
+        # prev_selection = ""
         for step in range(args.num_steps):
             with torch.no_grad():
                 value, action, action_log_prob, recurrent_hidden_states = actor_critic.act(
@@ -363,7 +363,7 @@ if __name__ == "__main__":
                     pos_control = args.pos_control)
 
     env_kwargs_val = env_kwargs.copy()
-    env_kwargs_val['world_path'] = args.val_path
+    if args.val_path: env_kwargs_val['world_path'] = args.val_path
 
     if args.algo == 'sac':
         variant = dict(

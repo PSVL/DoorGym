@@ -130,10 +130,13 @@ class DoorEnv(mujoco_env.MujocoEnv):
         raise NotImplementedError()
 
     def reset_model(self, gg=2):
-        property_DR = True
+        property_DR = False
         if property_DR:
             if self.init_done:
                 self.randomized_property()
+        set_base_pos = True
+        if set_base_pos:
+            self.set_base_pos()
 
         hooked_chance = np.random.randint(100)
         untucked_chance = np.random.randint(100)

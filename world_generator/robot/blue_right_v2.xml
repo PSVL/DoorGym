@@ -28,7 +28,7 @@
         <geom name="pedestal_top" type="box" size="0.25 0.25 0.01" pos="0 0 0" quat="1 0 0 0"  rgba="1 1 1 1" condim="1"/>
         <geom name="pedestal_bottom" type="cylinder" size="0.05 0.5" pos="0 0 -0.5" quat="1 0 0 0"  rgba="1 1 1 1" condim="1"/> -->
 
-        <body name="robotbase_link" pos="0.6 0.0 1">
+        <body name="robotbase_link" pos="0.6 0 0.7">
             <inertial pos="0.107964 -0.000118075 0.0740607" quat="-0.00144458 0.606987 0.000927747 0.79471" mass="3.45161" diaginertia="0.0175534 0.0157386 0.00730286" />
             <geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="arm_base_link_v2" contype="1" conaffinity="28" />
             <body name="robotshoulder_link" pos="0 0 0.083499" quat="0 1 0 0">

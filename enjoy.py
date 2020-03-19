@@ -132,7 +132,7 @@ def onpolicy_inference(
     epi_counter = 1
     dooropen_counter = 0
     door_opened = False
-    test_num = 10
+    test_num = 100
 
     while True:
         with torch.no_grad():
