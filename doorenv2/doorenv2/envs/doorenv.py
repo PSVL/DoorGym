@@ -4,6 +4,7 @@ from gym.envs.mujoco import mujoco_env
 from gym.envs.robotics.rotations import quat2euler, euler2quat, mat2euler
 import os
 import random
+from random import uniform, randrange
 from mjremote import mjremote
 import time
 
@@ -130,10 +131,22 @@ class DoorEnv(mujoco_env.MujocoEnv):
         raise NotImplementedError()
 
     def reset_model(self, gg=2):
-        property_DR = False
-        if property_DR:
-            if self.init_done:
-                self.randomized_property()
+        property_DR = True
+        if property_DR and self.init_done:
+            self.physics_randomization()
+
+        light_DR = True
+        if light_DR:
+            self.light_randomization()
+
+        camera_DR = True
+        if camera_DR:
+            self.camera_randomization()
+
+        color_DR = True
+        if color_DR:
+            self.color_randomization()
+
         set_base_pos = True
         if set_base_pos:
             self.set_base_pos()
@@ -147,8 +160,43 @@ class DoorEnv(mujoco_env.MujocoEnv):
             self.untucked = False
         return self._reset_model(gg=gg, hooked=self.hooked, untucked=self.untucked)
 
-    def randomized_property(self):
+    def physics_randomization(self):
         raise NotImplementedError()
+
+    def light_randomization(self):       
+        light_n = self.model.light_pos.shape[0]
+        light_pos, light_dir, light_diffuse = [], [], []
+        for i in range(light_n):
+            light_pos.append([randrange(0,500)/100.0, randrange(-500,500)/100.0, randrange(300,700)/100.0])
+            light_dir.append([randrange(-50,50)/100.0, randrange(-50,50)/100.0, randrange(-50,-25)/100.0])
+            light_diffuse.append([randrange(9,11)/10, randrange(9,11)/10, randrange(9,11)/10])
+        self.model.light_pos[:,:] = np.array(light_pos)
+        self.model.light_dir[:,:] = np.array(light_dir)
+        self.model.light_diffuse[:,:] = np.array(light_diffuse)
+
+    def camera_randomization(self):        
+        cam_pos = [[0.99, -0.5, 1.0], [0.5, 0.0, 1.99]] #1m x 1m
+        cam_ori = [[0.0, 1.57, 1.57], [0, 0, 0]]
+        cam_fovy = [60, 60]
+        for i in range(len(cam_pos)):
+            for j in range(len(cam_pos[0])):
+                cam_pos[i][j] += randrange(-15,15)/1000
+        ori_dim = len(cam_ori[0])
+        for i in range(len(cam_ori)):
+            for j in range(ori_dim):
+                cam_ori[i][j] += randrange(-17,17)/1000
+        for i in range(len(cam_fovy)):
+            cam_fovy[i] += randrange(-100,100)/100
+        self.model.cam_pos[:,:] = np.array(cam_pos)
+        self.model.cam_quat[:,:] = np.array(euler2quat(cam_ori))
+        self.model.cam_fovy[:] = np.array(cam_fovy)
+    
+    def color_randomization(self):
+        geom_n = self.model.geom_rgba.shape[0]
+        geom_rgba = []
+        for i in range(geom_n):
+            geom_rgba.append([randrange(1,100)/100.0, randrange(1,100)/100.0, randrange(1,100)/100.0, 1.0])
+        self.model.geom_rgba[:,:] = np.array(geom_rgba)
 
     def sample_gaussiannormal(self, property_array, sigma):
         shape = property_array.shape

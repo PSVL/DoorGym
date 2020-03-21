@@ -3,7 +3,8 @@ from gym import utils, spaces
 from gym.envs.mujoco import mujoco_env
 from gym.envs.robotics.rotations import quat2euler, euler2quat, mat2euler
 import os
-import random
+# import random
+from random import uniform, randint, randrange
 from mjremote import mjremote
 import time
 from doorenv2.envs.doorenv import DoorEnv
@@ -105,24 +106,24 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
             if self.xml_path.find("gripper")>-1:
                 qpos[self.nn-2] = np.random.uniform(0.0,3.13)
         elif self.xml_path.find("mobile")>-1:
-            qpos[0] = 0.0 + random.uniform(-0.0, 0.0)           # x_slider
-            qpos[1] = 0.0 + random.uniform(-0.0, -0.0)          # y_slider
-            qpos[2] = 0.0 + random.uniform(-2.3412, 3.3999)     # base_roll_joint
-            qpos[3] = 0.0 + random.uniform(-2.2944, 0)          # shoulder_lift_joint
-            qpos[4] = 0.0 + random.uniform(-2.6761, 2.6761)     # shoulder_roll_joint
-            qpos[5] = 1.0 + random.uniform(-2.2944, 0)          # elbow_lift_joint
-            qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # elbow_roll_joint
-            qpos[7] = 1.0 + random.uniform(-2.2944, 0)          # wrist_lift_joint
-            qpos[8] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
+            qpos[0] = 0.0 + uniform(-0.0, 0.0)           # x_slider
+            qpos[1] = 0.0 + uniform(-0.0, -0.0)          # y_slider
+            qpos[2] = 0.0 + uniform(-2.3412, 3.3999)     # base_roll_joint
+            qpos[3] = 0.0 + uniform(-2.2944, 0)          # shoulder_lift_joint
+            qpos[4] = 0.0 + uniform(-2.6761, 2.6761)     # shoulder_roll_joint
+            qpos[5] = 1.0 + uniform(-2.2944, 0)          # elbow_lift_joint
+            qpos[6] = 0.0 + uniform(-2.6761, 2.6761)     # elbow_roll_joint
+            qpos[7] = 1.0 + uniform(-2.2944, 0)          # wrist_lift_joint
+            qpos[8] = 0.0 + uniform(-2.6761, 2.6761)     # wrist_roll_joint
         else:
             qpos = self.init_qpos
-            qpos[0] = 0.0 + random.uniform(-0.1, 0.1)     # base_roll_joint
-            qpos[1] = 0.0 + random.uniform(-0.1, 0.1)     # shoulder_lift_joint
-            qpos[2] = 0.0 + random.uniform(-0.1, 0.1)     # shoulder_roll_joint
-            qpos[3] = 0.0 + random.uniform(-0.1, 0.1)     # elbow_lift_joint
-            qpos[4] = 0.0 + random.uniform(-0.1, 0.1)     # elbow_roll_joint
-            qpos[5] = 0.0 + random.uniform(-0.1, 0.1)     # wrist_lift_joint
-            qpos[6] = 0.0 + random.uniform(-0.1, 0.1)     # wrist_roll_joint
+            qpos[0] = 0.0 + uniform(-0.1, 0.1)     # base_roll_joint
+            qpos[1] = 0.0 + uniform(-0.1, 0.1)     # shoulder_lift_joint
+            qpos[2] = 0.0 + uniform(-0.1, 0.1)     # shoulder_roll_joint
+            qpos[3] = 0.0 + uniform(-0.1, 0.1)     # elbow_lift_joint
+            qpos[4] = 0.0 + uniform(-0.1, 0.1)     # elbow_roll_joint
+            qpos[5] = 0.0 + uniform(-0.1, 0.1)     # wrist_lift_joint
+            qpos[6] = 0.0 + uniform(-0.1, 0.1)     # wrist_roll_joint
 
         if self.xml_path.find("pull")>-1:
             self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)
@@ -241,73 +242,46 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
             self.gripper_action = np.array([a[-1],-a[-1],a[-1],-a[-1]])
             return np.concatenate((a,self.gripper_action))
 
-    def randomized_property(self):
-        import pprint as pp
-        import sys
-        from random import randrange
-        # pp.pprint(dir(self.model), width=1)
-        # sys.exit(1)
-        print(">>>>>before>>>>>>>")
-        pp.pprint(self.model.light_pos)
-        # pp.pprint(self.model.light_pos.shape[0])
-        # sys.exit(1)
-        mb = np.array(self.model.light_pos)
+    def physics_randomization(self):
+        self.model.body_mass[1:18] = self.sample_gaussiannormal(self.model_origin.body_mass[1:18], 0.2) # gaussiannormal x original_mass
+        self.model.dof_damping[0:12] = self.sample_gaussiannormal(self.model_origin.dof_damping[0:12], 0.2) # gaussiannormal x original_damping
+        self.model.actuator_gainprm[:,0] = self.sample_gaussiannormal(self.model_origin.actuator_gainprm[:,0], 0.1) # gaussiannormal x original_damping
 
-        light_n=randrange(2,6)
-        light_pos= []
-        for i in range(light_n):
-            light_pos.append([randrange(0,500)/100.0, randrange(-500,500)/100.0, randrange(300,700)/100.0])
-            # light_property = dict(
-            #     light_diffuse=[randrange(9,11)/10, randrange(9,11)/10, randrange(9,11)/10],
-            #     light_pos=[randrange(0,500)/100.0, randrange(-500,500)/100.0, randrange(300,700)/100.0],
-            #     light_dir=[randrange(-50,50)/100.0, randrange(-50,50)/100.0, randrange(-50,-25)/100.0]
-            # )
-            # light_property_list.append(light_property)
-        # mb = np.array(light_pos)
-        self.model.light_pos = mb
-        print(">>>>>after>>>>>>>")
-        pp.pprint(self.model.light_pos)
-        sys.exit(1)
-
-        # print("mass", self.model.body_mass)
-        # print("damping", self.model.dof_damping)
-        # print("control gain", self.model.actuator_gainprm)
-        phys_random = False
-        if phys_random:
-            self.model.body_mass[1:18] = self.sample_gaussiannormal(self.model_origin.body_mass[1:18], 0.2) # gaussiannormal x original_mass
-            self.model.dof_damping[0:12] = self.sample_gaussiannormal(self.model_origin.dof_damping[0:12], 0.2) # gaussiannormal x original_damping
-            self.model.actuator_gainprm[:,0] = self.sample_gaussiannormal(self.model_origin.actuator_gainprm[:,0], 0.1) # gaussiannormal x original_damping
-
-        # self.model.body_mass[10:16] = self.sample_lognormal(self.model_origin.body_mass[10:16], 0.1, 0.4) # lognormal [0.4, 4.0] x original_mass
-        # self.model.dof_damping[0:10] = self.sample_lognormal(self.model_origin.dof_damping[0:10], 0.3, 1.0) # lognormal [0.4, 20.0] x original_damping
-        # self.model.actuator_gainprm[:,0] = self.sample_lognormal(self.model_origin.actuator_gainprm[:,0], 0.1, 0.2) # lognormal [0.5, 2.0] x original_damping
-
-        # print(">>>>>after>>>>>>>")
-        # pp.pprint(self.model.actuator_gainprm)
-    
-    def set_base_pos(self):
-        # import pprint as pp
-        # import sys
-        # pp.pprint(dir(self.model.body_pos), width=1)
-        # print(">>>>>before>>>>>>>")
-        pos_list = [0.5, 0, 0.7]
-        # pp.pprint(self.model.body_pos)
+    def set_base_pos(self, pos_list=[0.6, 0.7, 0.7]):
         for i,x in enumerate(pos_list):
             self.model.body_pos[1,i] = x
 
+    # def color_randomization(self):
+        # import pprint as pp
+        # import sys
+        # pp.pprint(dir(self.model), width=1)
+        # print(">>>>>before>>>>>>>")
+
+        # pp.pprint(self.model.geom_rgba)
+        # geom_n = self.model.geom_rgba.shape[0]
+
+        # geom_rgba = []
+        # for i in range(geom_n):
+        #     geom_rgba.append([randrange(1,100)/100.0, randrange(1,100)/100.0, randrange(1,100)/100.0, 1.0])
+
+        # self.model.geom_rgba[:,:] = np.array(geom_rgba)
+        # self.model.cam_quat[:,:] = np.array(euler2quat(cam_ori))
+        # self.model.cam_fovy[:] = np.array(cam_fovy)
         # print(">>>>>after>>>>>>>")
-        # pp.pprint(self.model.body_pos)
+        # pp.pprint(self.model.geom_rgba)
+        # pp.pprint(self.model.cam_quat)
+        # pp.pprint(self.model.cam_fovy)
         # sys.exit(1)
 
     def _reset_model(self, gg=2, hooked=False, untucked=False):
         qpos = self.init_qpos
-        qpos[0] = 0.0 + random.uniform(-0.1, 0.1)     # base_roll_joint
-        qpos[1] = 0.0 + random.uniform(-0.1, 0.1)     # shoulder_lift_joint
-        qpos[2] = 0.0 + random.uniform(-0.1, 0.1)     # shoulder_roll_joint
-        qpos[3] = 0.0 + random.uniform(-0.1, 0.1)     # elbow_lift_joint
-        qpos[4] = 0.0 + random.uniform(-0.1, 0.1)     # elbow_roll_joint
-        qpos[5] = 0.0 + random.uniform(-0.1, 0.1)     # wrist_lift_joint
-        qpos[6] = 0.0 + random.uniform(-0.1, 0.1)     # wrist_roll_joint
+        qpos[0] = 0.0 + uniform(-0.1, 0.1)     # base_roll_joint
+        qpos[1] = 0.0 + uniform(-0.1, 0.1)     # shoulder_lift_joint
+        qpos[2] = 0.0 + uniform(-0.1, 0.1)     # shoulder_roll_joint
+        qpos[3] = 0.0 + uniform(-0.1, 0.1)     # elbow_lift_joint
+        qpos[4] = 0.0 + uniform(-0.1, 0.1)     # elbow_roll_joint
+        qpos[5] = 0.0 + uniform(-0.1, 0.1)     # wrist_lift_joint
+        qpos[6] = 0.0 + uniform(-0.1, 0.1)     # wrist_roll_joint
 
         if self.xml_path.find("pull")>-1:
             self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)
