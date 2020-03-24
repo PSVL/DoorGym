@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mujoco model="door_knob">
 	<compiler angle="radian"/>
+	<!-- <include file="../../robot/blue_right_v2_gripper_position.xml"/> -->
 	<include file="../../robot/blue_right_v2_gripper_motor.xml"/>
 	<option gravity="0 0 0" timestep="0.001"/>
 	<visual>
@@ -54,7 +55,7 @@
 		<light diffuse="0.9 0.9 0.9" dir="0.46 0.3 -0.35" directional="true" pos="2.61 2.63 5.0"/>
 		<light diffuse="0.9 0.9 1.0" dir="0.31 -0.01 -0.46" directional="true" pos="4.39 2.56 6.04"/>
 		<geom material="Floor" name="floor" pos="0 0 -0.05" size="15.0 15.0 0.05" type="plane"/>
-		<camera fovy="60" mode="fixed" name="camera1" pos="0.99 0.5 1.0" euler="0.0 1.57 1.57"/>
+		<camera fovy="60" mode="fixed" name="camera1" pos="0.99 -0.5 1.0" euler="0.0 1.57 1.57"/>
 		<camera fovy="60" mode="fixed" name="camera2" pos="0.5 0.0 1.99" euler="0 0 0"/>
 		<body childclass="wall" name="wall_link" pos="0.0 0.0 0.0">
 			<inertial mass="100" pos="0 0 0" diaginertia="0.0001 0.0001 0.0001"/>

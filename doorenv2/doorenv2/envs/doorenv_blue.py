@@ -247,7 +247,7 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
         self.model.dof_damping[0:12] = self.sample_gaussiannormal(self.model_origin.dof_damping[0:12], 0.2) # gaussiannormal x original_damping
         self.model.actuator_gainprm[:,0] = self.sample_gaussiannormal(self.model_origin.actuator_gainprm[:,0], 0.1) # gaussiannormal x original_damping
 
-    def set_base_pos(self, pos_list=[0.6, 0.7, 0.7]):
+    def set_base_pos(self, pos_list=[0.5, 0.0, 0.7]):
         for i,x in enumerate(pos_list):
             self.model.body_pos[1,i] = x
 
@@ -275,13 +275,13 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
 
     def _reset_model(self, gg=2, hooked=False, untucked=False):
         qpos = self.init_qpos
-        qpos[0] = 0.0 + uniform(-0.1, 0.1)     # base_roll_joint
-        qpos[1] = 0.0 + uniform(-0.1, 0.1)     # shoulder_lift_joint
-        qpos[2] = 0.0 + uniform(-0.1, 0.1)     # shoulder_roll_joint
-        qpos[3] = 0.0 + uniform(-0.1, 0.1)     # elbow_lift_joint
-        qpos[4] = 0.0 + uniform(-0.1, 0.1)     # elbow_roll_joint
-        qpos[5] = 0.0 + uniform(-0.1, 0.1)     # wrist_lift_joint
-        qpos[6] = 0.0 + uniform(-0.1, 0.1)     # wrist_roll_joint
+        qpos[0] =  0.0 + uniform(-0.1, 0.1)     # base_roll_joint
+        qpos[1] = -2.310 + uniform(-0.0, 0.1)     # shoulder_lift_joint
+        qpos[2] =  1.571 + uniform(-0.1, 0.1)     # shoulder_roll_joint
+        qpos[3] = -0.750 + uniform(-0.1, 0.1)     # elbow_lift_joint
+        qpos[4] = -1.571 + uniform(-0.1, 0.1)     # elbow_roll_joint
+        qpos[5] =  0.0 + uniform(-0.1, 0.1)     # wrist_lift_joint
+        qpos[6] =  0.0 + uniform(-0.1, 0.1)     # wrist_roll_joint
 
         if self.xml_path.find("pull")>-1:
             self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)

@@ -61,7 +61,7 @@ def main(dataset_file):
         light_property_list.append(light_property)
 
     # Camera property
-    camera1_pos = [0.99, -0.5, 1.0] #1m x 1m
+    camera1_pos = [0.99, 0.5, 1.0] #1m x 1m
     camera1_ori = [0.0, 1.57, 1.57]
     camera2_pos = [0.5, 0.0, 1.99]  #1m x 1m
     camera2_ori = [0, 0, 0]

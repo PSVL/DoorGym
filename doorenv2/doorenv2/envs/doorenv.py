@@ -131,19 +131,19 @@ class DoorEnv(mujoco_env.MujocoEnv):
         raise NotImplementedError()
 
     def reset_model(self, gg=2):
-        property_DR = True
+        property_DR = False
         if property_DR and self.init_done:
             self.physics_randomization()
 
-        light_DR = True
+        light_DR = False
         if light_DR:
             self.light_randomization()
 
-        camera_DR = True
+        camera_DR = False
         if camera_DR:
             self.camera_randomization()
 
-        color_DR = True
+        color_DR = False
         if color_DR:
             self.color_randomization()
 
@@ -175,7 +175,7 @@ class DoorEnv(mujoco_env.MujocoEnv):
         self.model.light_diffuse[:,:] = np.array(light_diffuse)
 
     def camera_randomization(self):        
-        cam_pos = [[0.99, -0.5, 1.0], [0.5, 0.0, 1.99]] #1m x 1m
+        cam_pos = [[0.99, 0.5, 1.0], [0.5, 0.0, 1.99]] #1m x 1m
         cam_ori = [[0.0, 1.57, 1.57], [0, 0, 0]]
         cam_fovy = [60, 60]
         for i in range(len(cam_pos)):
