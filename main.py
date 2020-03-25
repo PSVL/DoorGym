@@ -306,15 +306,20 @@ def offpolicy_main(variant):
     else:
         expl_policy.visionmodel = None
 
+    # print("intput stepskip:", args.step_skip)
     eval_path_collector = MdpPathCollector(
         eval_env,
         eval_policy,
         doorenv=args.env_name.find('doorenv')>-1,
+        pos_control=args.pos_control,
+        step_skip=args.step_skip,
     )
     expl_path_collector = MdpPathCollector(
         expl_env,
         expl_policy,
         doorenv=args.env_name.find('doorenv')>-1,
+        pos_control=args.pos_control,
+        step_skip=args.step_skip,
     )
 
     if not args.replaybuffer_load:
@@ -343,6 +348,15 @@ def offpolicy_main(variant):
     algorithm.env_name = args.env_name
     algorithm.save_name = args.save_name
     algorithm.env_kwargs = env_kwargs
+    algorithm.env_kwargs_val = env_kwargs_val
+    algorithm.eval_function = offpolicy_inference
+    algorithm.eval_interval = args.eval_interval
+    algorithm.knob_noisy = knob_noisy
+    algorithm.visionnet_input = args.visionnet_input
+    algorithm.pos_control = args.pos_control
+    algorithm.step_skip = args.step_skip
+    algorithm.max_path_length = variant['algorithm_kwargs']['max_path_length']
+
     summary_name = args.log_dir + '{0}_{1}'
     writer = SummaryWriter(summary_name.format(args.env_name, args.save_name))
     algorithm.writer = writer

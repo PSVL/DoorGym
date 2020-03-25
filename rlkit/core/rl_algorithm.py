@@ -51,6 +51,12 @@ class BaseRLAlgorithm(object, metaclass=abc.ABCMeta):
         self.env_name = None
         self.save_name = None
         self.env_kwargs = None
+        self.eval_function = None
+        self.eval_interval = None
+        self.env_kwargs_val = None
+        self.pos_control = None
+        self.step_skip = None
+        self.max_path_length = None
         #####################################
 
         self.post_epoch_funcs = []
@@ -58,7 +64,6 @@ class BaseRLAlgorithm(object, metaclass=abc.ABCMeta):
         # print("writer has been made")
 
     def train(self, start_epoch=0):
-
         snapshot = self._get_snapshot()
         # print("what is in a snapshot", snapshot)
 
@@ -105,15 +110,43 @@ class BaseRLAlgorithm(object, metaclass=abc.ABCMeta):
                 pickle.dump(self.replay_buffer, save_file)
         ####################################
 
+        ####################################
+        if (self.eval_interval is not None and epoch % self.eval_interval == 0):
+            total_num_steps = (epoch + 1) * self.max_path_length
+            opening_rate, opening_timeavg = self.eval_function(
+                                        seed=99, 
+                                        env_name=self.env_name, 
+                                        det=True, 
+                                        load_name=self.save_name, 
+                                        evaluation=True, 
+                                        render=False, 
+                                        knob_noisy=self.knob_noisy, 
+                                        visionnet_input=self.visionnet_input, 
+                                        env_kwargs=self.env_kwargs_val,
+                                        actor_critic=snapshot['evaluation/policy'],
+                                        verbose=False,
+                                        pos_control=self.pos_control,
+                                        step_skip=self.step_skip)
+            print("{}th update. {}th timestep. opening rate {}%. Average time to open is {}.".format(epoch, total_num_steps, opening_rate, opening_timeavg))
+            self.writer.add_scalar("Opening rate per envstep", opening_rate, total_num_steps)
+            self.writer.add_scalar("Opening rate per update", opening_rate, epoch)
+        ####################################
+
     def _get_snapshot(self):
         snapshot = {}
         for k, v in self.trainer.get_snapshot().items():
+            print("trainer: ", k)
             snapshot['trainer/' + k] = v
         for k, v in self.expl_data_collector.get_snapshot().items():
-            snapshot['exploration/' + k] = v
+            print("expl_data_collector: ", k)
+            if not k=="env":
+                snapshot['exploration/' + k] = v
         for k, v in self.eval_data_collector.get_snapshot().items():
-            snapshot['evaluation/' + k] = v
+            print("eval_data_collector: ", k)
+            if not k=="env":
+                snapshot['evaluation/' + k] = v
         for k, v in self.replay_buffer.get_snapshot().items():
+            print("replay_buffer: ", k)
             snapshot['replay_buffer/' + k] = v
         return snapshot
 

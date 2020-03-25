@@ -301,6 +301,9 @@ class DoorEnv(mujoco_env.MujocoEnv):
         img = np.reshape(img, (3*self.imgsize_h*self.imgsize_w))
         return img
 
+    def get_doorangle(self):
+        return self.sim.data.get_joint_qpos("hinge0")
+
     def get_robot_joints(self):
         raise NotImplementedError()
 

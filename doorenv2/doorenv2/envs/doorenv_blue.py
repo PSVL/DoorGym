@@ -23,78 +23,16 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
             world_path=world_path,
             pos_control=pos_control,
         )
-        # self.port = port
-        # self.hooked = True
-        # self.untucked = True
-        # self.init_done = False
-        # self.pos_control = pos_control
-        # self.hook_ratio = -1 #-1:all non_hooked, 100:all hooked
-        # self.untucked_ratio = -1 #-1:all non-untucked, 100:all untucked
-        # self.imgsize_h = 640
-        # self.imgsize_w = 640
-        # self.visionnet_input = visionnet_input
-        # self.gripper_action = np.zeros(4)
-        # self.xml_path = self.random_world(world_path)
-
-        # if self.xml_path.find("float")>-1:
-        #     if self.xml_path.find("hook")>-1:
-        #         self.nn = 6
-        #     if self.xml_path.find("gripper")>-1:
-        #         self.nn = 7
-        # else:
-        #     if self.xml_path.find("mobile")>-1:
-        #         if self.xml_path.find("hook")>-1:
-        #             self.nn = 9
-        #         if self.xml_path.find("gripper")>-1:
-        #             self.nn = 10
-        #     else:
-        #         if self.xml_path.find("hook")>-1:
-        #             self.nn = 7
-        #         if self.xml_path.find("gripper")>-1:
-        #             self.nn = 8
-
-        # self.unity = unity
-        # if self.visionnet_input:
-        #     if self.unity:
-        #         self.b = bytearray(3*self.imgsize_h*self.imgsize_w)
-        #         self.no_viewer = False
-        #     else:
-        #         self.no_viewer = True
-        # else:
-        #     self.no_viewer = False
-        # frame_skip = 20
         utils.EzPickle.__init__(self)
-        # mujoco_env.MujocoEnv.__init__(self, self.xml_path, frame_skip)
-        # gripper_space = self.gripper_action.shape[0]
-        # if self.xml_path.find("gripper")>-1:
-        #     bounds = self.model.actuator_ctrlrange.copy()
-        #     low, high = bounds.T
-        #     low, high = low[:-gripper_space], high[:-gripper_space] # four joints for finger is a dependant of finger inertial joint
-        #     self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
-        #     self.gripper_action = self.sim.data.qpos[-gripper_space:]
-        # self.init_done = True
-        # self.model_origin = self.model
 
     def gripper_action_gen(self, a):
             self.gripper_action = np.array([a[-1],-a[-1],a[-1],-a[-1]])
             return np.concatenate((a,self.gripper_action))
 
     def randomized_property(self):
-        # import pprint as pp
-        # pp.pprint(dir(self.model), width=1)
-        # print(">>>>>before>>>>>>>")
-        # pp.pprint(self.model.actuator_gainprm)
-
         self.model.body_mass[10:16] = self.sample_gaussiannormal(self.model_origin.body_mass[10:16], 0.2) # gaussiannormal x original_mass
         self.model.dof_damping[0:10] = self.sample_gaussiannormal(self.model_origin.dof_damping[0:10], 0.2) # gaussiannormal x original_damping
         self.model.actuator_gainprm[:,0] = self.sample_gaussiannormal(self.model_origin.actuator_gainprm[:,0], 0.1) # gaussiannormal x original_damping
-
-        # self.model.body_mass[10:16] = self.sample_lognormal(self.model_origin.body_mass[10:16], 0.1, 0.4) # lognormal [0.4, 4.0] x original_mass
-        # self.model.dof_damping[0:10] = self.sample_lognormal(self.model_origin.dof_damping[0:10], 0.3, 1.0) # lognormal [0.4, 20.0] x original_damping
-        # self.model.actuator_gainprm[:,0] = self.sample_lognormal(self.model_origin.actuator_gainprm[:,0], 0.1, 0.2) # lognormal [0.5, 2.0] x original_damping
-
-        # print(">>>>>after>>>>>>>")
-        # pp.pprint(self.model.actuator_gainprm)
 
     def _reset_model(self, gg=2, hooked=False, untucked=False):
         qpos = self.init_qpos
@@ -247,7 +185,7 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
         self.model.dof_damping[0:12] = self.sample_gaussiannormal(self.model_origin.dof_damping[0:12], 0.2) # gaussiannormal x original_damping
         self.model.actuator_gainprm[:,0] = self.sample_gaussiannormal(self.model_origin.actuator_gainprm[:,0], 0.1) # gaussiannormal x original_damping
 
-    def set_base_pos(self, pos_list=[0.5, 0.0, 0.7]):
+    def set_base_pos(self, pos_list=[0.6, 0.35, 0.7]):
         for i,x in enumerate(pos_list):
             self.model.body_pos[1,i] = x
 

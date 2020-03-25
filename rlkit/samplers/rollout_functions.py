@@ -113,6 +113,8 @@ def rollout(
         evaluate=False,
         verbose=True,
         doorenv=True,
+        pos_control=False,
+        step_skip=1,
         epoch=0,
 ):
     """
@@ -131,22 +133,6 @@ def rollout(
     """
     if doorenv:
         env_obj = env.wrapped_env
-        if env_obj.xml_path.find("float")>-1:
-            if env_obj.xml_path.find("hook")>-1:
-                doorhinge_idx = 6
-            if env_obj.xml_path.find("gripper")>-1:
-                doorhinge_idx = 11
-        else:
-            if env_obj.xml_path.find("mobile")>-1:
-                if env_obj.xml_path.find("hook")>-1:
-                    doorhinge_idx = 9
-                if env_obj.xml_path.find("gripper")>-1:
-                    doorhinge_idx = 14
-            else:
-                if env_obj.xml_path.find("hook")>-1:
-                    doorhinge_idx = 7
-                if env_obj.xml_path.find("gripper")>-1:
-                    doorhinge_idx = 12
 
     if render_kwargs is None:
         render_kwargs = {}
@@ -157,6 +143,8 @@ def rollout(
     agent_infos = []
     env_infos = []
     o = env.reset()
+    # print(o, o.shape)
+    initial_state = o[:env.action_space.shape[0]]
     agent.reset()
     if doorenv:
         if agent.visionnet_input:
@@ -174,10 +162,26 @@ def rollout(
 
     door_opened = False
     opening_time = None
+    current_state = initial_state
 
     while path_length < max_path_length:
         a, agent_info = agent.get_action(o)
-        next_o, r, d, env_info = env.step(a)
+
+        if pos_control:
+            # print("main step_skip",args.step_skip)
+            # if path_length%(512/step_skip-1)==0: current_state = initial_state
+            a = current_state + a
+            # print("stepskip:",step_skip)
+            for kk in range(step_skip):
+                next_o, r, d, env_info = env.step(a)
+                
+            current_state = next_o[:env.action_space.shape[0]]
+        else:
+            for kk in range(step_skip):
+                next_o, r, d, env_info = env.step(a)
+                # full_obs, reward, done, infos = env.step(next_action)
+
+        # next_o, r, d, env_info = env.step(a)
         if doorenv:
             if agent.visionnet_input:
                 next_o = obs2inputs(next_o, agent.visionmodel, agent.nn)
@@ -187,6 +191,7 @@ def rollout(
                         next_o = add_noise(next_o)
                     else:
                         next_o = add_noise(next_o, epoch)
+
         observations.append(o)
         rewards.append(r)
         terminals.append(d)
@@ -201,7 +206,7 @@ def rollout(
             env.render(**render_kwargs)
 
         if doorenv:
-            if evaluate and not door_opened and abs(env_obj.sim.data.qpos[doorhinge_idx])>=0.2:
+            if evaluate and not door_opened and abs(env_obj.get_doorangle())>=0.2:
                 opening_time = path_length/50
                 if verbose:
                     print("door opened! opening time is {}".format(opening_time))

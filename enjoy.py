@@ -104,25 +104,25 @@ def onpolicy_inference(
     if render_func is not None:
         render_func('human')
 
-    if env_name.find('doorenv')>-1:
-        if env_obj.xml_path.find("baxter")>-1:
-            doorhinge_idx = 20
-        elif env_obj.xml_path.find("float")>-1:
-            if env_obj.xml_path.find("hook")>-1:
-                doorhinge_idx = 6
-            elif env_obj.xml_path.find("gripper")>-1:
-                doorhinge_idx = 11
-        else:
-            if env_obj.xml_path.find("mobile")>-1:
-                if env_obj.xml_path.find("hook")>-1:
-                    doorhinge_idx = 9
-                if env_obj.xml_path.find("gripper")>-1:
-                    doorhinge_idx = 14
-            else:
-                if env_obj.xml_path.find("hook")>-1:
-                    doorhinge_idx = 7
-                if env_obj.xml_path.find("gripper")>-1:
-                    doorhinge_idx = 12
+    # if env_name.find('doorenv')>-1:
+    #     if env_obj.xml_path.find("baxter")>-1:
+    #         doorhinge_idx = 20
+    #     elif env_obj.xml_path.find("float")>-1:
+    #         if env_obj.xml_path.find("hook")>-1:
+    #             doorhinge_idx = 6
+    #         elif env_obj.xml_path.find("gripper")>-1:
+    #             doorhinge_idx = 11
+    #     else:
+    #         if env_obj.xml_path.find("mobile")>-1:
+    #             if env_obj.xml_path.find("hook")>-1:
+    #                 doorhinge_idx = 9
+    #             if env_obj.xml_path.find("gripper")>-1:
+    #                 doorhinge_idx = 14
+    #         else:
+    #             if env_obj.xml_path.find("hook")>-1:
+    #                 doorhinge_idx = 7
+    #             if env_obj.xml_path.find("gripper")>-1:
+    #                 doorhinge_idx = 12
 
     start_time = int(time.mktime(time.localtime()))
 
@@ -170,7 +170,8 @@ def onpolicy_inference(
         epi_step += 1
 
         if env_name.find('doorenv')>-1:
-            if not door_opened and abs(env_obj.sim.data.qpos[doorhinge_idx])>=0.2:
+            # if not door_opened and abs(env_obj.sim.data.qpos[doorhinge_idx])>=0.2:
+            if not door_opened and abs(env_obj.get_doorangle())>=0.2:
                 dooropen_counter += 1
                 opening_time = epi_step/(1.0/mujoco_timestep)*step_skip
                 if verbose:
@@ -242,15 +243,19 @@ def offpolicy_inference(
     import time 
     from gym import wrappers
 
+    print("evaluatin started!")
+
     filename = str(uuid.uuid4())
 
     gpu = True
 
-    env, _, _ = prepare_env(env_name, args.visionmodel_path, **env_kwargs)
-
-
-    snapshot = torch.load(load_name)
-    policy = snapshot['evaluation/policy']
+    env, _, _ = prepare_env(env_name, **env_kwargs)
+    
+    if not actor_critic:
+        snapshot = torch.load(load_name)
+        policy = snapshot['evaluation/policy']
+    else:
+        policy = actor_critic
     if env_name.find('doorenv')>-1:
         policy.knob_noisy = knob_noisy
         policy.nn = env._wrapped_env.nn
@@ -259,21 +264,14 @@ def offpolicy_inference(
     epi_counter = 1
     dooropen_counter = 0
     total_time = 0
-    test_num = 100
-
-    if evaluation:
-        render = False
-    else:
-        if not unity:
-            render = True
-        else:
-            render = False
+    test_num = 10
 
     start_time = int(time.mktime(time.localtime()))
 
     if gpu:
         set_gpu_mode(True)
     while True:
+        # print("new env")
         if env_name.find('doorenv')>-1:
             path, door_opened, opening_time = rollout(
                 env,
@@ -284,12 +282,12 @@ def offpolicy_inference(
                 evaluate=True,
                 verbose=True,
             )
-            print("done first")
             if hasattr(env, "log_diagnostics"):
                 env.log_diagnostics([path])
             logger.dump_tabular()
             if evaluation:
-                env, _, _ = prepare_env(env_name, args.visionmodel_path, **env_kwargs)
+                # print("1")
+                env, _, _ = prepare_env(env_name, **env_kwargs)
                 if door_opened:
                     dooropen_counter += 1
                     total_time += opening_time
@@ -430,6 +428,10 @@ if __name__ == "__main__":
             render=args.render, 
             knob_noisy=args.knob_noisy, 
             visionnet_input=args.visionnet_input, 
-            env_kwargs=env_kwargs)
+            env_kwargs=env_kwargs,
+            actor_critic=None,
+            verbose=True,
+            pos_control=args.pos_control,
+            step_skip=args.step_skip)
     else:
         raise "not sure which type of algorithm."

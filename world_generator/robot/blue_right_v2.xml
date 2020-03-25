@@ -25,8 +25,8 @@
     <worldbody>
         <!-- <light directional="true" diffuse=".8 .8 .8" specular="0.1 0.1 0.1" pos="0 0 2.5" dir="0 0 -1" castshadow="false"/>
         <geom name="ground" type="plane" size="6 6 1" pos="0 0 -1." quat="1 0 0 0" material="matplane" condim="1"/> -->
-        <geom name="pedestal_top" type="box" size="0.25 0.25 0.01" pos="0.78 0 0.7" quat="1 0 0 0"  rgba="1 1 1 1" condim="1"/>
-        <geom name="pedestal_bottom" type="cylinder" size="0.05 0.35" pos="0.78 0 0.35" quat="1 0 0 0"  rgba="1 1 1 1" condim="1"/>
+        <!-- <geom name="pedestal_top" type="box" size="0.25 0.25 0.01" pos="0.78 0 0.7" quat="1 0 0 0"  rgba="1 1 1 1" condim="1"/>
+        <geom name="pedestal_bottom" type="cylinder" size="0.05 0.35" pos="0.78 0 0.35" quat="1 0 0 0"  rgba="1 1 1 1" condim="1"/> -->
 
         <body name="robotbase_link" pos="0.6 0 0.7">
             <inertial pos="0.107964 -0.000118075 0.0740607" quat="-0.00144458 0.606987 0.000927747 0.79471" mass="3.45161" diaginertia="0.0175534 0.0157386 0.00730286" />

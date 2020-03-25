@@ -40,10 +40,11 @@ def load_visionmodel(xml_path, model_path, visionmodel):
     print("=> loaded checkpoint '{}' (epoch {}), best pred {}".format(visionmodel_path, checkpoint['epoch'], best_pred))
     return visionmodel
 
-def prepare_env(env_name, visionmodel_path, **env_kwargs):
+def prepare_env(env_name, visionmodel_path=None, **env_kwargs):
     from gym.spaces import Box
 
     if env_name.find('doorenv')>-1:
+        # print("expl_env")
         expl_env = NormalizedBoxEnv(gym.make(env_name, **env_kwargs))
         xml_path = expl_env._wrapped_env.xml_path
         if env_kwargs['visionnet_input']:
@@ -52,7 +53,8 @@ def prepare_env(env_name, visionmodel_path, **env_kwargs):
             if env_kwargs['unity']:
                 expl_env._wrapped_env.init()
         else:
-            print("no vision")
+            # print("no vision")
+            # print("eval_env")
             eval_env = NormalizedBoxEnv(gym.make(env_name, **env_kwargs))
 
         env_obj = expl_env._wrapped_env

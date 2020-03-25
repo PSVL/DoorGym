@@ -8,6 +8,7 @@ from rlkit.samplers.data_collector import PathCollector
 from rlkit.envs.wrappers import NormalizedBoxEnv
 from rlkit.samplers.data_collector import MdpPathCollector
 import doorenv
+import doorenv2
 
 
 class BatchRLAlgorithm(BaseRLAlgorithm, metaclass=abc.ABCMeta):
@@ -27,7 +28,7 @@ class BatchRLAlgorithm(BaseRLAlgorithm, metaclass=abc.ABCMeta):
             num_trains_per_train_loop,
             num_train_loops_per_epoch=10,
             min_num_steps_before_training=0,
-    ):
+        ):
         super().__init__(
             trainer,
             exploration_env,

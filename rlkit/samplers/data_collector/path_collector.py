@@ -14,6 +14,8 @@ class MdpPathCollector(PathCollector):
             render=False,
             render_kwargs=None,
             doorenv = True,
+            pos_control=False,
+            step_skip=1,
     ):
         if render_kwargs is None:
             render_kwargs = {}
@@ -25,6 +27,8 @@ class MdpPathCollector(PathCollector):
         self._render_kwargs = render_kwargs
         self._epoch = 0
         self._doorenv = doorenv
+        self._pos_control=pos_control
+        self._step_skip=step_skip
 
         self._num_steps_total = 0
         self._num_paths_total = 0
@@ -48,6 +52,8 @@ class MdpPathCollector(PathCollector):
                 max_path_length=max_path_length_this_loop,
                 epoch = self._epoch,
                 doorenv = self._doorenv,
+                pos_control=self._pos_control,
+                step_skip=self._step_skip,
             )
             path_len = len(path['actions'])
             if (
