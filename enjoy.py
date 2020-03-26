@@ -264,7 +264,7 @@ def offpolicy_inference(
     epi_counter = 1
     dooropen_counter = 0
     total_time = 0
-    test_num = 10
+    test_num = 100
 
     start_time = int(time.mktime(time.localtime()))
 
@@ -277,10 +277,12 @@ def offpolicy_inference(
                 env,
                 policy,
                 max_path_length=512,
-                doorenv=True,
                 render=render,
-                evaluate=True,
+                evaluate=evaluation,
                 verbose=True,
+                doorenv=True,
+                pos_control=pos_control,
+                step_skip=step_skip,
             )
             if hasattr(env, "log_diagnostics"):
                 env.log_diagnostics([path])

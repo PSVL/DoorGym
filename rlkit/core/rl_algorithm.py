@@ -173,12 +173,15 @@ class BaseRLAlgorithm(object, metaclass=abc.ABCMeta):
                 print("Target Entropy", v)
                 self.writer.add_scalar("Target Entropy", v, epoch)
 
+        total_num_steps = (epoch + 1) * self.max_path_length
+
         expl_paths = self.expl_data_collector.get_epoch_paths()
         d = eval_util.get_generic_path_information(expl_paths)
         for k, v in d.items():
             if str(k) == "Average Returns":
                 print("Exploration_rewards", v)
                 self.writer.add_scalar("Episode_rewards", v, epoch)
+                self.writer.add_scalar("Episode_rewards_envstep", v, total_num_steps)
 
         eval_util.print_returns_info(expl_paths, epoch)
         if self.eval_env:
@@ -188,6 +191,7 @@ class BaseRLAlgorithm(object, metaclass=abc.ABCMeta):
                 if str(k) == "Average Returns":
                     print("Evaluation_rewards", v)
                     self.writer.add_scalar("Evaluation_rewards", v, epoch)
+                    self.writer.add_scalar("Evaluation_rewards_envstep", v, total_num_steps)
         print("################################################################")
 
     @abc.abstractmethod

@@ -166,22 +166,24 @@ def rollout(
 
     while path_length < max_path_length:
         a, agent_info = agent.get_action(o)
+        next_a = a
 
-        if pos_control:
-            # print("main step_skip",args.step_skip)
-            # if path_length%(512/step_skip-1)==0: current_state = initial_state
-            a = current_state + a
-            # print("stepskip:",step_skip)
-            for kk in range(step_skip):
-                next_o, r, d, env_info = env.step(a)
+        # if pos_control:
+        #     # print("main step_skip",args.step_skip)
+        #     # if path_length%(512/step_skip-1)==0: current_state = initial_state
+        #     next_a = current_state + next_a
+        #     # print("stepskip:",step_skip)
+        #     for kk in range(step_skip):
+        #         next_o, r, d, env_info = env.step(next_a)
                 
-            current_state = next_o[:env.action_space.shape[0]]
-        else:
-            for kk in range(step_skip):
-                next_o, r, d, env_info = env.step(a)
-                # full_obs, reward, done, infos = env.step(next_action)
+        #     current_state = next_o[:env.action_space.shape[0]]
+        # else:
+        #     for kk in range(step_skip):
+        #         next_o, r, d, env_info = env.step(next_a)
+        #         # full_obs, reward, done, infos = env.step(next_action)
 
-        # next_o, r, d, env_info = env.step(a)
+        # print("reward ",r)
+        next_o, r, d, env_info = env.step(a)
         if doorenv:
             if agent.visionnet_input:
                 next_o = obs2inputs(next_o, agent.visionmodel, agent.nn)
