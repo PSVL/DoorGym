@@ -364,6 +364,28 @@ def offpolicy_main(variant):
     algorithm.to(ptu.device)
     algorithm.train()
 
+
+def parse(args):
+    import datetime
+    opt = args
+    args = vars(opt)
+    verbose = True
+    if verbose:
+        print('------------ Options -------------')
+        print("start time:", datetime.datetime.now())
+        for k, v in sorted(args.items()):
+            print('%s: %s' % (str(k), str(v)))
+        print('-------------- End ----------------')
+    # save to the disk
+    expr_dir = os.path.join(opt.params_log_dir)
+    file_name = os.path.join(expr_dir, '{}.txt'.format(opt.env_name))
+    with open(file_name, 'wt') as opt_file:
+        opt_file.write('------------ Options -------------\n')
+        opt_file.write('start time:' + str(datetime.datetime.now()))
+        for k, v in sorted(args.items()):
+            opt_file.write('%s: %s\n' % (str(k), str(v)))
+        opt_file.write('-------------- End ----------------\n')
+
 if __name__ == "__main__":
     args = get_args()
 
@@ -387,11 +409,11 @@ if __name__ == "__main__":
             algorithm_kwargs=dict(
                 num_epochs=6000,
                 num_eval_steps_per_epoch=512, #512
-                num_trains_per_train_loop=1000, #1000
+                num_trains_per_train_loop=10, #1000
                 num_expl_steps_per_train_loop=512, #512
                 min_num_steps_before_training=512, #1000
                 max_path_length=512, #512
-                batch_size=512,
+                batch_size=128,
                 ),
             trainer_kwargs=dict(
                 discount=0.99,
@@ -404,6 +426,8 @@ if __name__ == "__main__":
                 ),
             replay_buffer_size=int(1E6),
         )
+        # args_variant = {**vars(args), **variant}
+        # parse(args_variant)
         offpolicy_main(variant)
     elif args.algo == 'td3':
         variant = dict(
@@ -432,8 +456,11 @@ if __name__ == "__main__":
             ),
             replay_buffer_size=int(1E6),
         )
+        # args_variant = {**args, **variant}
+        # parse(args_variant)
         offpolicy_main(variant)
     elif args.algo == 'a2c' or args.algo == 'ppo':
+        # parse(args_variant)
         onpolicy_main()
     else:
         raise Exception("unknown algorithm")

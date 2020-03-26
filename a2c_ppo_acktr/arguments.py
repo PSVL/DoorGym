@@ -108,6 +108,10 @@ def get_args():
         default='./logs/',
         help='directory to save agent logs (default: ./logs/)')
     parser.add_argument(
+        '--params-log-dir',
+        default='./params_logs/',
+        help='directory to save params logs (default: ./params_logs/)')
+    parser.add_argument(
         '--save-dir',
         default='./trained_models/',
         help='directory to save agent logs (default: ./trained_models/)')

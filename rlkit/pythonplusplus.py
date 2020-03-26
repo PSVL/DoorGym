@@ -162,9 +162,9 @@ def list_of_dicts__to__dict_of_lists(lst):
     keys = lst[0].keys()
     output_dict = collections.defaultdict(list)
     for d in lst:
-        if 'TimeLimit.truncated' in d:
-            del d['TimeLimit.truncated']
-        assert set(d.keys()) == set(keys)
+        # if 'TimeLimit.truncated' in d:
+        #     del d['TimeLimit.truncated']
+        # assert set(d.keys()) == set(keys)
         for k in keys:
             output_dict[k].append(d[k])
     return output_dict
