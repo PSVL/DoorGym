@@ -14,7 +14,8 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
                 port=1050,
                 unity=False,visionnet_input=False,
                 world_path='/home/demo/DoorGym/world_generator/world/pull_floatinghook',
-                pos_control=False
+                pos_control=False,
+                 ik_control=False
         ):
         super().__init__(
             port=port,
@@ -165,7 +166,8 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
                 port=1050,
                 unity=False,visionnet_input=False,
                 world_path='/home/demo/DoorGym/world_generator/world/pull_floatinghook',
-                pos_control=False
+                pos_control=False,
+                ik_control=False
         ):
         super().__init__(
             port=port,
@@ -173,6 +175,7 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
             visionnet_input=visionnet_input,
             world_path=world_path,
             pos_control=pos_control,
+            ik_control=ik_control,
         )
         utils.EzPickle.__init__(self)
 
@@ -243,9 +246,19 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
         return self._get_obs()
 
     def get_robot_joints(self):
-        return np.concatenate([
-            self.sim.data.qpos.flat[:self.nn],
-            self.sim.data.qvel.flat[:self.nn]])
+        if self.ik_control:
+            return np.concatenate([
+                self.get_finger_target(),
+                self.get_finger_ori(),
+                self.get_gripper_pos(),
+                self.get_finger_vel(),
+                self.get_finger_angvel(),
+            ])
+        else:
+            return np.concatenate([
+                self.sim.data.qpos.flat[:self.nn],
+                self.sim.data.qvel.flat[:self.nn]
+            ])
 
     def get_finger_target(self):
         return (self.sim.data.get_geom_xpos("fingerleft2") \
@@ -256,3 +269,12 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
     
     def get_finger_quat(self):
         return self.sim.data.get_body_xquat("robotwrist_rolllink")
+
+    def get_finger_vel(self):
+        return self.sim.data.get_body_xvelp("robotwrist_rolllink")
+
+    def get_finger_angvel(self):
+        return self.sim.data.get_body_xvelr("robotwrist_rolllink")
+
+    def get_gripper_pos(self):
+        return np.array([self.sim.data.get_joint_qpos("right_gripper_joint")])

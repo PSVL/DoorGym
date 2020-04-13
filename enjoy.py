@@ -273,22 +273,23 @@ def offpolicy_inference(
     while True:
         # print("new env")
         if env_name.find('doorenv')>-1:
-            path, door_opened, opening_time = rollout(
-                env,
-                policy,
-                max_path_length=512,
-                render=render,
-                evaluate=evaluation,
-                verbose=True,
-                doorenv=True,
-                pos_control=pos_control,
-                step_skip=step_skip,
-            )
-            if hasattr(env, "log_diagnostics"):
-                env.log_diagnostics([path])
-            logger.dump_tabular()
             if evaluation:
-                # print("1")
+                path, door_opened, opening_time = rollout(
+                    env,
+                    policy,
+                    max_path_length=512,
+                    render=render,
+                    evaluate=evaluation,
+                    verbose=True,
+                    doorenv=True,
+                    pos_control=pos_control,
+                    step_skip=step_skip,
+                )
+                if hasattr(env, "log_diagnostics"):
+                    env.log_diagnostics([path])
+                logger.dump_tabular()
+                # if evaluation:
+                    # print("1")
                 env, _, _ = prepare_env(env_name, **env_kwargs)
                 if door_opened:
                     dooropen_counter += 1
@@ -296,6 +297,21 @@ def offpolicy_inference(
                     if verbose:
                         print("{} ep end >>>>>>>>>>>>>>>>>>>>>>>>".format(epi_counter))
                         eval_print(dooropen_counter, epi_counter, start_time, total_time)
+            else:
+                path = rollout(
+                    env,
+                    policy,
+                    max_path_length=512,
+                    render=render,
+                    evaluate=evaluation,
+                    verbose=True,
+                    doorenv=True,
+                    pos_control=pos_control,
+                    step_skip=step_skip,
+                )
+                if hasattr(env, "log_diagnostics"):
+                    env.log_diagnostics([path])
+                logger.dump_tabular()
 
         else:
             path = rollout(

@@ -14,12 +14,14 @@ class DoorEnv(mujoco_env.MujocoEnv):
                 unity=False,
                 visionnet_input=False,
                 world_path='/home/demo/DoorGym/world_generator/world/pull_floatinghook',
-                pos_control=False):
+                pos_control=False,
+                ik_control=False):
         self.port = port
         self.hooked = True
         self.untucked = True
         self.init_done = False
         self.pos_control = pos_control
+        self.ik_control = ik_control
         self.hook_ratio = -1 #-1:all non_hooked, 100:all hooked
         self.untucked_ratio = -1 #-1:all non-untucked, 100:all untucked
         self.imgsize_h = 640
@@ -330,6 +332,15 @@ class DoorEnv(mujoco_env.MujocoEnv):
         raise NotImplementedError()
     
     def get_finger_quat(self):
+        raise NotImplementedError()
+
+    def get_finger_vel(self):
+        raise NotImplementedError()
+
+    def get_finger_angvel(self):
+        raise NotImplementedError()
+
+    def get_gripper_pos(self):
         raise NotImplementedError()
 
     def get_ori_diff(self):
