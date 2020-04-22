@@ -309,6 +309,9 @@ class DoorEnv(mujoco_env.MujocoEnv):
     def get_robot_joints(self):
         raise NotImplementedError()
 
+    def get_robot_joints_pos(self):
+        return self.sim.data.qpos.flat[:self.nn]
+
     def get_knob_target(self):
         # print("head camera pos:",self.sim.data.get_body_xpos("head_camera"))
         if self.xml_path.find("lever")>-1:
@@ -323,6 +326,9 @@ class DoorEnv(mujoco_env.MujocoEnv):
             assert "not sure about the door knob type"
 
     def get_finger_target(self):
+        raise NotImplementedError()
+
+    def get_base_pos(self):
         raise NotImplementedError()
 
     def get_dist_vec(self):

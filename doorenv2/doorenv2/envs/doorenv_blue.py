@@ -215,31 +215,49 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
         # sys.exit(1)
 
     def _reset_model(self, gg=2, hooked=False, untucked=False):
-        qpos = self.init_qpos
-        qpos[0] =  0.0 + uniform(-0.1, 0.1)     # base_roll_joint
-        qpos[1] = -2.310 + uniform(-0.0, 0.1)     # shoulder_lift_joint
-        qpos[2] =  1.571 + uniform(-0.1, 0.1)     # shoulder_roll_joint
-        qpos[3] = -0.750 + uniform(-0.1, 0.1)     # elbow_lift_joint
-        qpos[4] = -1.571 + uniform(-0.1, 0.1)     # elbow_roll_joint
-        qpos[5] =  0.0 + uniform(-0.1, 0.1)     # wrist_lift_joint
-        qpos[6] =  0.0 + uniform(-0.1, 0.1)     # wrist_roll_joint
-
-        if self.xml_path.find("pull")>-1:
-            self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)
-            if self.xml_path.find("lefthinge")>-1:
-                self.goal[0] = np.random.uniform(-0.15,0.05)
-                self.goal[1] = np.random.uniform(-0.15,0.15)
+        def randomize():
+            qpos = self.init_qpos
+            qpos[0] = uniform(-3.3999, 2.3412) # base_roll_joint
+            qpos[1] = uniform(-2.2944, 0) # shoulder_lift_joint
+            qpos[2] = uniform(-2.6761, 2.6761) # shoulder_roll_joint
+            qpos[3] = uniform(-2.2944, 0) # elbow_lift_joint
+            qpos[4] = uniform(-2.6761, 2.6761) # elbow_roll_joint
+            qpos[5] = uniform(-2.2944, 0) # wrist_lift_joint
+            qpos[6] = uniform(-2.6761, 2.676) # wrist_roll_joint
+            # qpos[0] =  0.0 + uniform(-0.1, 0.1)     # base_roll_joint
+            # qpos[1] = -2.310 + uniform(-0.0, 0.1)     # shoulder_lift_joint
+            # qpos[2] =  1.571 + uniform(-0.1, 0.1)     # shoulder_roll_joint
+            # qpos[3] = -0.750 + uniform(-0.1, 0.1)     # elbow_lift_joint
+            # qpos[4] = -1.571 + uniform(-0.1, 0.1)     # elbow_roll_joint
+            # qpos[5] =  0.0 + uniform(-0.1, 0.1)     # wrist_lift_joint
+            # qpos[6] =  0.0 + uniform(-0.1, 0.1)     # wrist_roll_joint
+            if self.xml_path.find("pull")>-1:
+                self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)
+                if self.xml_path.find("lefthinge")>-1:
+                    self.goal[0] = np.random.uniform(-0.15,0.05)
+                    self.goal[1] = np.random.uniform(-0.15,0.15)
+                else:
+                    self.goal[0] = np.random.uniform(-0.05,0.15)
+                    self.goal[1] = np.random.uniform(-0.15,0.15)
             else:
-                self.goal[0] = np.random.uniform(-0.05,0.15)
-                self.goal[1] = np.random.uniform(-0.15,0.15)
-        else:
-            self.goal = np.zeros(gg)
-            self.goal[0] = np.random.uniform(-0.15,0.15)
+                self.goal = np.zeros(gg)
+                self.goal[0] = np.random.uniform(-0.15,0.15)
 
-        qpos[self.nn:-gg] = 0
-        qpos[-gg:] = self.goal
-        qvel = self.init_qvel 
-        self.set_state(qpos, qvel)
+            qpos[self.nn:-gg] = 0
+            qpos[-gg:] = self.goal
+            qvel = self.init_qvel 
+            self.set_state(qpos, qvel)
+
+        collision = True
+        while collision:
+            # print("collision found! Count: ", self.sim.data.ncon)
+            randomize()
+            collision = self.sim.data.ncon > 0
+        # import pprint as pp
+        # pp.pprint(dir(env.env.sim.data))
+        # print("final collision count: ", self.sim.data.ncon)
+        # import sys
+        # sys.exit(1)
 
         if self.unity:
             self.remote.setqpos(self.sim.data.qpos)
@@ -249,7 +267,7 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
         if self.ik_control:
             return np.concatenate([
                 self.get_finger_target(),
-                self.get_finger_ori(),
+                self.get_finger_quat(),
                 self.get_gripper_pos(),
                 self.get_finger_vel(),
                 self.get_finger_angvel(),
@@ -263,6 +281,9 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
     def get_finger_target(self):
         return (self.sim.data.get_geom_xpos("fingerleft2") \
             + self.sim.data.get_geom_xpos("fingerright2"))/2.0
+
+    def get_base_pos(self):
+        return self.sim.data.get_body_xpos("robotbase_link")
 
     def get_finger_ori(self):
         return quat2euler(self.sim.data.get_body_xquat("robotwrist_rolllink"))
