@@ -13,9 +13,13 @@ class DoorEnv(mujoco_env.MujocoEnv):
                 port=1050,
                 unity=False,
                 visionnet_input=False,
+                vision_obs= False,
                 world_path='/home/demo/DoorGym/world_generator/world/pull_floatinghook',
                 pos_control=False,
-                ik_control=False):
+                ik_control=False,
+                imgsize_h=640,
+                imgsize_w=640):
+        print("passed",imgsize_h)
         self.port = port
         self.hooked = True
         self.untucked = True
@@ -24,9 +28,10 @@ class DoorEnv(mujoco_env.MujocoEnv):
         self.ik_control = ik_control
         self.hook_ratio = -1 #-1:all non_hooked, 100:all hooked
         self.untucked_ratio = -1 #-1:all non-untucked, 100:all untucked
-        self.imgsize_h = 640
-        self.imgsize_w = 640
+        self.imgsize_h = imgsize_h
+        self.imgsize_w = imgsize_w
         self.visionnet_input = visionnet_input
+        self.vision_obs = vision_obs
         self.gripper_action = np.zeros(4)
         self.xml_path = self.random_world(world_path)
 
@@ -57,7 +62,7 @@ class DoorEnv(mujoco_env.MujocoEnv):
                         self.nn = 8
 
         self.unity = unity
-        if self.visionnet_input:
+        if self.visionnet_input or self.vision_obs:
             if self.unity:
                 self.b = bytearray(3*self.imgsize_h*self.imgsize_w)
                 self.no_viewer = False
@@ -221,6 +226,10 @@ class DoorEnv(mujoco_env.MujocoEnv):
                 self.get_flatten_img(cam_num=1), 
                 self.get_flatten_img(cam_num=2) 
                 ])
+        elif self.vision_obs:
+            return np.concatenate([
+                self.get_img(cam_num=2),
+                ])
         else:
             # print("qpos", self.sim.data.qpos)
             return np.concatenate([
@@ -280,6 +289,32 @@ class DoorEnv(mujoco_env.MujocoEnv):
         img /= 255.0
         img -= mean
         img /= std
+        return img
+
+    def get_img(self, cam_num, device=1):
+        if self.unity:
+            if self.init_done:
+                self.remote.setcamera(1)
+                time.sleep(0.05)
+                self.remote.getimage(self.b)
+                img = np.reshape(self.b, (self.imgsize_h, self.imgsize_w, 3))
+            else:
+                img = np.reshape(self.b, (self.imgsize_h, self.imgsize_w, 3))
+        else:
+            img = self.sim.render(width=self.imgsize_h,
+                                  height=self.imgsize_w,
+                                  mode='offscreen',
+                                  camera_name="camera{}".format(cam_num))
+        img = img[::-1,:,:]
+
+        # print(img.shape)
+        # import matplotlib.pyplot as plt
+        # plt.imshow(img)
+        # plt.show()
+        # import sys
+        # sys.exit(1)
+        
+        img = np.transpose(img, (2,0,1))
         return img
 
     def get_flatten_img(self, cam_num, device=0):

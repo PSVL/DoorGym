@@ -164,18 +164,26 @@ class DoorEnvBlueV1(DoorEnv, utils.EzPickle):
 class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
     def __init__(self,
                 port=1050,
-                unity=False,visionnet_input=False,
+                unity=False,
+                visionnet_input=False,
+                vision_obs=False,
                 world_path='/home/demo/DoorGym/world_generator/world/pull_floatinghook',
                 pos_control=False,
-                ik_control=False
+                ik_control=False,
+                imgsize_h=640,
+                imgsize_w=640
         ):
+        print("1st passed", imgsize_h)
         super().__init__(
             port=port,
             unity=unity,
             visionnet_input=visionnet_input,
+            vision_obs = vision_obs,
             world_path=world_path,
             pos_control=pos_control,
             ik_control=ik_control,
+            imgsize_h=imgsize_h,
+            imgsize_w=imgsize_w
         )
         utils.EzPickle.__init__(self)
 
