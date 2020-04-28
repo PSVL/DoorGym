@@ -19,7 +19,7 @@ class DoorEnv(mujoco_env.MujocoEnv):
                 ik_control=False,
                 imgsize_h=640,
                 imgsize_w=640):
-        print("passed",imgsize_h)
+        # print("passed",imgsize_h)
         self.port = port
         self.hooked = True
         self.untucked = True
@@ -291,7 +291,7 @@ class DoorEnv(mujoco_env.MujocoEnv):
         img /= std
         return img
 
-    def get_img(self, cam_num, device=1):
+    def get_img(self, cam_num, device=0):
         if self.unity:
             if self.init_done:
                 self.remote.setcamera(1)

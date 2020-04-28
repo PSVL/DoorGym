@@ -1,13 +1,13 @@
 <mujoco model="blue_descriptions_right">
     <include file="../../robot/blue_right_v2.xml"/>
     <actuator>
-        <motor ctrlrange="-1.0 1.0" gear="20.0" joint="right_base_roll_joint" />
-        <motor ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_lift_joint" />
-        <motor ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_roll_joint" />
-        <motor ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_lift_joint" />
-        <motor ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_roll_joint" />
-        <motor ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_lift_joint" />
-        <motor ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_base_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_roll_joint" />
         <!-- <motor ctrlrange="-20.0 20.0" gear="1.0" joint="right_base_roll_joint" />
         <motor ctrlrange="-20.0 20.0" gear="1.0" joint="right_shoulder_lift_joint" />
         <motor ctrlrange="-20.0 20.0" gear="1.0" joint="right_shoulder_roll_joint" />

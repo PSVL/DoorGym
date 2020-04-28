@@ -57,6 +57,7 @@
 		<geom material="Floor" name="floor" pos="0 0 -0.05" size="15.0 15.0 0.05" type="plane"/>
 		<camera fovy="60" mode="fixed" name="camera1" pos="0.99 -0.5 1.0" euler="0.0 1.57 1.57"/>
 		<camera fovy="60" mode="fixed" name="camera2" pos="0.5 0.0 1.99" euler="0 0 0"/>
+		<camera fovy="60" mode="fixed" name="camera3" pos="0.5 0.0 1.99" euler="0 0 0"/>
 		<body childclass="wall" name="wall_link" pos="0.0 0.0 0.0">
 			<inertial mass="100" pos="0 0 0" diaginertia="0.0001 0.0001 0.0001"/>
 			<geom material="Wood" name="wall_0" pos="-0.15 -1.57 1.0645" size="0.15 1.0 1.0645" type="box" euler="0 0 0"/>
