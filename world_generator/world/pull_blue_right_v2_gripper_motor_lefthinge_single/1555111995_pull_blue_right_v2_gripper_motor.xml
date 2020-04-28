@@ -55,8 +55,9 @@
 		<light diffuse="0.9 0.9 0.9" dir="0.46 0.3 -0.35" directional="true" pos="2.61 2.63 5.0"/>
 		<light diffuse="0.9 0.9 1.0" dir="0.31 -0.01 -0.46" directional="true" pos="4.39 2.56 6.04"/>
 		<geom material="Floor" name="floor" pos="0 0 -0.05" size="15.0 15.0 0.05" type="plane"/>
-		<camera fovy="60" mode="fixed" name="camera1" pos="0.99 -0.5 1.0" euler="0.0 1.57 1.57"/>
+		<camera fovy="60" mode="fixed" name="camera1" pos="0.99 0.5 1.0" euler="0.0 1.57 1.57"/>
 		<camera fovy="60" mode="fixed" name="camera2" pos="0.5 0.0 1.99" euler="0 0 0"/>
+		<camera fovy="60" mode="fixed" name="camera3" pos="0.35 1.2 1.0" euler="-1.57 0 3.14"/>
 		<body childclass="wall" name="wall_link" pos="0.0 0.0 0.0">
 			<inertial mass="100" pos="0 0 0" diaginertia="0.0001 0.0001 0.0001"/>
 			<geom material="Wood" name="wall_0" pos="-0.15 -1.57 1.0645" size="0.15 1.0 1.0645" type="box" euler="0 0 0"/>
@@ -71,9 +72,9 @@
 				<geom material="Wood" name="door_frame_4" pos="-0.0465 0.91 0.0645" size="0.0135 0.05 1.0645" type="box" euler="0 0 0"/>
 				<geom material="Wood" name="door_frame_5" pos="-0.0465 0.35 1.079" size="0.0135 0.6 0.05" type="box" euler="0 0 0"/>
 				<body childclass="door" name="door_link" pos="0 0 0">
-					<joint armature="0.0001" axis="0 0 1" damping="1.8" frictionloss="0" limited="true" name="hinge0" pos="0 -0.15 0" range="-1.57 0.0" stiffness="0.16" type="hinge"/>
+					<joint armature="0.0001" axis="0 0 1" damping="5" frictionloss="1" limited="true" name="hinge0" pos="0 -0.15 0" range="-1.57 0.0" stiffness="10" type="hinge"/>
 					<geom material="Paint" name="door0" pos="0 0.35 0.014499999999999957" size="0.0135 0.5 1.0043549999999999" type="box" euler="0 0 0"/>
-					<inertial mass="16.4349" pos="0 0.35 0.014499999999999957" diaginertia="7.007897512575 5.63932093275 1.370573420175"/>
+					<inertial mass="50" pos="0 0.35 0.014499999999999957" diaginertia="7.007897512575 5.63932093275 1.370573420175"/>
 					<body childclass="door_knob" name="knob_link" pos="0 0.7 0">
 						<inertial mass="1" pos="0 0 0" diaginertia="0.001 0.001 0.001"/>
 						<joint armature="0" axis="0 1 0" damping="30000" frictionloss="0" limited="true" name="target0" range="-0.2 0.3" stiffness="0" type="slide"/>

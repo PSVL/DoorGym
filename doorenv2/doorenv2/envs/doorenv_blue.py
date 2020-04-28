@@ -173,7 +173,7 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
                 imgsize_h=640,
                 imgsize_w=640
         ):
-        print("1st passed", imgsize_h)
+        # print("1st passed", imgsize_h)
         super().__init__(
             port=port,
             unity=unity,
