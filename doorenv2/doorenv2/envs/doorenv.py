@@ -154,6 +154,10 @@ class DoorEnv(mujoco_env.MujocoEnv):
         if color_DR:
             self.color_randomization()
 
+        mesh_DR = False
+        if mesh_DR:
+            self.mesh_randomization()
+
         set_base_pos = True
         if set_base_pos:
             self.set_base_pos()
@@ -204,6 +208,37 @@ class DoorEnv(mujoco_env.MujocoEnv):
         for i in range(geom_n):
             geom_rgba.append([randrange(1,100)/100.0, randrange(1,100)/100.0, randrange(1,100)/100.0, 1.0])
         self.model.geom_rgba[:,:] = np.array(geom_rgba)
+
+    def mesh_randomization(self):
+        import pprint as pp
+        import sys
+        pp.pprint(dir(self.model), width=1)
+        pp.pprint(dir(self.data), width=1)
+        print(">>>>>before>>>>>>>")
+
+        print("mesh face: ",self.model.mesh_face.shape)
+        print("mesh faceadr: ",self.model.mesh_faceadr.shape)
+        print("mesh facenum: ",self.model.mesh_facenum.shape)
+        print("mesh graph: ",self.model.mesh_graph.shape)
+        print("mesh graphadr: ",self.model.mesh_graphadr.shape)
+        print("mesh names: ",len(self.model.mesh_names))
+        print("mesh normal: ",self.model.mesh_normal.shape)
+        print("mesh vert: ",self.model.mesh_vert.shape)
+
+        # geom_n = self.model.geom_rgba.shape[0]
+
+        # geom_rgba = []
+        # for i in range(geom_n):
+        #     geom_rgba.append([randrange(1,100)/100.0, randrange(1,100)/100.0, randrange(1,100)/100.0, 1.0])
+
+        # self.model.geom_rgba[:,:] = np.array(geom_rgba)
+        # self.model.cam_quat[:,:] = np.array(euler2quat(cam_ori))
+        # self.model.cam_fovy[:] = np.array(cam_fovy)
+        # print(">>>>>after>>>>>>>")
+        # pp.pprint(self.model.geom_rgba)
+        # pp.pprint(self.model.cam_quat)
+        # pp.pprint(self.model.cam_fovy)
+        sys.exit(1)
 
     def sample_gaussiannormal(self, property_array, sigma):
         shape = property_array.shape
