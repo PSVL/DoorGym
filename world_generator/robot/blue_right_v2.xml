@@ -58,6 +58,7 @@
                                     <body name="robotwrist_rolllink" pos="0 0.0701432 0" quat="0.707107 0.707107 0 0">
                                         <inertial pos="0.00526386 2.70692e-05 -0.0641638" quat="0.99991 0.000246685 0.0133803 0.00035395" mass="0.65711" diaginertia="0.00578835 0.00530224 0.0034223" />
                                         <joint name="right_wrist_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
+                                        <camera fovy="60" mode="fixed" name="hand_camera" pos="0.06 0 -0.02" euler="0 0 -1.57"/>
                                         <geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="hand_base_link" contype="16" conaffinity="7" />
                                         <body name="right_gripper_link" pos="0 0 -0.1" quat="0.535369 0.498747 0.498747 -0.464631">
                                             <inertial pos="-7.00549e-05 2.51272e-05 -0.0523671" quat="1 5.54202e-05 -0.000544908 -0.000762021" mass="0.00471098" diaginertia="0.000916889 0.000877269 0.000293332" />

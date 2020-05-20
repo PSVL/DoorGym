@@ -225,20 +225,20 @@ class DoorEnvBlueV2(DoorEnv, utils.EzPickle):
     def _reset_model(self, gg=2, hooked=False, untucked=False):
         def randomize():
             qpos = self.init_qpos
-            qpos[0] = uniform(-3.3999, 2.3412) # base_roll_joint
-            qpos[1] = uniform(-2.2944, 0) # shoulder_lift_joint
-            qpos[2] = uniform(-2.6761, 2.6761) # shoulder_roll_joint
-            qpos[3] = uniform(-2.2944, 0) # elbow_lift_joint
-            qpos[4] = uniform(-2.6761, 2.6761) # elbow_roll_joint
-            qpos[5] = uniform(-2.2944, 0) # wrist_lift_joint
-            qpos[6] = uniform(-2.6761, 2.676) # wrist_roll_joint
-            # qpos[0] =  0.0 + uniform(-0.1, 0.1)     # base_roll_joint
-            # qpos[1] = -2.310 + uniform(-0.0, 0.1)     # shoulder_lift_joint
-            # qpos[2] =  1.571 + uniform(-0.1, 0.1)     # shoulder_roll_joint
-            # qpos[3] = -0.750 + uniform(-0.1, 0.1)     # elbow_lift_joint
-            # qpos[4] = -1.571 + uniform(-0.1, 0.1)     # elbow_roll_joint
-            # qpos[5] =  0.0 + uniform(-0.1, 0.1)     # wrist_lift_joint
-            # qpos[6] =  0.0 + uniform(-0.1, 0.1)     # wrist_roll_joint
+            # qpos[0] = uniform(-3.3999, 2.3412) # base_roll_joint
+            # qpos[1] = uniform(-2.2944, 0) # shoulder_lift_joint
+            # qpos[2] = uniform(-2.6761, 2.6761) # shoulder_roll_joint
+            # qpos[3] = uniform(-2.2944, 0) # elbow_lift_joint
+            # qpos[4] = uniform(-2.6761, 2.6761) # elbow_roll_joint
+            # qpos[5] = uniform(-2.2944, 0) # wrist_lift_joint
+            # qpos[6] = uniform(-2.6761, 2.676) # wrist_roll_joint
+            qpos[0] =  0.0 + uniform(-0.1, 0.1)     # base_roll_joint
+            qpos[1] = -2.310 + uniform(-0.0, 0.1)     # shoulder_lift_joint
+            qpos[2] =  1.571 + uniform(-0.1, 0.1)     # shoulder_roll_joint
+            qpos[3] = -0.750 + uniform(-0.1, 0.1)     # elbow_lift_joint
+            qpos[4] = -1.571 + uniform(-0.1, 0.1)     # elbow_roll_joint
+            qpos[5] =  0.0 + uniform(-0.1, 0.1)     # wrist_lift_joint
+            qpos[6] =  0.0 + uniform(-0.1, 0.1)     # wrist_roll_joint
             if self.xml_path.find("pull")>-1:
                 self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)
                 if self.xml_path.find("lefthinge")>-1:

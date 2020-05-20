@@ -8,14 +8,14 @@
         <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_roll_joint" />
         <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_lift_joint" />
         <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_roll_joint" />
-        <!-- <motor ctrlrange="-20.0 20.0" gear="1.0" joint="right_base_roll_joint" />
-        <motor ctrlrange="-20.0 20.0" gear="1.0" joint="right_shoulder_lift_joint" />
-        <motor ctrlrange="-20.0 20.0" gear="1.0" joint="right_shoulder_roll_joint" />
-        <motor ctrlrange="-20.0 20.0" gear="1.0" joint="right_elbow_lift_joint" />
-        <motor ctrlrange="-20.0 20.0" gear="1.0" joint="right_elbow_roll_joint" />
-        <motor ctrlrange="-10.0 10.0" gear="1.0" joint="right_wrist_lift_joint" />
-        <motor ctrlrange="-10.0 10.0" gear="1.0" joint="right_wrist_roll_joint" /> -->
-        <position ctrllimited="true" ctrlrange="0 1.05" gear="1.0" joint="right_gripper_joint" />
+        <!-- <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_base_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_roll_joint" /> -->
+        <position ctrllimited="true" kp="1.0" ctrlrange="0 1.05" joint="right_gripper_joint" />
         <position ctrllimited="true" kp="1.0" ctrlrange="0 1.05" joint="right_r_finger_joint" />
         <position ctrllimited="true" kp="1.0" ctrlrange="-1.05 0" joint="right_r_finger_tip_joint" />
         <position ctrllimited="true" kp="1.0" ctrlrange="0 1.05" joint="right_l_finger_joint" />
