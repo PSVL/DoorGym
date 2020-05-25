@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mujoco model="blue_reacher">
+	<!-- <compiler angle="radian"/> -->
+	<compiler angle="radian" meshdir="../../robot/meshes_blue_v2/"/>
+	<option gravity="0 0 0" timestep="0.001"/>
+	<visual>
+		<map fogend="5" fogstart="3" force="0.1" zfar="10" znear="0.01"/>
+		<!-- <quality shadowsize="2048"/> -->
+		<global offheight="256" offwidth="256"/>
+	</visual>
+	<default>
+        <joint armature="0.04" damping="0.2" limited="true" />
+        <!-- <geom friction=".5 .1 .1" margin="0.002" condim="1" contype="1" conaffinity="0"/> -->
+        <geom friction=".5 .1 .1" margin="0.002" condim="3" />
+    </default>
+	<asset>
+		<mesh name="arm_base_link_v2" file="arm_base_link_v2.STL" />
+        <mesh name="roll_link_v2" file="roll_link_v2.STL" />
+        <mesh name="lift_link_v2" file="lift_link_v2.STL" />
+        <mesh name="hand_base_link" file="hand_base_link.STL" />
+        <mesh name="finger_limb_link" file="finger_limb_link.STL" />
+        <mesh name="finger_tip_link" file="finger_tip_link.STL" />
+		<texture builtin="gradient" height="128" rgb1="0.4 0.6 0.8" rgb2="0 0 0" type="skybox" width="128"/>
+		<texture builtin="gradient" height="512" name="texplane" rgb1="0.32 0.37 0.16" rgb2="0.3 0.48 0.44" type="2d" width="512"/>
+		<material name="bench_mat" rgba="0.1 0.1 0.1 1.0" shininess="0.1" specular="0.5" reflectance="0.2"/>
+		<material name="Floor" texture="texplane"/>
+		<!-- <material name="target" rgba=".8 .2 .2 1"/> -->
+	</asset>
+
+	<worldbody>
+		<light diffuse="1.0 1.0 1.0" dir="0.25 0.31 -0.90" directional="true" pos="3.82 2.13 4.77"/>
+		<light diffuse="1.0 1.0 1.0" dir="0.26 0.25 -0.90" directional="true" pos="4.98 1.64 4.84"/>
+		<!-- <light diffuse="0.9 0.9 0.9" dir="0.46 0.3 -0.35" directional="true" pos="2.61 2.63 5.0"/>
+		<light diffuse="0.9 0.9 1.0" dir="0.31 -0.01 -0.46" directional="true" pos="4.39 2.56 6.04"/> -->
+		<geom name="floor" pos="0 0 -0.0" size="15.0 15.0 0.05" type="plane" rgba="0.7 0.7 0.7 1.0"/>
+		<body>
+			<!-- <geom size=".3 .2 .435" type="box" material="bench_mat"/> -->
+			<body name="table" pos="-0.70 0.25 0">
+				<!-- <geom size=".29 .19 .03" pos ="0 0 0.4" type="box" material="bench_mat"/>
+				<geom size=".04 .04 .435" pos =".26 .16 0" type="box" material="bench_mat"/>
+				<geom size=".04 .04 .435" pos ="-.26 .16 0" type="box" material="bench_mat"/>
+				<geom size=".04 .04 .435" pos =".26 -.16 0" type="box" material="bench_mat"/>
+				<geom size=".04 .04 .435" pos ="-.26 -.16 0" type="box" material="bench_mat"/> -->
+
+				<geom size=".75 .40 .03" pos ="0 0 0.4" type="box" material="bench_mat"/>
+				<geom size=".04 .04 .435" pos =".72 .37 0" type="box" material="bench_mat"/>
+				<geom size=".04 .04 .435" pos ="-.72 .37 0" type="box" material="bench_mat"/>
+				<geom size=".04 .04 .435" pos =".72 -.37 0" type="box" material="bench_mat"/>
+				<geom size=".04 .04 .435" pos ="-.72 -.37 0" type="box" material="bench_mat"/>
+			</body>
+			<!-- <include file="../../robot/blue_right_v2_gripper_position.xml"/> -->
+			<!-- <include file="../../robot/blue_right_v2_gripper_motor.xml"/> -->
+
+			<camera fovy="50" mode="fixed" name="camera1" pos="0.0 -1.2 0.61" euler="0.9 0 0"/>
+
+			<!-- target -->
+			<body name="target" pos=".0 -0.5 .01" euler="0 0 1.0">
+				<geom name="target" size=".03 .07 .01" type="box" rgba=".8 .2 .2 1"/>
+			</body>
+
+			<!-- robot -->
+			<body name="robotbase_link" pos="0 -0.1 0.415" euler="0 0 1.57">
+				<inertial pos="0.107964 -0.000118075 0.0740607" quat="-0.00144458 0.606987 0.000927747 0.79471" mass="3.45161" diaginertia="0.0175534 0.0157386 0.00730286" />
+				<geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="arm_base_link_v2" contype="1" conaffinity="28" />
+				<body name="robotshoulder_link" pos="0 0 0.083499" quat="0 1 0 0">
+					<inertial pos="0.00796478 6.88165e-07 -0.101495" quat="0.712797 -0.021542 -0.0203263 0.700745" mass="2.21396" diaginertia="0.00680774 0.00679994 0.00633497" />
+					<joint name="right_base_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-3.3999 2.3412" />
+					<geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="roll_link_v2" contype="2" conaffinity="24" />
+					<body name="robotshoulder_liftlink" pos="-0.012 0 -0.232779" quat="0.707107 -0.707107 0 0">
+						<inertial pos="-1.3238e-05 0.00162984 3.71222e-05" quat="0.714714 -0.00266942 -0.00304239 0.699405" mass="0.415577" diaginertia="0.000846898 0.000835923 0.000571351" />
+						<joint name="right_shoulder_lift_joint" pos="0 0 0" axis="0 0 -1" limited="true" range="-2.2944 0" />
+						<geom type="mesh" rgba="0.116747 0.862745 1 1" mesh="lift_link_v2" contype="0" />
+						<body name="robotupperarm_link" pos="0 0.0359532 0" quat="0.500704 0.500704 0.499295 -0.499295">
+							<inertial pos="0.00796478 6.88165e-07 -0.101495" quat="0.712797 -0.021542 -0.0203263 0.700745" mass="2.21396" diaginertia="0.00680774 0.00679994 0.00633497" />
+							<joint name="right_shoulder_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
+							<geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="roll_link_v2" contype="4" conaffinity="17" />
+							<body name="robotupperarm_liftlink" pos="-0.012 0 -0.232779" quat="0.707107 -0.707107 0 0">
+								<inertial pos="-1.3238e-05 0.00162984 3.71222e-05" quat="0.714714 -0.00266942 -0.00304239 0.699405" mass="0.415577" diaginertia="0.000846898 0.000835923 0.000571351" />
+								<joint name="right_elbow_lift_joint" pos="0 0 0" axis="0 0 -1" limited="true" range="-2.2944 0" />
+								<geom type="mesh" rgba="0.116747 0.862745 1 1" mesh="lift_link_v2" contype="0" />
+								<body name="robotforearm_link" pos="0 0.0359532 0" quat="0.500704 0.500704 -0.499295 0.499295">
+									<inertial pos="0.00796478 6.88165e-07 -0.101495" quat="0.712797 -0.021542 -0.0203263 0.700745" mass="1.71368" diaginertia="0.00680774 0.00679994 0.00633497" />
+									<joint name="right_elbow_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
+									<geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="roll_link_v2" contype="8" conaffinity="3" />
+									<body name="robotwrist_liftlink" pos="-0.012 0 -0.232779" quat="0.707107 -0.707107 0 0">
+										<inertial pos="-1.3238e-05 0.00162984 3.71222e-05" quat="0.714714 -0.00266942 -0.00304239 0.699405" mass="0.415577" diaginertia="0.000846898 0.000835923 0.000571351" />
+										<joint name="right_wrist_lift_joint" pos="0 0 0" axis="0 0 -1" limited="true" range="-2.2944 0" />
+										<geom type="mesh" rgba="0.116747 0.862745 1 1" mesh="lift_link_v2" contype="0" />
+										<body name="robotwrist_rolllink" pos="0 0.0701432 0" quat="0.707107 0.707107 0 0">
+											<inertial pos="0.00526386 2.70692e-05 -0.0641638" quat="0.99991 0.000246685 0.0133803 0.00035395" mass="0.65711" diaginertia="0.00578835 0.00530224 0.0034223" />
+											<joint name="right_wrist_roll_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-2.6761 2.6761" />
+											<camera fovy="60" mode="fixed" name="hand_camera" pos="0.06 0 -0.02" euler="0 0 -1.57"/>
+											<geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="hand_base_link" contype="16" conaffinity="7" />
+											<body name="right_gripper_link" pos="0 0 -0.1" quat="0.535369 0.498747 0.498747 -0.464631">
+												<inertial pos="-7.00549e-05 2.51272e-05 -0.0523671" quat="1 5.54202e-05 -0.000544908 -0.000762021" mass="0.00471098" diaginertia="0.000916889 0.000877269 0.000293332" />
+												<joint name="right_gripper_joint" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.05" />
+											</body>
+											<body name="robotfingerlimb_rightlink" pos="0 0.030703 -0.071979" quat="0.631851 -0.317432 -0.631853 0.317432">
+												<inertial pos="0.000467332 0.0122666 1.16453e-07" quat="0.705809 0.705807 -0.042877 -0.0427953" mass="0.0384621" diaginertia="1.95846e-05 1.92561e-05 5.02091e-06" />
+												<joint name="right_r_finger_joint" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.1" />
+												<geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="finger_limb_link" contype="16" conaffinity="7" />
+												<body name="robotfingertip_rightlink" pos="0 0.06 0" quat="0.222329 0.222329 -0.671246 -0.671244">
+													<inertial pos="0.000428096 -6.39629e-08 0.016281" quat="0.982245 -0.000139751 0.187603 -0.000716219" mass="0.00964245" diaginertia="1.96342e-06 1.95368e-06 4.76554e-07" />
+													<joint name="right_r_finger_tip_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-1.1 0" />
+													<geom name="fingerright2" type="mesh" rgba="0.116747 0.862745 1 1" mesh="finger_tip_link" contype="1" conaffinity="1" />
+												</body>
+											</body>
+											<body name="robotfingerlimb_leftlink" pos="0 -0.030703 -0.071979" quat="0.31743 -0.631852 0.317435 -0.631852">
+												<inertial pos="0.000467332 0.0122666 1.16453e-07" quat="0.705809 0.705807 -0.042877 -0.0427953" mass="0.0384621" diaginertia="1.95846e-05 1.92561e-05 5.02091e-06" />
+												<joint name="right_l_finger_joint" pos="0 0 0" axis="0 0 1" limited="true" range="0 1.1"/>
+												<geom type="mesh" rgba="0.2784 0.2784 0.2784 1" mesh="finger_limb_link" contype="16" conaffinity="7" />
+												<body name="robotfingertip_leftlink" pos="0 0.06 0" quat="0.222329 0.222329 -0.671246 -0.671244">
+													<inertial pos="0.000428096 -6.39629e-08 0.016281" quat="0.982245 -0.000139751 0.187603 -0.000716219" mass="0.00964245" diaginertia="1.96342e-06 1.95368e-06 4.76554e-07" />
+													<joint name="right_l_finger_tip_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-1.1 0" />
+													<geom name="fingerleft2" type="mesh" rgba="0.116747 0.862745 1 1" mesh="finger_tip_link" contype="1" conaffinity="1" />
+												</body>
+											</body>
+											<body name="right_gripper_finger_link" pos="0 0 -0.18" quat="0.707107 -1.29867e-06 0.707107 -1.29867e-06">
+												<inertial pos="0 0 -0.18" quat="0.707107 -1.29867e-06 0.707107 -1.29867e-06" mass="0" diaginertia="0 0 0" />
+											</body>
+										</body>
+									</body>
+									<body name="right_wrist_accel_link" pos="-0.0200083 -0.00051 -0.111067" quat="0.69759 0.69759 0.115618 -0.115618">
+										<inertial pos="-0.0200083 -0.00051 -0.111067" quat="0.69759 0.69759 0.115618 -0.115618" mass="0" diaginertia="0 0 0" />
+									</body>
+								</body>
+							</body>
+							<body name="right_elbow_accel_link" pos="-0.0200083 -0.00051 -0.111067" quat="0.69759 0.69759 0.115618 -0.115618">
+								<inertial pos="-0.0200083 -0.00051 -0.111067" quat="0.69759 0.69759 0.115618 -0.115618" mass="0" diaginertia="0 0 0" />
+							</body>
+						</body>
+					</body>
+					<body name="right_shoulder_accel_link" pos="-0.0200083 -0.00051 -0.111067" quat="0.69759 0.69759 0.115618 -0.115618">
+						<inertial pos="-0.0200083 -0.00051 -0.111067" quat="0.69759 0.69759 0.115618 -0.115618" mass="0" diaginertia="0 0 0" />
+					</body>
+				</body>
+			</body>
+		</body>
+	</worldbody>
+
+    <actuator>
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_base_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_roll_joint" />
+        <!-- <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_base_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_shoulder_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="20.0" joint="right_elbow_roll_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_lift_joint" />
+        <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="10.0" joint="right_wrist_roll_joint" /> -->
+        <position ctrllimited="true" kp="1.0" ctrlrange="0 1.05" joint="right_gripper_joint" />
+        <position ctrllimited="true" kp="1.0" ctrlrange="0 1.05" joint="right_r_finger_joint" />
+        <position ctrllimited="true" kp="1.0" ctrlrange="-1.05 0" joint="right_r_finger_tip_joint" />
+        <position ctrllimited="true" kp="1.0" ctrlrange="0 1.05" joint="right_l_finger_joint" />
+        <position ctrllimited="true" kp="1.0" ctrlrange="-1.05 0" joint="right_l_finger_tip_joint" />
+    </actuator>
+
+</mujoco>
