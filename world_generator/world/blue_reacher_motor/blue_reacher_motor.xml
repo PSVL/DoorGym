@@ -28,8 +28,10 @@
 	</asset>
 
 	<worldbody>
-		<light diffuse="1.0 1.0 1.0" dir="0.25 0.31 -0.90" directional="true" pos="3.82 2.13 4.77"/>
-		<light diffuse="1.0 1.0 1.0" dir="0.26 0.25 -0.90" directional="true" pos="4.98 1.64 4.84"/>
+		<light diffuse="0.3 0.3 0.3" dir=" 0.7 -0.7 -1.57" directional="true" pos="-2  2 5.00"/>
+		<light diffuse="0.3 0.3 0.3" dir=" 0.7 -0.7 -1.57" directional="true" pos=" 2 -2 5.00"/>
+		<light diffuse="0.3 0.3 0.3" dir=" 0.7 -0.7 -1.57" directional="true" pos=" 2  2 5.00"/>
+		<light diffuse="0.3 0.3 0.3" dir=" 0.7 -0.7 -1.57" directional="true" pos="-2 -2 5.00"/>
 		<!-- <light diffuse="0.9 0.9 0.9" dir="0.46 0.3 -0.35" directional="true" pos="2.61 2.63 5.0"/>
 		<light diffuse="0.9 0.9 1.0" dir="0.31 -0.01 -0.46" directional="true" pos="4.39 2.56 6.04"/> -->
 		<geom name="floor" pos="0 0 -0.0" size="15.0 15.0 0.05" type="plane" rgba="0.7 0.7 0.7 1.0"/>
