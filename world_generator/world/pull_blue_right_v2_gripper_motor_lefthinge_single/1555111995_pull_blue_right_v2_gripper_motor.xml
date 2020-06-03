@@ -72,12 +72,12 @@
 				<geom material="Wood" name="door_frame_4" pos="-0.0465 0.91 0.0645" size="0.0135 0.05 1.0645" type="box" euler="0 0 0"/>
 				<geom material="Wood" name="door_frame_5" pos="-0.0465 0.35 1.079" size="0.0135 0.6 0.05" type="box" euler="0 0 0"/>
 				<body childclass="door" name="door_link" pos="0 0 0">
-					<joint armature="0.0001" axis="0 0 1" damping="1.8" frictionloss="0" limited="true" name="hinge0" pos="0 -0.15 0" range="-1.57 0.0" stiffness="0.16" type="hinge"/>
+					<!-- <joint armature="0.0001" axis="0 0 1" damping="1.8" frictionloss="0" limited="true" name="hinge0" pos="0 -0.15 0" range="-1.57 0.0" stiffness="0.16" type="hinge"/>
 					<geom material="Paint" name="door0" pos="0 0.35 0.014499999999999957" size="0.0135 0.5 1.0043549999999999" type="box" euler="0 0 0"/>
-					<inertial mass="16.4349" pos="0 0.35 0.014499999999999957" diaginertia="7.007897512575 5.63932093275 1.370573420175"/>
-					<!-- <joint armature="0.0001" axis="0 0 1" damping="5" frictionloss="1" limited="true" name="hinge0" pos="0 -0.15 0" range="-1.57 0.0" stiffness="10" type="hinge"/>
+					<inertial mass="16.4349" pos="0 0.35 0.014499999999999957" diaginertia="7.007897512575 5.63932093275 1.370573420175"/> -->
+					<joint armature="0.0001" axis="0 0 1" damping="5" frictionloss="1" limited="true" name="hinge0" pos="0 -0.15 0" range="-1.57 0.0" stiffness="10" type="hinge"/>
 					<geom material="Paint" name="door0" pos="0 0.35 0.014499999999999957" size="0.0135 0.5 1.0043549999999999" type="box" euler="0 0 0"/>
-					<inertial mass="50" pos="0 0.35 0.014499999999999957" diaginertia="7.007897512575 5.63932093275 1.370573420175"/> -->
+					<inertial mass="50" pos="0 0.35 0.014499999999999957" diaginertia="7.007897512575 5.63932093275 1.370573420175"/>
 					<body childclass="door_knob" name="knob_link" pos="0 0.7 0">
 						<inertial mass="1" pos="0 0 0" diaginertia="0.001 0.001 0.001"/>
 						<joint armature="0" axis="0 1 0" damping="30000" frictionloss="0" limited="true" name="target0" range="-0.2 0.3" stiffness="0" type="slide"/>
