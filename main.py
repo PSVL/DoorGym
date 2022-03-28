@@ -433,7 +433,7 @@ if __name__ == "__main__":
         variant = dict(
             algorithm=args.algo,
             algorithm_kwargs=dict(
-                num_epochs=3000,
+                num_epochs=1500,
                 num_eval_steps_per_epoch=512,
                 num_trains_per_train_loop=1000,
                 num_expl_steps_per_train_loop=512,

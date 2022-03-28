@@ -45,6 +45,8 @@ def main(dataset_file):
         robot_type = "blue_right_v2_gripper_position"
     elif args.robot_type == "b2-motor":
         robot_type = "blue_right_v2_gripper_motor"
+    elif args.robot_type == "husky-ur5":
+        robot_type = "husky_ur5"
     else:
         raise Exception("robot type not recognized")
     
@@ -201,7 +203,7 @@ def main(dataset_file):
 
     ###################### Constant Parameters ######################
     # gravity
-    if args.robot_type.find("floating")>-1 or args.robot_type.find("baxter")>-1 or args.robot_type.find("b2")>-1:
+    if args.robot_type.find("floating")>-1 or args.robot_type.find("baxter")>-1 or args.robot_type.find("b2")>-1 or args.robot_type.find("husky")>-1:
         gravity_vector = [0,0,0]
     else:
         gravity_vector = [0,0,-9.81]

@@ -14,7 +14,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     def __init__(self,
                 port=1050,
                 unity=False,visionnet_input=False,
-                world_path='/home/demo/DoorGym/world_generator/world/pull_floatinghook',
+                world_path='/home/kuolun/DoorGym/world_generator/no_gravity_push/pull_husky_ur5',
                 pos_control=False):
         self.tt = 0
         self.port = port
@@ -26,12 +26,13 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.hook_ratio = -1 #-1:all non_hooked, 100:all hooked
         self.untucked_ratio = -1 #-1:all non-untucked, 100:all untucked
         self.switch_avg = 0.0
-        # self.imgsize = 256
+        self.imgsize = 256
         self.imgsize_h = 640
         self.imgsize_w = 640
         self.visionnet_input = visionnet_input
         self.gripper_action = np.zeros(4)
-        self.xml_path = self.random_world(world_path)
+        self.path = world_path
+        self.xml_path = self.random_world(self.path)
 
         if self.xml_path.find("baxter")>-1:
             if self.xml_path.find("botharm")>-1:
@@ -59,6 +60,9 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     if self.xml_path.find("gripper")>-1:
                         self.nn = 8
 
+        if self.xml_path.find("husky")>-1:
+            self.nn = 10
+
         self.unity = unity
         if self.visionnet_input:
             if self.unity:
@@ -73,14 +77,16 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         mujoco_env.MujocoEnv.__init__(self, self.xml_path, frame_skip)
         gripper_space = self.gripper_action.shape[0]
         # print("gripper space", gripper_space)
-        if self.xml_path.find("gripper")>-1 or self.xml_path.find('baxter')>-1:
+        if self.xml_path.find("gripper")>-1 or self.xml_path.find('baxter')>-1 or self.xml_path.find("husky")>-1:
             bounds = self.model.actuator_ctrlrange.copy()
             low, high = bounds.T
             low, high = low[:-gripper_space], high[:-gripper_space] # four joints for finger is a dependant of finger inertial joint
             self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
             self.gripper_action = self.sim.data.qpos[-gripper_space:]
+        # print(self.gripper_action)
         self.init_done = True
         self.model_origin = self.model
+        # self.count = 1
 
     def __delete__(self):
         self.disconnet_to_unity()
@@ -94,6 +100,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     def step(self, a):
         # print("step")
+
         if not self.unity and self.no_viewer:
             print("made mujoco viewer")
             self.viewer = self._get_viewer('human')
@@ -131,6 +138,9 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 else:
                     self.gripper_action = np.array([-a[-1],a[-1]])
                 a = np.concatenate((a,self.gripper_action))
+            elif self.xml_path.find("husky")>-1:
+                self.gripper_action = np.array([a[-1],-a[-1],a[-1],-a[-1]])
+                a = np.concatenate((a,self.gripper_action))
             else:
                 pass
 
@@ -145,6 +155,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return ob, reward, done, dict(reward_dist=reward_dist, reward_ctrl=reward_ctrl)
 
     def reset_model(self, gg=2):
+        
         property_DR = False
         if property_DR:
             if self.init_done:
@@ -158,6 +169,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             self.hooked = False
         if untucked_chance>=self.untucked_ratio:
             self.untucked = False
+    
         return self._reset_model(gg=gg, hooked=self.hooked, untucked=self.untucked)
 
     def randomized_property(self):
@@ -271,7 +283,18 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 # qpos[3] = 1.0 + random.uniform(-0.6, 0)             # elbow_lift_joint
                 # qpos[4] = 0.0 + random.uniform(-2.6761, 2.6761)     # elbow_roll_joint
                 # qpos[5] = 1.0 + random.uniform(-0.6, 0)             # wrist_lift_joint
-                # qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # wrist_roll_joint
+                # qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # 
+        elif self.xml_path.find("husky")>-1:
+            qpos[0] = 0.0
+            qpos[1] = 0.0
+            qpos[2] = 0.0
+            qpos[3] = -2.15
+            qpos[4] = 2.30
+            qpos[5] = -3.30
+            qpos[6] = -1.57
+            qpos[7] = -1.57
+            qpos[8] = 0
+            qpos[9] = 0
 
         if self.xml_path.find("pull")>-1:
             self.goal = self.np_random.uniform(low=-.15, high=.15, size=gg)
@@ -358,8 +381,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return self._get_obs()
 
     def _get_obs(self):
-        # print("finger",self.get_finger_target())
-        # print("door",self.get_knob_target())
+        # print("robot_joint", self.get_robot_joints())
         if self.visionnet_input:
             return np.concatenate([
                 self.get_robot_joints(),
@@ -398,7 +420,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
       
     def change_model(self, full_path):
         print('Setting world in unity')
-        # print("full path", full_path)
+        print("full path", full_path)
         self.remote.changeworld(full_path)
         while True:
             try:
@@ -437,10 +459,12 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             else:
                 img = np.reshape(self.b, (self.imgsize_h, self.imgsize_w, 3))
         else:
-            img = self.sim.render(width=self.imgsize,
-                                  height=self.imgsize,
+            img = self.sim.render(width=self.imgsize_h,
+                                  height=self.imgsize_w,
+                                  depth=True,
                                   mode='offscreen',
                                   camera_name="camera{}".format(cam_num))
+        # print(img)
         img = img[::-1,:,:]
 
         img = self.normalizer(img)
@@ -487,8 +511,14 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             else:
                 return (self.sim.data.get_body_xpos("r_gripper_l_finger_tip") \
                     + self.sim.data.get_body_xpos("r_gripper_r_finger_tip"))/2.0
+        elif self.xml_path.find("husky")>-1:
+            return (self.sim.data.get_body_xpos("right_driver") \
+                    + self.sim.data.get_body_xpos("left_driver"))/2.0
         else:
             assert "not sure about the end-effector type"
+    
+    def get_doorangle(self):
+        return self.sim.data.get_joint_qpos("hinge0")
 
     def get_dist_vec(self):
         # print("finger pos", self.get_finger_target(), "knob pos", self.get_knob_target())
@@ -505,6 +535,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 return quat2euler(self.sim.data.get_body_xquat("left_wrist"))
             else:
                 return quat2euler(self.sim.data.get_body_xquat("right_wrist"))
+        elif self.xml_path.find("husky")>-1:
+            return quat2euler(self.sim.data.get_body_xquat("ee_link"))
         else:
             assert "not sure about the end-effector type"
     
@@ -519,6 +551,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 return self.sim.data.get_body_xquat("left_wrist")
             else:
                 return self.sim.data.get_body_xquat("right_wrist")
+        elif self.xml_path.find("husky")>-1:
+            return self.sim.data.get_body_xquat("ee_link")
         else:
             assert "not sure about the end-effector type"
 
