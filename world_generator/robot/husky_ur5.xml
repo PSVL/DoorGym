@@ -1,0 +1,217 @@
+<mujoco model="husky">
+    <compiler angle="radian" meshdir="../../robot/mesh_mujoco/" />
+
+    <!-- <option gravity="0 0 -9.8" cone="elliptic" timestep="0.02" /> -->
+    <!-- <option timestep="2e-3"
+			iterations="10"
+			tolerance="1e-10"
+			impratio="10"
+			gravity="0 0 -9.81"
+			solver="PGS"
+			cone="elliptic" /> -->
+
+    <size njmax="500" nconmax="100" />
+
+    <visual>
+        <map znear="0.001" />
+    </visual>
+
+    <default>
+        <light castshadow="false" diffuse="1 1 1" />
+        <!-- <joint armature="1" damping="1" limited="true"/> -->
+        <joint frictionloss="1" damping="1" />
+        <camera fovy="60" />
+        <motor gear="0.8"/>
+        <velocity kv="10"/>
+        <position kp="5"/>
+    </default>
+    <!-- <default>
+        <joint armature="1" damping="1" limited="true"/>
+        <geom conaffinity="0" condim="3" density="5.0" friction="1 0.5 0.5" margin="0.01" rgba="0.8 0.6 0.4 1"/>
+    </default> -->
+    <asset>
+        <mesh name="base_link" file="base_link.stl" />
+        <mesh name="wheel" file="wheel.stl" />
+        <mesh name="top_chassis" file="top_chassis.stl" />
+        <mesh name="user_rail" file="user_rail.stl" />
+        <mesh name="bumper" file="bumper.stl" />
+        <mesh name="top_plate" file="top_plate.stl" />
+        <mesh name="base" file="base.stl" />
+        <mesh name="shoulder" file="shoulder.stl" />
+        <mesh name="upperarm" file="upperarm.stl" />
+        <mesh name="forearm" file="forearm.stl" />
+        <mesh name="wrist1" file="wrist1.stl" />
+        <mesh name="wrist2" file="wrist2.stl" />
+        <mesh name="wrist3" file="wrist3.stl" />
+        <mesh file="kinova_robotiq_coupler.stl" />
+        <mesh name="robotiq_ft300" file="robotiq_ft300.STL" />
+        <mesh name="robotiq_ft300-G-062-COUPLING_G-50-4M6-1D6_20181119" file="robotiq_ft300-G-062-COUPLING_G-50-4M6-1D6_20181119.STL" />
+        <mesh name="robotiq_85_base_link" file="robotiq_85_base_link.stl" />
+        <mesh name="robotiq_85_knuckle_link" file="robotiq_85_knuckle_link.stl" />
+        <mesh name="robotiq_85_finger_link" file="robotiq_85_finger_link.stl" />
+        <mesh name="robotiq_85_inner_knuckle_link" file="robotiq_85_inner_knuckle_link.stl" />
+        <mesh name="robotiq_85_finger_tip_link" file="robotiq_85_finger_tip_link.stl" />
+        <material name="GriMat" specular="0.9" shininess="0.5" reflectance="0" rgba="0.1 0.1 0.1 1" emission="0.1" />
+        <material name="Light" specular="0" shininess="0.6" reflectance="0.9" rgba="0.5 0.5 1 1" emission="0.7" />
+    </asset>
+    <worldbody>
+        <!-- <geom name="floor" pos="0 0 -0.15" size="1 1 1" type="plane" rgba="1 0.83 0.61 0.5"/> -->
+        <body name="robot0:base_link" pos="1.2 0 0.062" quat="0 0 0 1">
+        <!-- <light directional="true" pos="-0.5 0.5 3" dir="0 0 -1" /> -->
+        
+        <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="base_link" />
+        <geom size="0.4937 0.28545 0.061875" pos="0 0 0.061875" type="box" />
+            <!-- <joint armature="0.0001" axis="1 0 0" damping="1e+11" name="robot0:slide0" pos="0 0 0" type="slide"></joint>
+            <joint armature="0.0001" axis="0 1 0" damping="1e+11" name="robot0:slide1" pos="0 0 0" type="slide"></joint>
+            <joint armature="0.0001" axis="0 0 1" damping="1e+0" name="robot0:slide2" pos="0 0 0" type="slide"></joint> -->
+            <inertial diaginertia="1.2869 1.2236 0.9868" mass="70.1294" pos="-0.0036 0 0.0014" quat="0.7605 -0.0133 -0.0061 0.6491"></inertial>
+
+            <!-- control the husky base -->
+            <joint name="base_x_slide_joint" type="slide" pos="0 0 0" axis="1 0 0" limited="false" range="-1 0.5" damping="15000"/>
+        <joint name="base_z_hinge_joint" type="hinge" pos="0 0 0" axis="0 0 1" limited="true" range="-0.57 0.57" damping="10000"/>
+        <geom size="0.39496 0.28545 0.051875" pos="0 0 0.175625" type="box" />
+        <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="top_chassis" />
+        <geom pos="0.272 0 0.245" type="mesh" contype="0" conaffinity="0" group="1" mesh="user_rail" />
+        <geom pos="0.48 0 0.091" type="mesh" contype="0" conaffinity="0" group="1" mesh="bumper" />
+        <geom pos="-0.48 0 0.091" quat="1.32679e-06 0 0 1" type="mesh" contype="0" conaffinity="0" group="1" mesh="bumper" />
+        <geom pos="0.0812 0 0.245" type="mesh" contype="0" conaffinity="0" group="1" mesh="top_plate" />
+        <geom pos="0.0812 0 0.245" type="mesh" mesh="top_plate" />
+        <geom pos="0.0812 0 0.245" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="base" />
+        <geom pos="0.0812 0 0.245" type="mesh" rgba="0.7 0.7 0.7 1" mesh="base" />
+        <body name="front_left_wheel_link" pos="0.256 0.2854 0.03282">
+            <inertial pos="0 0 0" quat="0.707107 0 0 0.707107" mass="2.637" diaginertia="0.04411 0.02467 0.02467" />
+            <!-- <joint name="front_left_wheel" pos="0 0 0" axis="0 1 0" limited="true" range="-6.28319 6.28319" /> -->
+            <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="wheel" />
+            <geom size="0.1651 0.05715" quat="0.707107 0.707106 0 0" type="cylinder" />
+        </body>
+        <body name="front_right_wheel_link" pos="0.256 -0.2854 0.03282">
+            <inertial pos="0 0 0" quat="0.707107 0 0 0.707107" mass="2.637" diaginertia="0.04411 0.02467 0.02467" />
+            <!-- <joint name="front_right_wheel" pos="0 0 0" axis="0 1 0" limited="true" range="-6.28319 6.28319" /> -->
+            <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="wheel" />
+            <geom size="0.1651 0.05715" quat="0.707107 0.707106 0 0" type="cylinder" />
+        </body>
+        <body name="rear_left_wheel_link" pos="-0.256 0.2854 0.03282">
+            <inertial pos="0 0 0" quat="0.707107 0 0 0.707107" mass="2.637" diaginertia="0.04411 0.02467 0.02467" />
+            <!-- <joint name="rear_left_wheel" pos="0 0 0" axis="0 1 0" limited="true" range="-6.28319 6.28319" /> -->
+            <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="wheel" />
+            <geom size="0.1651 0.05715" quat="0.707107 0.707106 0 0" type="cylinder" />
+        </body>
+        <body name="rear_right_wheel_link" pos="-0.256 -0.2854 0.03282">
+            <inertial pos="0 0 0" quat="0.707107 0 0 0.707107" mass="2.637" diaginertia="0.04411 0.02467 0.02467" />
+            <!-- <joint name="rear_right_wheel" pos="0 0 0" axis="0 1 0" limited="true" range="-6.28319 6.28319" /> -->
+            <geom type="mesh" contype="0" conaffinity="0" group="1" mesh="wheel" />
+            <geom size="0.1651 0.05715" quat="0.707107 0.707106 0 0" type="cylinder" />
+        </body>
+        <body name="ur5/shoulder_link" pos="0.0812 0 0.334159">
+            <inertial pos="0 0 0" mass="3.7" diaginertia="0.0102675 0.0102675 0.00666" />
+            <joint name="ur5/shoulder_pan_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-6.28319 6.28319" />
+            <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="shoulder" />
+            <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="shoulder" />
+            <body name="ur5/upper_arm_link" pos="0 0.13585 0" quat="0.707107 0 0.707107 0">
+                <inertial pos="0 0 0.28" mass="8.393" diaginertia="0.226891 0.226891 0.0151074" />
+                <joint name="ur5/shoulder_lift_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-6.28319 6.28319" />
+                <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="upperarm" />
+                <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="upperarm" />
+                <body name="ur5/forearm_link" pos="0 -0.1197 0.425">
+                    <inertial pos="0 0 0.196125" mass="2.275" diaginertia="0.0312168 0.0312168 0.004095" />
+                    <joint name="ur5/elbow_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-6.28319 6.28319" />
+                    <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="forearm" />
+                    <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="forearm" />
+                    <body name="ur5/wrist_1_link" pos="0 0 0.39225" quat="0.707107 0 0.707107 0">
+                        <inertial pos="0 0.093 0" mass="1.219" diaginertia="0.0025599 0.0025599 0.0021942" />
+                        <joint name="ur5/wrist_1_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-6.28319 6.28319" />
+                        <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="wrist1" />
+                        <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="wrist1" />
+                        <body name="ur5/wrist_2_link" pos="0 0.093 0">
+                            <inertial pos="0 0 0.09465" mass="1.219" diaginertia="0.0025599 0.0025599 0.0021942" />
+                            <joint name="ur5/wrist_2_joint" pos="0 0 0" axis="0 0 1" limited="false" range="-6.28319 6.28319" />
+                            <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="wrist2" />
+                            <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="wrist2" />
+                            <body name="ur5/wrist_3_link" pos="0 0 0.09465">
+                                <inertial pos="2.00096e-05 0.117773 9.62321e-06" quat="0.707428 0.706785 -7.0013e-05 -0.000114123" mass="1.15384" diaginertia="0.00225767 0.0021929 0.000745625" />
+                                <joint name="ur5/wrist_3_joint" pos="0 0 0" axis="0 1 0" limited="false" range="-6.28319 6.28319" />
+                                <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="wrist3" />
+                                <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="wrist3" />
+                                <!-- <geom size="0.005 0.005 0.005" pos="0 0.0723 0" quat="0.707107 0 0 0.707107" type="box" />
+                                <geom pos="0 0.0823 0" quat="0.5 -0.5 -0.5 -0.5" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.4 0.4 0.4 1" mesh="robotiq_ft300-G-062-COUPLING_G-50-4M6-1D6_20181119" />
+                                <geom pos="0 0.0823 0" quat="0.5 -0.5 -0.5 -0.5" type="mesh" rgba="0.4 0.4 0.4 1" mesh="robotiq_ft300-G-062-COUPLING_G-50-4M6-1D6_20181119" />
+                                <geom pos="0 0.1238 0" quat="0.5 0.5 0.5 -0.5" type="mesh" contype="0" conaffinity="0" group="1" rgba="0.2 0.2 0.2 1" mesh="robotiq_ft300" />
+                                <geom pos="0 0.1238 0" quat="0.5 0.5 0.5 -0.5" type="mesh" rgba="0.2 0.2 0.2 1" mesh="robotiq_ft300" />
+                                <geom pos="0 0.1238 0" quat="-0.5 0.5 0.5 -0.5" type="mesh" contype="0" conaffinity="0" group="1" mesh="robotiq_85_base_link" />
+                                <geom pos="0 0.1238 0" quat="-0.5 0.5 0.5 -0.5" type="mesh" mesh="robotiq_85_base_link" /> -->
+                                
+                                <body name="ee_link" pos="0 0.0823 0" quat="0.707107 -0.707107 0 0">
+                                        <inertial pos="0 0.0823 0" quat="0.707107 -0.707107 0 0" mass="0" diaginertia="0 0 0" />
+                                        <geom name="light_1" type="sphere" size="0.005" pos="0.035 0 0.0166" material="Light" />
+                                        <geom name="light_2" type="sphere" size="0.005" pos="-0.035 0 0.0166" material="Light" />
+                                        <geom name="kinova_robotiq_coupler_mesh" type="mesh" mesh="kinova_robotiq_coupler" pos="0 0 0.0466" material="GriMat" />
+                                        <geom name="robotiq_85_base_link_mesh" type="mesh" mesh="robotiq_85_base_link" pos="0 0 0.0016" quat="0.707107 0 -0.707107 0" material="GriMat" />
+
+                                    <body name="right_driver" pos="0 -0.0306011 0.054904" quat="0.707107 0 -0.707107 0">
+                                        <geom name="right_driver_mesh" type="mesh" mesh="robotiq_85_knuckle_link" material="GriMat" contype="0" conaffinity="0" />
+                                        <joint name="joint7_1" axis="0 0 1" type="hinge" limited="true" range="0 0.872664626" />
+
+                                    
+                                        <body name="right_coupler" pos="0 -0.0315 0">
+                                            <geom name="right_coupler_mesh" type="mesh" mesh="robotiq_85_finger_link" material="GriMat" contype="0" conaffinity="0" />
+                                            <!-- <joint name="joint8_1" axis="0 0 1" type="hinge" limited="true" range="0 2.967059728" /> -->
+
+                                            <body name="right_follower_link" pos="0.0475 -0.006 0">
+                                                <geom name="right_follower_mesh" pos="0.0025 0.021 0" type="mesh" mesh="robotiq_85_finger_tip_link" material="GriMat" />
+                                                <!-- <joint name="joint9_1" axis="0 0 1" type="hinge" limited="true" range="0 2.967059728" /> -->
+                                            </body>
+
+                                        </body>
+
+                                    </body>
+
+                                    <body name="right_spring_link" pos="0.0016 -0.012 0.0614" quat="0.707107 0 -0.707107 0">
+                                        <geom name="right_spring_mesh" type="mesh" pos="0 -0.0005 0.0016" mesh="robotiq_85_inner_knuckle_link" material="GriMat" contype="0" conaffinity="0" />
+                                        <!-- <joint name="joint10_1" axis="0 0 1" type="hinge" limited="true" range="0 1" /> -->
+                                    </body>
+
+
+                                    <body name="left_driver" pos="0 0.0306011 0.054904" quat="0 0.707107 0 0.707107">
+                                        <geom name="left_driver_mesh" type="mesh" mesh="robotiq_85_knuckle_link" material="GriMat" contype="0" conaffinity="0" />
+                                        <joint name="joint7_2" axis="0 0 1" type="hinge" limited="true" range="0 0.872664626" />
+
+                                    
+                                        <body name="left_coupler" pos="0 -0.0315 0">
+                                            <geom name="left_coupler_mesh" type="mesh" mesh="robotiq_85_finger_link" material="GriMat" contype="0" conaffinity="0" />
+                                            <!-- <joint name="joint8_2" axis="0 0 1" type="hinge" limited="true" range="0 2.967059728" /> -->
+
+                                            <body name="left_follower_link" pos="0.0475 -0.006 0">
+                                                <geom name="left_follower_mesh" pos="0.0025 0.021 0" type="mesh" mesh="robotiq_85_finger_tip_link" material="GriMat" />
+                                                <!-- <joint name="joint9_2" axis="0 0 1" type="hinge" limited="true" range="0 2.967059728" /> -->
+                                            </body>
+
+                                        </body>
+
+                                    </body>
+
+                                    <body name="left_spring_link" pos="0.0016 0.012 0.0614" quat="0 0.707107 0 0.707107">
+                                        <geom name="left_spring_mesh" type="mesh" pos="0 0.0005 0.0016" mesh="robotiq_85_inner_knuckle_link" material="GriMat" contype="0" conaffinity="0" />
+                                        <!-- <joint name="joint10_2" axis="0 0 1" type="hinge" limited="true" range="0 1" /> -->
+                                    </body>
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+        </body>
+    </worldbody>
+        <actuator>
+            <position ctrllimited="true" ctrlrange="-50.0 50.0" joint="base_x_slide_joint" kp="18000" name="base_x_slide_joint" user="1"/>
+            <position ctrllimited="true" ctrlrange="-0.57 0.57" kp="20000" joint="base_z_hinge_joint" name="base_z_hinge_joint" user="1"/>
+            <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="1.2" joint="ur5/shoulder_pan_joint" />
+            <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="1.2" joint="ur5/shoulder_lift_joint" />
+            <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="1.2" joint="ur5/elbow_joint" />
+            <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="1.2" joint="ur5/wrist_1_joint" />     
+            <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="1.2" joint="ur5/wrist_2_joint" />
+            <motor ctrllimited="true" ctrlrange="-1.0 1.0" gear="1.2" joint="ur5/wrist_3_joint" /> 
+            <motor name="close_1" joint="joint7_1" gear="1 0 0 0 0 0" />
+            <motor name="close_2" joint="joint7_2" gear="1 0 0 0 0 0" />
+	    </actuator>
+</mujoco>
