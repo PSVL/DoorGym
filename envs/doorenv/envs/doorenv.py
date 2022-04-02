@@ -30,7 +30,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.imgsize_h = 640
         self.imgsize_w = 640
         self.visionnet_input = visionnet_input
-        self.gripper_action = np.zeros(4)
+        self.gripper_action = np.zeros(2)
         self.path = world_path
         self.xml_path = self.random_world(self.path)
 
@@ -107,8 +107,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             self.viewer_setup()
             self.no_viewer = False
 
-        reward_dist = -np.linalg.norm(self.get_dist_vec())
-        reward_log_dist = -np.log(np.square(np.linalg.norm(reward_dist))+5e-3) - 5.0 
+        reward_dist = -2*np.linalg.norm(self.get_dist_vec())
+        reward_log_dist = -np.log(np.square(2*np.linalg.norm(reward_dist))+5e-3) - 5.0 
         reward_ori = - np.linalg.norm(self.get_ori_diff_no_xaxis())
         reward_door = abs(self.sim.data.get_joint_qpos("hinge0")) *30 #*30
 
@@ -139,7 +139,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     self.gripper_action = np.array([-a[-1],a[-1]])
                 a = np.concatenate((a,self.gripper_action))
             elif self.xml_path.find("husky")>-1:
-                self.gripper_action = np.array([a[-1],-a[-1],a[-1],-a[-1]])
+                self.gripper_action = np.array([a[-1],-a[-1]])
                 a = np.concatenate((a,self.gripper_action))
             else:
                 pass

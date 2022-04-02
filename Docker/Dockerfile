@@ -281,6 +281,8 @@ RUN python3 -m pip install \
 
 ##################################### setting #####################################
 
+RUN pip3 install netifaces==0.11.0
+
 RUN chown -R ${USER}:${USER} ${HOME}/
 RUN echo "kl ALL=(ALL)  ALL" > /etc/sudoers
 
