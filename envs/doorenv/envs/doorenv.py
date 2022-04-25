@@ -109,10 +109,11 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         reward_dist = -2*np.linalg.norm(self.get_dist_vec())
         reward_log_dist = -np.log(np.square(2*np.linalg.norm(reward_dist))+5e-3) - 5.0 
-        reward_ori = - np.linalg.norm(self.get_ori_diff_no_xaxis())
+        # reward_ori = - np.linalg.norm(self.get_ori_diff_no_xaxis())
+        reward_ori = 0
         reward_door = abs(self.sim.data.get_joint_qpos("hinge0")) *30 #*30
 
-        if self.xml_path.find("gripper")>-1:
+        if self.xml_path.find("gripper")>-1 or self.xml_path.find("husky")>-1:
             reward_ctrl = - np.mean(np.square(a[:-2]))
         else:
             reward_ctrl = - np.mean(np.square(a))
@@ -143,7 +144,6 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 a = np.concatenate((a,self.gripper_action))
             else:
                 pass
-
         self.do_simulation(a, self.frame_skip)
         ob = self._get_obs()
         done = False
@@ -512,8 +512,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 return (self.sim.data.get_body_xpos("r_gripper_l_finger_tip") \
                     + self.sim.data.get_body_xpos("r_gripper_r_finger_tip"))/2.0
         elif self.xml_path.find("husky")>-1:
-            return (self.sim.data.get_body_xpos("right_driver") \
-                    + self.sim.data.get_body_xpos("left_driver"))/2.0
+            return (self.sim.data.get_body_xpos("left_follower_link") \
+                    + self.sim.data.get_body_xpos("right_follower_link"))/2.0
         else:
             assert "not sure about the end-effector type"
     

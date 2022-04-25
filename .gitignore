@@ -118,3 +118,9 @@ MUJOCO_LOG.TXT
 logs/
 trained_models/
 params_logs/
+
+
+*.pyc
+*.txt
+devel/
+.catkin_workspace
