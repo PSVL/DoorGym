@@ -160,19 +160,22 @@ class is_open(smach.State):
         smach.State.__init__(self, outcomes=['opening', 'opened'])
         self.get_door_angle_srv = rospy.ServiceProxy("/gazebo/get_joint_properties", GetJointProperties)
 
-    def execute(self, userdate):
+    def execute(self, userdata):
 
         req = GetJointPropertiesRequest()
         req.joint_name = "hinge_door::hinge"
 
         res = self.get_door_angle_srv(req)
 
-        if(res.position[0] <= -1.05)
+        if(res.position[0] <= -1.05):
             return 'opened'
-        else
+        else:
             return 'opening'
 
+        
 def main():
+
+    rospy.init_node("doorgym_node", anonymous=False)
 
     sm = smach.StateMachine(outcomes=['end'])
 
