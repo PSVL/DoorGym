@@ -13,6 +13,7 @@ from tf.transformations import euler_from_quaternion, quaternion_from_euler
 sys.path.append(os.getcwd())
 import a2c_ppo_acktr
 
+from std_srvs.srv import Trigger, TriggerRequest
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist
 from arm_operation.srv import * 
@@ -27,12 +28,14 @@ class Inference:
         self.get_knob_srv = rospy.ServiceProxy("/gazebo/get_link_state", GetLinkState)
         self.goto_joint_srv = rospy.ServiceProxy("/robot/ur5_control_server/ur_control/goto_joint_pose", joint_pose)
         self.get_door_angle_srv = rospy.ServiceProxy("/gazebo/get_joint_properties", GetJointProperties)
+        self.close_srv = rospy.ServiceProxy("/robot/gripper/close", Trigger)
         self.joint = np.zeros(23)
         self.dis = 0
         self.listener = tf.TransformListener()
         self.joint_value = joint_value()
 
         load_name = "trained_models/ppo/doorenv-v0_push-load.125.pt"
+        # load_name = "trained_models/ppo/doorenv-v0_pull-load.100.pt"
         self.actor_critic, ob_rms = torch.load(load_name)
         self.actor_critic = self.actor_critic.eval()
         self.actor_critic.to("cuda:0")
@@ -115,12 +118,22 @@ class Inference:
 
             res = self.get_door_angle_srv(req)
 
+            # push parameter
             if res.position[0] <= -0.45:
                 joint_action[2] *= -3
                 joint_action[6] *= -3
                 joint_action[4] *= -0.2
+            
 
-            ## ur5 arm
+            ## ur5 arm pull parameter
+            # self.joint_value.joint_value[0] += joint_action[2] * 0.005
+            # self.joint_value.joint_value[1] += joint_action[3] * 0.004
+            # self.joint_value.joint_value[2] += joint_action[4] * -0.003
+            # self.joint_value.joint_value[3] += joint_action[5] * -0.001
+            # self.joint_value.joint_value[4] += joint_action[6] * -0.004
+            # self.joint_value.joint_value[5] += joint_action[7] * 0.001
+
+            # ur5 push paramter
             self.joint_value.joint_value[0] += joint_action[2] * -0.009
             self.joint_value.joint_value[1] += joint_action[3] * -0.007
             self.joint_value.joint_value[2] += joint_action[4] * -0.007
@@ -128,35 +141,42 @@ class Inference:
             self.joint_value.joint_value[4] += joint_action[6] * -0.001
             self.joint_value.joint_value[5] += joint_action[7] * 0.001
 
-            # doorenv-v0_husky_no_push.1845.pt parameter
-            # self.joint_value.joint_value[0] += joint_action[4] * -0.008
-            # self.joint_value.joint_value[1] += joint_action[3] * (-0.005)
-            # self.joint_value.joint_value[2] += joint_action[2] * -0.005
-            # self.joint_value.joint_value[3] += joint_action[5] * 0.005
-            # self.joint_value.joint_value[4] += joint_action[6] * 0.005
-            # self.joint_value.joint_value[5] += joint_action[7] * 0.005
-            
             joint_pose_req.joints.append(self.joint_value)
             res_ = self.goto_joint_srv(joint_pose_req)
 
             # husky
             t = Twist()
 
-            t.linear.x = abs(joint_action[0]) * 0.04
+            # husky push parameter
+            t.linear.x = abs(joint_action[0]) * 0.02
             t.angular.z = joint_action[1] * 0.015
 
-            # doorenv-v0_husky_no_push.1845.pt parameter
-            # t.linear.x = joint_action[0] * 0.03
-            # t.angular.z = joint_action[1] * -0.005
+            # husky pull paramter
+            # req_getlink = GetLinkStateRequest()
+            # req_getlink.link_name = "base_link"
+
+            # pos = self.get_knob_srv(req_getlink)
+            
+            # t.linear.x = abs(joint_action[0]) * 0.007
+            # t.angular.z = joint_action[1] * 0.005
+
+            # if(pos.link_state.pose.position.y <= 12.775):
+            #     req_gri = TriggerRequest()
+            #     self.close_srv(req_gri)
+            #     t.linear.x *= -1
+
+            # if(res.position[0] >= 0.01):
+            #     t.linear.x *= -1
 
             self.husky_cmd_pub.publish(t)
             
             if(res.position[0] <= -1.05):
+                # print(res.position[0])
                 break
 
         end = time.time()
 
-        print(end - begin)
+        print("time", end - begin)
 
 if __name__ == '__main__':
     rospy.init_node("doorgym_node", anonymous=False)
