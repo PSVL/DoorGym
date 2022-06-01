@@ -262,7 +262,8 @@ RUN pip3 install \
     wrapt==1.11.2 \
     zipp==0.6.0 \
     zmq==0.0.0 \
-    numpy==1.12.0 
+    numpy==1.12.0 \
+    Cython 
 
 RUN pip3 install tensorflow==2.4.0
 
