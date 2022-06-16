@@ -15,20 +15,16 @@ import a2c_ppo_acktr
 from std_srvs.srv import Trigger, TriggerRequest
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Twist, Pose
-from arm_operation.srv import * 
-from arm_operation.msg import *
 from gazebo_msgs.srv import *
-from ur5_bringup.srv import *
+from vx300s_bringup.srv import *
 
 class Inference:
     def __init__(self):
         self.husky_cmd_pub = rospy.Publisher("/robot/cmd_vel", Twist, queue_size=1)
         self.get_knob_srv = rospy.ServiceProxy("/gazebo/get_link_state", GetLinkState)
-        self.goto_pose_srv = rospy.ServiceProxy("/robot/ur5_control_server/ur_control/goto_pose", target_pose)
+        self.go_pose_srv = rospy.ServiceProxy("/robot/go_pose", ee_pose)
         self.get_door_angle_srv = rospy.ServiceProxy("/gazebo/get_joint_properties", GetJointProperties)
-        self.close_srv = rospy.ServiceProxy("/robot/gripper/close", Trigger)
-        self.open_srv = rospy.ServiceProxy("/robot/gripper/open", Trigger)
-        self.get_pose_srv = rospy.ServiceProxy("/robot/ur5/get_pose", cur_pose)
+        self.get_pose_srv = rospy.ServiceProxy("/robot/get_pose", cur_pose)
         self.input = np.zeros(3)
         self.listener = tf.TransformListener()
 
@@ -41,7 +37,6 @@ class Inference:
         self.masks = torch.zeros(1, 1)
         
         req = TriggerRequest()
-        self.open_srv(req)
         self.inference()
 
     def get_knob_xyz(self):
@@ -60,8 +55,7 @@ class Inference:
 
             self.get_knob_xyz()
 
-            target_pose_req = target_poseRequest()
-            target_pose_req.factor = 0.8
+            pose_req = ee_poseRequest()
 
             res = self.get_pose_srv()
 
@@ -82,15 +76,15 @@ class Inference:
                 next_action[3] *= -5
                 next_action[4] *= -1
 
-            target_pose_req.target_pose.position.x = res.pose.position.x + 0.005 * next_action[2]
-            target_pose_req.target_pose.position.y = res.pose.position.y + -0.005 * next_action[3]
-            target_pose_req.target_pose.position.z = res.pose.position.z + 0.005 * next_action[4]
-            target_pose_req.target_pose.orientation.x = res.pose.orientation.x
-            target_pose_req.target_pose.orientation.y = res.pose.orientation.y
-            target_pose_req.target_pose.orientation.z = res.pose.orientation.z
-            target_pose_req.target_pose.orientation.w = res.pose.orientation.w
+            pose_req.target_pose.position.x = res.pose.position.x + 0.005 * next_action[2]
+            pose_req.target_pose.position.y = res.pose.position.y + -0.005 * next_action[3]
+            pose_req.target_pose.position.z = res.pose.position.z + 0.005 * next_action[4]
+            pose_req.target_pose.orientation.x = res.pose.orientation.x
+            pose_req.target_pose.orientation.y = res.pose.orientation.y
+            pose_req.target_pose.orientation.z = res.pose.orientation.z
+            pose_req.target_pose.orientation.w = res.pose.orientation.w
 
-            self.goto_pose_srv(target_pose_req)
+            self.go_pose_srv(pose_req)
 
             # husky
             t = Twist()
