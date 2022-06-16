@@ -35,6 +35,7 @@ class Inference:
         self.joint_value = joint_value()
 
         load_name = "trained_models/ppo/doorenv-v0_push-load.125.pt"
+        # load_name = "trained_models/ppo/doorenv-v0_ur5-push-new.3500.pt"
         # load_name = "trained_models/ppo/doorenv-v0_pull-load.100.pt"
         self.actor_critic, ob_rms = torch.load(load_name)
         self.actor_critic = self.actor_critic.eval()
@@ -91,8 +92,6 @@ class Inference:
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
             print("Service call failed: %s"%e)
 
-        # print("knob :", pos.link_state.pose, "gripper :", trans)
-
         self.joint[0] = trans[0] - pos.link_state.pose.position.x
         self.joint[1] = trans[1] - pos.link_state.pose.position.y
         self.joint[2] = trans[2] - pos.link_state.pose.position.z
@@ -114,64 +113,73 @@ class Inference:
             joint_action = np.concatenate((next_action, gripper_action))
 
             req = GetJointPropertiesRequest()
-            req.joint_name = "hinge_door::hinge"
+            req.joint_name = "hinge_door_0::hinge"
 
             res = self.get_door_angle_srv(req)
 
             # push parameter
             if res.position[0] <= -0.45:
-                joint_action[2] *= -3
-                joint_action[6] *= -3
+                joint_action[2] *= 8
+                joint_action[6] *= -5
                 joint_action[4] *= -0.2
-            
 
-            ## ur5 arm pull parameter
-            # self.joint_value.joint_value[0] += joint_action[2] * 0.005
+            ## ur5 pull parameter
+            # self.joint_value.joint_value[0] += joint_action[2] * 0.003
             # self.joint_value.joint_value[1] += joint_action[3] * 0.004
-            # self.joint_value.joint_value[2] += joint_action[4] * -0.003
-            # self.joint_value.joint_value[3] += joint_action[5] * -0.001
-            # self.joint_value.joint_value[4] += joint_action[6] * -0.004
+            # self.joint_value.joint_value[2] += joint_action[4] * 0.012
+            # self.joint_value.joint_value[3] += joint_action[5] * -0.003
+            # self.joint_value.joint_value[4] += joint_action[6] * -0.008
+            # self.joint_value.joint_value[5] += joint_action[7] * 0.001
+
+            # ur5 push doorgym parameter
+            # self.joint_value.joint_value[0] += joint_action[2] * -0.009
+            # self.joint_value.joint_value[1] += joint_action[3] * 0.007
+            # self.joint_value.joint_value[2] += joint_action[4] * 0.007
+            # self.joint_value.joint_value[3] += joint_action[5] * 0.001
+            # self.joint_value.joint_value[4] += joint_action[6] * -0.001
             # self.joint_value.joint_value[5] += joint_action[7] * 0.001
 
             # ur5 push paramter
             self.joint_value.joint_value[0] += joint_action[2] * -0.009
-            self.joint_value.joint_value[1] += joint_action[3] * -0.007
-            self.joint_value.joint_value[2] += joint_action[4] * -0.007
+            self.joint_value.joint_value[1] += joint_action[3] * 0.004
+            self.joint_value.joint_value[2] += joint_action[4] * 0.004
             self.joint_value.joint_value[3] += joint_action[5] * 0.001
             self.joint_value.joint_value[4] += joint_action[6] * -0.001
             self.joint_value.joint_value[5] += joint_action[7] * 0.001
-
-            joint_pose_req.joints.append(self.joint_value)
-            res_ = self.goto_joint_srv(joint_pose_req)
-
+            
             # husky
             t = Twist()
 
+            if(res.position[0] >= 0.01):
+                t.linear.x *= -1
+                t.angular.z *= -1
+            else:
+                joint_pose_req.joints.append(self.joint_value)
+                res_ = self.goto_joint_srv(joint_pose_req)
+
             # husky push parameter
-            t.linear.x = abs(joint_action[0]) * 0.02
+            t.linear.x = abs(joint_action[0]) * 0.03
             t.angular.z = joint_action[1] * 0.015
 
-            # husky pull paramter
+            # # husky pull paramter
             # req_getlink = GetLinkStateRequest()
             # req_getlink.link_name = "base_link"
 
             # pos = self.get_knob_srv(req_getlink)
             
-            # t.linear.x = abs(joint_action[0]) * 0.007
-            # t.angular.z = joint_action[1] * 0.005
+            # t.linear.x = abs(joint_action[0]) * 0.03
+            # t.angular.z = joint_action[1] * 0.015
 
-            # if(pos.link_state.pose.position.y <= 12.775):
-            #     req_gri = TriggerRequest()
-            #     self.close_srv(req_gri)
-            #     t.linear.x *= -1
-
-            # if(res.position[0] >= 0.01):
-            #     t.linear.x *= -1
+            # if(pos.link_state.pose.position.y <= 12.86):
+            # if(pos.link_state.pose.position.y <= -24):
+                # req_gri = TriggerRequest()
+                # self.close_srv(req_gri)
+                # t.linear.x *= -1
 
             self.husky_cmd_pub.publish(t)
             
             if(res.position[0] <= -1.05):
-                # print(res.position[0])
+            # if(res.position[0] >= 1.0):
                 break
 
         end = time.time()

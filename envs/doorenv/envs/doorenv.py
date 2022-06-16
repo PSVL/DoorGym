@@ -8,6 +8,8 @@ import torch
 from mjremote import mjremote
 import time
 import matplotlib.pyplot as plt
+from scipy.spatial.transform import Rotation as R
+from ikfastpy import ikfastpy
 
 class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
     static_nn = 0
@@ -33,6 +35,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.gripper_action = np.zeros(2)
         self.path = world_path
         self.xml_path = self.random_world(self.path)
+        self.ur5_kin = ikfastpy.PyKinematics()   
+        self.n_joints = self.ur5_kin.getDOF()
 
         if self.xml_path.find("baxter")>-1:
             if self.xml_path.find("botharm")>-1:
@@ -62,6 +66,10 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         if self.xml_path.find("husky")>-1:
             self.nn = 10
+            # self.nn = 5
+
+        # if self.xml_path.find("ur5")>-1:
+        #     self.nn = 10
 
         self.unity = unity
         if self.visionnet_input:
@@ -77,13 +85,12 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         mujoco_env.MujocoEnv.__init__(self, self.xml_path, frame_skip)
         gripper_space = self.gripper_action.shape[0]
         # print("gripper space", gripper_space)
-        if self.xml_path.find("gripper")>-1 or self.xml_path.find('baxter')>-1 or self.xml_path.find("husky")>-1:
-            bounds = self.model.actuator_ctrlrange.copy()
+        if self.xml_path.find("gripper")>-1 or self.xml_path.find('baxter')>-1 or self.xml_path.find("husky")>-1 or self.xml_path.find("ur5")>-1:
+            bounds = self.model.actuator_ctrlrange.copy()[:7]
             low, high = bounds.T
             low, high = low[:-gripper_space], high[:-gripper_space] # four joints for finger is a dependant of finger inertial joint
             self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
             self.gripper_action = self.sim.data.qpos[-gripper_space:]
-        # print(self.gripper_action)
         self.init_done = True
         self.model_origin = self.model
         # self.count = 1
@@ -98,8 +105,65 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.unity_init(self.port + rank%8)
         self.change_model(self.xml_path)
 
+    def trans(self, action):
+
+        world = R.from_quat([0.0 , 0.0, 1.0, 0.0])
+        world_mat = world.as_matrix()
+        new_mat = np.identity(4)
+        new_mat[0:3,0:3] = world_mat
+
+        pos = self.sim.data.get_body_xpos("ur5/shoulder_link")
+        qua = self.sim.data.get_body_xquat("ur5/shoulder_link")
+        pos[2] -= 0.089159
+        pos_ee = self.sim.data.get_body_xpos("ee_link")        
+        qua_ee = self.sim.data.get_body_xquat("ee_link")
+        pos[0] += 0.18
+
+        if(np.all(qua == 0) == False):
+            # calculate relationship between bask_link and ee_pose
+            r = R.from_quat([qua])
+            x = r.as_matrix()
+            mat = np.identity(4)
+            mat[0:3,0:3] = x
+            mat[0:3,3] = pos
+            
+            r_ee = R.from_quat([qua_ee])
+            x_ee = r_ee.as_matrix()
+            mat_ee = np.identity(4)
+            mat_ee[0:3,0:3] = x_ee
+            mat_ee[0:3,3] = pos_ee
+   
+            ee_pose = np.dot(np.linalg.inv(mat), mat_ee)
+
+            # ee_pose + delta action
+
+            ee_pose[0:3,3] += 0.75 * action[2:]
+
+            # calculate ik
+
+            joint_configs = self.ur5_kin.inverse(ee_pose[0:3,:].reshape(-1).tolist())
+            n_solutions = int(len(joint_configs)/self.n_joints)
+
+            joint_configs = np.asarray(joint_configs).reshape(n_solutions, self.n_joints)
+
+            # pick one reasonable solution
+
+            state = self.sim.get_state()
+            ori = state.qpos[2:8]
+            dist = np.zeros(n_solutions)
+            for i in range(n_solutions):
+                dist[i] = np.sum((joint_configs[i][0:3] - ori[0:3]) * 1.5) ** 2 + np.sum((joint_configs[i][3:] - ori[3:]) * 0.5) ** 2
+
+            if(dist.size != 0):
+                index = np.argmin(dist)
+                return np.concatenate((action[0:2], joint_configs[index]))
+            else:
+                return np.concatenate((action[0:2], ori))
+        return action
+
     def step(self, a):
-        # print("step")
+        
+        # a = self.trans(a)
 
         if not self.unity and self.no_viewer:
             print("made mujoco viewer")
@@ -139,7 +203,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 else:
                     self.gripper_action = np.array([-a[-1],a[-1]])
                 a = np.concatenate((a,self.gripper_action))
-            elif self.xml_path.find("husky")>-1:
+            elif self.xml_path.find("husky")>-1 or self.xml_path.find("ur5")>-1:
                 self.gripper_action = np.array([a[-1],-a[-1]])
                 a = np.concatenate((a,self.gripper_action))
             else:
@@ -284,7 +348,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 # qpos[4] = 0.0 + random.uniform(-2.6761, 2.6761)     # elbow_roll_joint
                 # qpos[5] = 1.0 + random.uniform(-0.6, 0)             # wrist_lift_joint
                 # qpos[6] = 0.0 + random.uniform(-2.6761, 2.6761)     # 
-        elif self.xml_path.find("husky")>-1:
+        elif self.xml_path.find("husky")>-1 or self.xml_path.find("ur5")>-1:
             qpos[0] = 0.0
             qpos[1] = 0.0
             qpos[2] = 0.0
@@ -313,7 +377,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         elif self.xml_path.find('baxter')>-1:
             qpos[self.all_joints:-gg] = 0
         else:
-            qpos[self.nn:-gg] = 0
+            qpos[self.nn+3:-gg] = 0
 
         if self.xml_path.find('baxter')>-1:
             if self.xml_path.find('both')>-1:
@@ -321,7 +385,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             else:
                 qpos[(self.all_joints*2):-gg] = 0
         else:
-            qpos[self.nn:-gg] = 0
+            qpos[self.nn+3:-gg] = 0
 
         qpos[-gg:] = self.goal
 
@@ -395,6 +459,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 self.get_robot_joints(),
                 self.get_dist_vec() # if knob dist from mujoco
                 ])
+            # return self.get_finger_target()
 
     def connect_to_unity(self):
         while True:
@@ -511,7 +576,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             else:
                 return (self.sim.data.get_body_xpos("r_gripper_l_finger_tip") \
                     + self.sim.data.get_body_xpos("r_gripper_r_finger_tip"))/2.0
-        elif self.xml_path.find("husky")>-1:
+        elif self.xml_path.find("husky")>-1 or self.xml_path.find("ur5")>-1:
             return (self.sim.data.get_body_xpos("left_follower_link") \
                     + self.sim.data.get_body_xpos("right_follower_link"))/2.0
         else:
@@ -535,7 +600,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 return quat2euler(self.sim.data.get_body_xquat("left_wrist"))
             else:
                 return quat2euler(self.sim.data.get_body_xquat("right_wrist"))
-        elif self.xml_path.find("husky")>-1:
+        elif self.xml_path.find("husky")>-1 or self.xml_path.find("ur5")>-1:
             return quat2euler(self.sim.data.get_body_xquat("ee_link"))
         else:
             assert "not sure about the end-effector type"
@@ -551,7 +616,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                 return self.sim.data.get_body_xquat("left_wrist")
             else:
                 return self.sim.data.get_body_xquat("right_wrist")
-        elif self.xml_path.find("husky")>-1:
+        elif self.xml_path.find("husky")>-1 or self.xml_path.find("ur5")>-1:
             return self.sim.data.get_body_xquat("ee_link")
         else:
             assert "not sure about the end-effector type"

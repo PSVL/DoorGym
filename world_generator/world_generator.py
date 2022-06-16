@@ -47,6 +47,8 @@ def main(dataset_file):
         robot_type = "blue_right_v2_gripper_motor"
     elif args.robot_type == "husky-ur5":
         robot_type = "husky_ur5"
+    elif args.robot_type == "ur5":
+        robot_type = "ur5"
     else:
         raise Exception("robot type not recognized")
     
