@@ -65,11 +65,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                         self.nn = 8
 
         if self.xml_path.find("husky")>-1:
-            self.nn = 10
-            # self.nn = 5
-
-        # if self.xml_path.find("ur5")>-1:
-        #     self.nn = 10
+            self.nn = 5
 
         self.unity = unity
         if self.visionnet_input:
@@ -84,7 +80,6 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         utils.EzPickle.__init__(self)
         mujoco_env.MujocoEnv.__init__(self, self.xml_path, frame_skip)
         gripper_space = self.gripper_action.shape[0]
-        # print("gripper space", gripper_space)
         if self.xml_path.find("gripper")>-1 or self.xml_path.find('baxter')>-1 or self.xml_path.find("husky")>-1 or self.xml_path.find("ur5")>-1:
             bounds = self.model.actuator_ctrlrange.copy()[:7]
             low, high = bounds.T
@@ -163,7 +158,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     def step(self, a):
         
-        # a = self.trans(a)
+        a = self.trans(a)
 
         if not self.unity and self.no_viewer:
             print("made mujoco viewer")
@@ -546,8 +541,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                     self.sim.data.qpos.flat[self.all_joints:self.all_joints+self.nn],
                     self.sim.data.qvel.flat[self.all_joints:self.all_joints+self.nn]])
         return np.concatenate([
-            self.sim.data.qpos.flat[:self.nn],
-            self.sim.data.qvel.flat[:self.nn]])
+            self.sim.data.qpos.flat[:10],
+            self.sim.data.qvel.flat[:10]])
 
     def get_knob_target(self):
         # print("head camera pos:",self.sim.data.get_body_xpos("head_camera"))

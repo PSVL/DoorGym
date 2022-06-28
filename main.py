@@ -64,8 +64,8 @@ def onpolicy_main():
             visionnet_input = envs.venv.venv.envs[0].env.env.env.visionnet_input
             nn = envs.venv.venv.envs[0].env.env.env.nn
             env_name = envs.venv.venv.envs[0].env.env.env.xml_path
-        dummy_obs = np.zeros(nn*2+3)
-        # dummy_obs = np.zeros(3)
+        # dummy_obs = np.zeros(nn*2+3)
+        dummy_obs = np.zeros(23)
     else:
         dummy_obs = envs.observation_space
         visionnet_input = None
