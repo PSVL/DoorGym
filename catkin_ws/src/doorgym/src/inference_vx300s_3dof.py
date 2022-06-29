@@ -65,7 +65,6 @@ class Inference:
                     output, self.recurrent_hidden_states, self.masks, deterministic=True)
             next_action = action.cpu().numpy()[0,1,0]
             gripper_action = np.array([next_action[-1], -next_action[-1]])
-            print(next_action)
 
             req = GetJointPropertiesRequest()
             req.joint_name = "hinge_door_0::hinge"
