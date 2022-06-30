@@ -123,7 +123,7 @@ class Inference:
                 joint_action[6] *= -5
                 joint_action[4] *= -0.2
 
-            ## ur5 pull parameter
+            # husky ur5 pull parameter
             # self.joint_value.joint_value[0] += joint_action[2] * 0.003
             # self.joint_value.joint_value[1] += joint_action[3] * 0.004
             # self.joint_value.joint_value[2] += joint_action[4] * 0.012
@@ -131,7 +131,7 @@ class Inference:
             # self.joint_value.joint_value[4] += joint_action[6] * -0.008
             # self.joint_value.joint_value[5] += joint_action[7] * 0.001
 
-            # ur5 push doorgym parameter
+            # ur5 push parameter
             # self.joint_value.joint_value[0] += joint_action[2] * -0.009
             # self.joint_value.joint_value[1] += joint_action[3] * 0.007
             # self.joint_value.joint_value[2] += joint_action[4] * 0.007
@@ -139,7 +139,7 @@ class Inference:
             # self.joint_value.joint_value[4] += joint_action[6] * -0.001
             # self.joint_value.joint_value[5] += joint_action[7] * 0.001
 
-            # ur5 push paramter
+            # husky ur5 push paramter
             self.joint_value.joint_value[0] += joint_action[2] * -0.009
             self.joint_value.joint_value[1] += joint_action[3] * 0.004
             self.joint_value.joint_value[2] += joint_action[4] * 0.004
@@ -157,11 +157,11 @@ class Inference:
                 joint_pose_req.joints.append(self.joint_value)
                 res_ = self.goto_joint_srv(joint_pose_req)
 
-            # husky push parameter
+            # husky ur5 push parameter
             t.linear.x = abs(joint_action[0]) * 0.03
             t.angular.z = joint_action[1] * 0.015
 
-            # # husky pull paramter
+            # # husky ur5 pull paramter
             # req_getlink = GetLinkStateRequest()
             # req_getlink.link_name = "base_link"
 
@@ -179,7 +179,6 @@ class Inference:
             self.husky_cmd_pub.publish(t)
             
             if(res.position[0] <= -1.05):
-            # if(res.position[0] >= 1.0):
                 break
 
         end = time.time()
