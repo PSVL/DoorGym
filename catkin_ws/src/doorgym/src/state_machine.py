@@ -23,9 +23,10 @@ from std_srvs.srv import Trigger, TriggerRequest
 from sensor_msgs.msg import JointState, LaserScan
 from geometry_msgs.msg import Twist, PoseStamped
 from scipy.spatial.transform import Rotation as R
-from std_msgs.msg import Bool, String
+from std_msgs.msg import Bool, String, Float32
 from arm_operation.srv import * 
 from arm_operation.msg import *
+from ur5_bringup.srv import *
 from gazebo_msgs.srv import *
 from gazebo_msgs.msg import *
 
@@ -62,32 +63,54 @@ class init(smach.State):
 class nav_to_door(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=["navigating"])
-
+        
     def execute(self, userdata):
 
-        pub_info.publish("nav")
+        pub_info.publish("nav_door")
         return 'navigating'
 
 class reach_door(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['reached_door', 'not_yet'])
-        self.goal = np.array([9.3, 12.8])
-        self.sub_state = rospy.Subscriber("/state_re", String, self.cb_state, queue_size=1)
-        self.reach = False
-
-    def cb_state(self, msg):
-        
-        if(msg.data == "reached"):
-            self.reach = True
-        else:
-            self.reach = False
+        self.get_model = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+        self.get_angle = rospy.ServiceProxy("/gazebo/get_link_state", GetLinkState)
+        self.pub_cmd = rospy.Publisher("/robot/cmd_vel", Twist, queue_size=1)
+        self.sub_goal = np.array([9.0, 13.0])
 
     def execute(self, userdata):
 
-        if(self.reach):
+        agent = self.get_model("robot", "")
+
+        cur = np.array([agent.pose.position.x, agent.pose.position.y])
+        dis = np.linalg.norm(self.sub_goal - cur)
+
+        req = GetLinkStateRequest()
+        req.link_name = "base_link"
+        pos = self.get_angle(req)
+
+        r = R.from_quat([pos.link_state.pose.orientation.x,
+                        pos.link_state.pose.orientation.y,
+                        pos.link_state.pose.orientation.z,
+                        pos.link_state.pose.orientation.w])
+        yaw = r.as_euler('zyx')[0]
+
+        if(dis < 0.5):
+            pub_info.publish("stop")
+            rospy.loginfo("reached_door")
+            cmd = Twist()
+            if(yaw >= -1.45):
+                cmd.angular.z = -0.1
+            elif(yaw <= -1.65):
+                cmd.angular.z = +0.1
+            else:
+                rospy.loginfo("goal reached")
+            self.pub_cmd.publish(cmd)
+
+        if(dis < 0.5 and yaw <= -1.45 and yaw >= -1.65):
+            pub_info.publish("stop")
             return 'reached_door'
         else:
-            return 'not yet'
+            return 'not_yet'
 
 class open_door(smach.State):
     def __init__(self):
@@ -97,15 +120,16 @@ class open_door(smach.State):
         self.husky_vel_sub = rospy.Subscriber("/robot/cmd_vel", Twist, self.husky_vel_cb, queue_size=1)
         self.husky_cmd_pub = rospy.Publisher("/robot/cmd_vel", Twist, queue_size=1)
         self.get_knob_srv = rospy.ServiceProxy("/gazebo/get_link_state", GetLinkState)
-        self.goto_joint_srv = rospy.ServiceProxy("/robot/ur5_control_server/ur_control/goto_joint_pose", joint_pose)
+        self.goto_pose_srv = rospy.ServiceProxy("/robot/ur5_control_server/ur_control/goto_pose", target_pose)
         self.get_door_angle_srv = rospy.ServiceProxy("/gazebo/get_joint_properties", GetJointProperties)
         self.get_odom_sub = rospy.Subscriber("/robot/truth_map_odometry", Odometry, self.get_odom, queue_size=1)
+        self.get_pose_srv = rospy.ServiceProxy("/robot/ur5/get_pose", cur_pose)
         self.joint = np.zeros(23)
         self.dis = 0
         self.listener = tf.TransformListener()
         self.joint_value = joint_value()
 
-        load_name = "trained_models/ppo/doorenv-v0_push-load.125.pt"
+        load_name = "model/husky_ur5_push_3dof.pt"
         self.actor_critic, ob_rms = torch.load(load_name)
         self.actor_critic = self.actor_critic.eval()
         self.actor_critic.to("cuda:0")
@@ -115,8 +139,12 @@ class open_door(smach.State):
 
     def execute(self, userdata):
 
+        target_pose_req = target_poseRequest()
+        target_pose_req.factor = 0.8
+
+        res = self.get_pose_srv()
+
         self.get_distance()
-        joint_pose_req = joint_poseRequest()
         joint = torch.from_numpy(self.joint).float().to("cuda:0")
         with torch.no_grad():
             value, action, _, self.recurrent_hidden_states = self.actor_critic.act(
@@ -126,31 +154,26 @@ class open_door(smach.State):
         joint_action = np.concatenate((next_action, gripper_action))
 
         req = GetJointPropertiesRequest()
-        req.joint_name = "hinge_door::hinge"
+        req.joint_name = "hinge_door_0::hinge"
 
-        res = self.get_door_angle_srv(req)
+        res_door = self.get_door_angle_srv(req)
 
-        if res.position[0] <= -0.45:
-            joint_action[2] *= -3
-            joint_action[6] *= -3
-            joint_action[4] *= -0.2
+        target_pose_req.target_pose.position.x = res.pose.position.x + 0.001 * next_action[2]
+        target_pose_req.target_pose.position.y = res.pose.position.y + 0.002 * next_action[3]
+        target_pose_req.target_pose.position.z = res.pose.position.z - 0.001 * next_action[4]
+        target_pose_req.target_pose.orientation.x = res.pose.orientation.x
+        target_pose_req.target_pose.orientation.y = res.pose.orientation.y
+        target_pose_req.target_pose.orientation.z = res.pose.orientation.z
+        target_pose_req.target_pose.orientation.w = res.pose.orientation.w
 
-        ## ur5 arm
-        self.joint_value.joint_value[0] += joint_action[2] * -0.009
-        self.joint_value.joint_value[1] += joint_action[3] * -0.007
-        self.joint_value.joint_value[2] += joint_action[4] * -0.007
-        self.joint_value.joint_value[3] += joint_action[5] * 0.001
-        self.joint_value.joint_value[4] += joint_action[6] * -0.001
-        self.joint_value.joint_value[5] += joint_action[7] * 0.001
+        self.goto_pose_srv(target_pose_req)
         
-        joint_pose_req.joints.append(self.joint_value)
-        res_ = self.goto_joint_srv(joint_pose_req)
-
         # husky
         t = Twist()
 
-        t.linear.x = abs(joint_action[0]) * 0.04
-        t.angular.z = joint_action[1] * 0.015
+        # husky push parameter
+        t.linear.x = abs(next_action[0]) * 0.05
+        t.angular.z = next_action[1] * 0.015
 
         self.husky_cmd_pub.publish(t)
 
@@ -211,12 +234,12 @@ class open_door(smach.State):
     def get_distance(self):
 
         req = GetLinkStateRequest()
-        req.link_name = "hinge_door::knob"
+        req.link_name = "hinge_door_0::knob"
 
         pos = self.get_knob_srv(req)
 
         try:
-            trans, _ = self.listener.lookupTransform("/world", "/object_link", rospy.Time(0))
+            trans, _ = self.listener.lookupTransform("/map", "/object_link", rospy.Time(0))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
             print("Service call failed: %s"%e)
 
@@ -228,49 +251,59 @@ class is_open(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['not_yet', 'opened'])
         self.get_door_angle_srv = rospy.ServiceProxy("/gazebo/get_joint_properties", GetJointProperties)
+        self.arm_go_home = rospy.ServiceProxy("/robot/ur5/go_home", Trigger)
+        self.pub_cmd = rospy.Publisher("/robot/cmd_vel", Twist, queue_size=1)
 
     def execute(self, userdata):
 
         req = GetJointPropertiesRequest()
-        req.joint_name = "hinge_door::hinge"
+        req.joint_name = "hinge_door_0::hinge"
 
         res = self.get_door_angle_srv(req)
 
         if(res.position[0] <= -1.05):
+            cmd = Twist()
+            cmd.linear.x = -25.0
+            self.pub_cmd.publish(cmd)
+            self.arm_go_home()
             return 'opened'
         else:
             return 'not_yet'
 
+ran = random.uniform(0.0, 1.0)
+
 class Navigation(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['navigating'])
-
+        
     def execute(self, userdata):
 
-        pub_info.publish("nav_goal")
+        if(ran <= 0.5):
+            pub_info.publish("nav_goal_1")
+        else: 
+            pub_info.publish("nav_goal_2")
         return 'navigating'
 
 class is_goal(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['not_yet', 'navigated'])
-        self.goal = np.array([10.25, 8.52])
+        if(ran <= 0.5):
+            self.goal = np.array([10.25, 8.52]) 
+        else:
+            self.goal = np.array([8.0, 8.52])
         self.get_robot_pos = rospy.ServiceProxy("/gazebo/get_model_state", GetModelState)
     
     def execute(self, userdata):
-        
-        req = GetModelStateRequest()
-        req.model_name = "robot"
 
-        robot_pose = self.get_robot_pos(req)
+        robot_pose = self.get_robot_pos("robot","")
 
         x, y = robot_pose.pose.position.x, robot_pose.pose.position.y
         dis = np.linalg.norm(self.goal - np.array([x, y]))
 
         if(dis < 0.8):
-            pub_info.publish("None")
+            pub_info.publish("stop")
             return 'navigated'
         else:
-            pub_info.publish("nav_door")
             return 'not_yet'
 
 def main():

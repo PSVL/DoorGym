@@ -85,12 +85,12 @@ class Inference:
     def get_distance(self):
 
         req = GetLinkStateRequest()
-        req.link_name = "hinge_door::knob"
+        req.link_name = "hinge_door_0::knob"
 
         pos = self.get_knob_srv(req)
 
         try:
-            trans, _ = self.listener.lookupTransform("/world", "vx300s/ee_gripper_link", rospy.Time(0))
+            trans, _ = self.listener.lookupTransform("/map", "vx300s/ee_gripper_link", rospy.Time(0))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
             print("Service call failed: %s"%e)
 

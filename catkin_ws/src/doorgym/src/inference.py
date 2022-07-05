@@ -34,9 +34,9 @@ class Inference:
         self.listener = tf.TransformListener()
         self.joint_value = joint_value()
 
-        load_name = "trained_models/ppo/doorenv-v0_push-load.125.pt"
-        # load_name = "trained_models/ppo/doorenv-v0_ur5-push-new.3500.pt"
-        # load_name = "trained_models/ppo/doorenv-v0_pull-load.100.pt"
+        load_name = "model/husky_ur5_push.pt"
+        # load_name = "mdoel/ur5_push.pt"
+        # load_name = "model/husky_ur5_pull.pt"
         self.actor_critic, ob_rms = torch.load(load_name)
         self.actor_critic = self.actor_critic.eval()
         self.actor_critic.to("cuda:0")
@@ -83,12 +83,12 @@ class Inference:
     def get_distance(self):
 
         req = GetLinkStateRequest()
-        req.link_name = "hinge_door::knob"
+        req.link_name = "hinge_door_0::knob"
 
         pos = self.get_knob_srv(req)
 
         try:
-            trans, _ = self.listener.lookupTransform("/world", "/object_link", rospy.Time(0))
+            trans, _ = self.listener.lookupTransform("/map", "/object_link", rospy.Time(0))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
             print("Service call failed: %s"%e)
 
