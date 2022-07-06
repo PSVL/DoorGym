@@ -15,7 +15,7 @@ import tensorflow
 import math
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
-sys.path.append(os.getcwd())
+sys.path.append("../DoorGym")
 import a2c_ppo_acktr
 
 from nav_msgs.msg import Odometry
@@ -129,7 +129,7 @@ class open_door(smach.State):
         self.listener = tf.TransformListener()
         self.joint_value = joint_value()
 
-        load_name = "model/husky_ur5_push_3dof.pt"
+        load_name = "../DoorGym/model/husky_ur5_push_3dof.pt"
         self.actor_critic, ob_rms = torch.load(load_name)
         self.actor_critic = self.actor_critic.eval()
         self.actor_critic.to("cuda:0")

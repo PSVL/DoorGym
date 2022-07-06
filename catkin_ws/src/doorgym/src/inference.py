@@ -10,7 +10,7 @@ import rospy
 import tf
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 
-sys.path.append(os.getcwd())
+sys.path.append("../DoorGym")
 import a2c_ppo_acktr
 
 from std_srvs.srv import Trigger, TriggerRequest
@@ -28,15 +28,15 @@ class Inference:
         self.get_knob_srv = rospy.ServiceProxy("/gazebo/get_link_state", GetLinkState)
         self.goto_joint_srv = rospy.ServiceProxy("/robot/ur5_control_server/ur_control/goto_joint_pose", joint_pose)
         self.get_door_angle_srv = rospy.ServiceProxy("/gazebo/get_joint_properties", GetJointProperties)
-        self.close_srv = rospy.ServiceProxy("/robot/gripper/close", Trigger)
+        self.ran = rospy.ServiceProxy("husky_ur5/random", Trigger)
+        self.arm_go_home = rospy.ServiceProxy("/robot/ur5/go_home", Trigger)
         self.joint = np.zeros(23)
         self.dis = 0
         self.listener = tf.TransformListener()
         self.joint_value = joint_value()
 
-        load_name = "model/husky_ur5_push.pt"
-        # load_name = "mdoel/ur5_push.pt"
-        # load_name = "model/husky_ur5_pull.pt"
+        load_name = "../DoorGym/model/husky_ur5_push.pt"
+        # load_name = "../DoorGym/mdoel/ur5_push.pt"
         self.actor_critic, ob_rms = torch.load(load_name)
         self.actor_critic = self.actor_critic.eval()
         self.actor_critic.to("cuda:0")
@@ -44,6 +44,8 @@ class Inference:
         self.recurrent_hidden_states = torch.zeros(1, self.actor_critic.recurrent_hidden_state_size)
         self.masks = torch.zeros(1, 1)
         
+        self.arm_go_home()
+        self.ran()
         self.inference()
 
     def joint_state_cb(self, msg):
@@ -88,7 +90,7 @@ class Inference:
         pos = self.get_knob_srv(req)
 
         try:
-            trans, _ = self.listener.lookupTransform("/map", "/object_link", rospy.Time(0))
+            trans, _ = self.listener.lookupTransform("/world", "/object_link", rospy.Time(0))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
             print("Service call failed: %s"%e)
 
@@ -117,20 +119,6 @@ class Inference:
 
             res = self.get_door_angle_srv(req)
 
-            # push parameter
-            if res.position[0] <= -0.45:
-                joint_action[2] *= 8
-                joint_action[6] *= -5
-                joint_action[4] *= -0.2
-
-            # husky ur5 pull parameter
-            # self.joint_value.joint_value[0] += joint_action[2] * 0.003
-            # self.joint_value.joint_value[1] += joint_action[3] * 0.004
-            # self.joint_value.joint_value[2] += joint_action[4] * 0.012
-            # self.joint_value.joint_value[3] += joint_action[5] * -0.003
-            # self.joint_value.joint_value[4] += joint_action[6] * -0.008
-            # self.joint_value.joint_value[5] += joint_action[7] * 0.001
-
             # ur5 push parameter
             # self.joint_value.joint_value[0] += joint_action[2] * -0.009
             # self.joint_value.joint_value[1] += joint_action[3] * 0.007
@@ -147,34 +135,15 @@ class Inference:
             self.joint_value.joint_value[4] += joint_action[6] * -0.001
             self.joint_value.joint_value[5] += joint_action[7] * 0.001
             
+            joint_pose_req.joints.append(self.joint_value)
+            res_ = self.goto_joint_srv(joint_pose_req)
+
             # husky
             t = Twist()
-
-            if(res.position[0] >= 0.01):
-                t.linear.x *= -1
-                t.angular.z *= -1
-            else:
-                joint_pose_req.joints.append(self.joint_value)
-                res_ = self.goto_joint_srv(joint_pose_req)
 
             # husky ur5 push parameter
             t.linear.x = abs(joint_action[0]) * 0.03
             t.angular.z = joint_action[1] * 0.015
-
-            # # husky ur5 pull paramter
-            # req_getlink = GetLinkStateRequest()
-            # req_getlink.link_name = "base_link"
-
-            # pos = self.get_knob_srv(req_getlink)
-            
-            # t.linear.x = abs(joint_action[0]) * 0.03
-            # t.angular.z = joint_action[1] * 0.015
-
-            # if(pos.link_state.pose.position.y <= 12.86):
-            # if(pos.link_state.pose.position.y <= -24):
-                # req_gri = TriggerRequest()
-                # self.close_srv(req_gri)
-                # t.linear.x *= -1
 
             self.husky_cmd_pub.publish(t)
             
@@ -186,6 +155,6 @@ class Inference:
         print("time", end - begin)
 
 if __name__ == '__main__':
-    rospy.init_node("doorgym_node", anonymous=False)
+    rospy.init_node("husky_ur5_node", anonymous=False)
     inference = Inference()
     rospy.spin()

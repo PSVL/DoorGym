@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="ur5" default="true"/>
+  <arg name="3dof" default="true"/>
+  <arg name="state" default="true"/>
+
+  <group if="$(arg state)">
+    
+    <node pkg="doorgym" type="state_machine.py" name="doorgym_node"/>
+
+  </group>
+
+  <group unless="$(arg state)">
+
+    <node pkg="husky_ur5_bringup" type="husky_ur5_control.py" name="husky_ur5_control_node"/>
+
+    <group if="$(arg ur5)">
+        <group if="$(arg 3dof)">
+            <node pkg="doorgym" type="inference_3dof.py" name="husky_ur5_3dof_node"/>
+        </group>
+
+        <group unless="$(arg 3dof)">
+            <node pkg="doorgym" type="inference.py" name="husky_ur5_node"/>
+        </group>
+    </group>
+
+    <group unless="$(arg ur5)">
+        <group if="$(arg 3dof)">
+            <node pkg="doorgym" type="inference_vx300s_3dof.py" name="husky_vx300s_3dof_node"/>
+        </group>
+
+        <group unless="$(arg 3dof)">
+            <node pkg="doorgym" type="inference_vx300s.py" name="husky_vx300s_node"/>
+        </group>
+    </group>
+
+  </group>
+
+</launch>
