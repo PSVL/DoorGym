@@ -29,7 +29,7 @@ class Inference:
         self.get_pose_srv = rospy.ServiceProxy("/robot/get_pose", cur_pose)
         self.get_door_angle_srv = rospy.ServiceProxy("/gazebo/get_joint_properties", GetJointProperties)
         self.ran = rospy.ServiceProxy("husky_ur5/random", Trigger)
-        self.arm_go_home = rospy.ServiceProxy("/robot/ur5/go_home", Trigger)
+        self.arm_go_home = rospy.ServiceProxy("/robot/go_home", Trigger)
         self.joint = np.zeros(23)
         self.dis = 0
         self.listener = tf.TransformListener()
@@ -128,7 +128,7 @@ class Inference:
             res_door = self.get_door_angle_srv(req)
 
             pose_req.target_pose.position.x = res.pose.position.x + 0.001 * next_action[2]
-            pose_req.target_pose.position.y = res.pose.position.y + 0.001 * next_action[3]
+            pose_req.target_pose.position.y = res.pose.position.y + 0.002 * next_action[3]
             pose_req.target_pose.position.z = res.pose.position.z - 0.001 * next_action[4]
             pose_req.target_pose.orientation.x = res.pose.orientation.x
             pose_req.target_pose.orientation.y = res.pose.orientation.y
