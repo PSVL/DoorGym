@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+    
+    <node pkg="doorgym" type="init.py" name="init_state_node"/>
+    <node pkg="doorgym" type="bt_door_open.py" name="open_door_node"/>
+    <node pkg="doorgym" type="door_angle.py" name="check_door_node"/>
+    <node pkg="doorgym" type="check_goal.py" name="check_goal_node"/>
+
+</launch>
