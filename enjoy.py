@@ -423,7 +423,7 @@ if __name__ == "__main__":
                     unity = args.unity,
                     world_path = args.world_path)
 
-    if args.load_name.find("a2c")>-1 or args.load_name.find("ppo")>-1: 
+    if args.load_name.find("husky_ur5")>-1 or args.load_name.find("ppo")>-1: 
         onpolicy_inference(
             seed=args.seed, 
             env_name=args.env_name, 
