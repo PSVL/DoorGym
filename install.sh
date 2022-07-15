@@ -8,3 +8,4 @@ python3 setup.py build_ext --inplace
 cd ..
 apt update
 apt install ros-noetic-dynamixel-sdk
+pip3 install curl-navi

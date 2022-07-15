@@ -41,7 +41,7 @@ def add_noise(obs, epoch=100):
     obs[:,-3:] += noise
     return obs
 
-def offpolicy_inference(
+def offpolicy_validation(
                 seed, 
                 env_name, 
                 det, 
@@ -158,7 +158,7 @@ def offpolicy_inference(
 
 if __name__ == "__main__":
 
-    args = DoorGym_utils.get_inference_args()
+    args = DoorGym_utils.get_validation_args()
 
     env_kwargs = dict(port = args.port,
                     visionnet_input = args.visionnet_input,
@@ -166,7 +166,7 @@ if __name__ == "__main__":
                     world_path = args.world_path)
 
     if args.load_name.find("ppo")>-1 or args.load_name.find("husky_ur5")>-1: 
-        DoorGym_utils.onpolicy_inference(
+        DoorGym_utils.onpolicy_validation(
             seed=args.seed, 
             env_name=args.env_name, 
             det=args.det, 
@@ -179,7 +179,7 @@ if __name__ == "__main__":
             pos_control=args.pos_control,
             step_skip=args.step_skip)
     elif args.load_name.find("sac")>-1 or args.load_name.find("td3")>-1:
-        offpolicy_inference(
+        offpolicy_validation(
             seed=args.seed, 
             env_name=args.env_name, 
             det=args.det, 
