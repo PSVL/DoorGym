@@ -19,6 +19,8 @@ from geometry_msgs.msg import Twist
 from vx300s_bringup.srv import *
 from gazebo_msgs.srv import *
 
+from curl_navi import DoorGym_gazebo_utils
+
 class Inference:
     def __init__(self):
         self.joint_state_sub = rospy.Subscriber("/robot/joint_states", JointState, self.joint_state_cb, queue_size = 1)
@@ -34,13 +36,11 @@ class Inference:
         self.listener = tf.TransformListener()
         self.joint_value = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0] 
 
-        load_name = "../DoorGym/model/husky_ur5_push.pt"
-        self.actor_critic, ob_rms = torch.load(load_name)
-        self.actor_critic = self.actor_critic.eval()
+        model_path = DoorGym_gazebo_utils.download_model("1scp0n_AkGVTnCq80fenGHUfPdO9cwUJl", "../DoorGym", "husky_ur5_push")
+        self.actor_critic = DoorGym_gazebo_utils.init_model(model_path, 23)
+
         self.actor_critic.to("cuda:0")
-        self.actor_critic.nn = 23
         self.recurrent_hidden_states = torch.zeros(1, self.actor_critic.recurrent_hidden_state_size)
-        self.masks = torch.zeros(1, 1)
         
         self.arm_go_home()
         self.ran()
@@ -110,9 +110,7 @@ class Inference:
             self.get_distance()
             joint_pose_req = joint_poseRequest()
             joint = torch.from_numpy(self.joint).float().to("cuda:0")
-            with torch.no_grad():
-                value, action, _, self.recurrent_hidden_states = self.actor_critic.act(
-                    joint, self.recurrent_hidden_states, self.masks, deterministic=True)
+            action, self.recurrent_hidden_states = DoorGym_gazebo_utils.inference(self.actor_critic, joint, self.recurrent_hidden_states)
             next_action = action.cpu().numpy()[0,1,0]
             gripper_action = np.array([next_action[-1], -next_action[-1]])
             joint_action = np.concatenate((next_action, gripper_action))

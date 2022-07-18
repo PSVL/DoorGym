@@ -20,6 +20,8 @@ from arm_operation.srv import *
 from arm_operation.msg import *
 from gazebo_msgs.srv import *
 
+from curl_navi import DoorGym_gazebo_utils
+
 class Inference:
     def __init__(self):
         self.joint_state_sub = rospy.Subscriber("/robot/joint_states", JointState, self.joint_state_cb, queue_size = 1)
@@ -35,14 +37,11 @@ class Inference:
         self.listener = tf.TransformListener()
         self.joint_value = joint_value()
 
-        load_name = "../DoorGym/model/husky_ur5_push.pt"
-        # load_name = "../DoorGym/mdoel/ur5_push.pt"
-        self.actor_critic, ob_rms = torch.load(load_name)
-        self.actor_critic = self.actor_critic.eval()
+        model_path = DoorGym_gazebo_utils.download_model("1scp0n_AkGVTnCq80fenGHUfPdO9cwUJl", "../DoorGym", "husky_ur5_push")
+        self.actor_critic = DoorGym_gazebo_utils.init_model(model_path, 23)
+        
         self.actor_critic.to("cuda:0")
-        self.actor_critic.nn = 23
         self.recurrent_hidden_states = torch.zeros(1, self.actor_critic.recurrent_hidden_state_size)
-        self.masks = torch.zeros(1, 1)
         
         self.arm_go_home()
         self.ran()
@@ -107,9 +106,7 @@ class Inference:
             self.get_distance()
             joint_pose_req = joint_poseRequest()
             joint = torch.from_numpy(self.joint).float().to("cuda:0")
-            with torch.no_grad():
-                value, action, _, self.recurrent_hidden_states = self.actor_critic.act(
-                    joint, self.recurrent_hidden_states, self.masks, deterministic=True)
+            action, self.recurrent_hidden_states = DoorGym_gazebo_utils.inference(self.actor_critic, joint, self.recurrent_hidden_states)
             next_action = action.cpu().numpy()[0,1,0]
             gripper_action = np.array([next_action[-1], -next_action[-1]])
             joint_action = np.concatenate((next_action, gripper_action))
@@ -134,6 +131,14 @@ class Inference:
             self.joint_value.joint_value[3] += joint_action[5] * 0.001
             self.joint_value.joint_value[4] += joint_action[6] * -0.001
             self.joint_value.joint_value[5] += joint_action[7] * 0.001
+
+            # husky ur5 pull parameter
+            # self.joint_value.joint_value[0] += joint_action[2] * 0.003
+            # self.joint_value.joint_value[1] += joint_action[3] * 0.004
+            # self.joint_value.joint_value[2] += joint_action[4] * 0.012
+            # self.joint_value.joint_value[3] += joint_action[5] * -0.003
+            # self.joint_value.joint_value[4] += joint_action[6] * -0.008
+            # self.joint_value.joint_value[5] += joint_action[7] * 0.001
             
             joint_pose_req.joints.append(self.joint_value)
             res_ = self.goto_joint_srv(joint_pose_req)
@@ -142,7 +147,7 @@ class Inference:
             t = Twist()
 
             # husky ur5 push parameter
-            t.linear.x = abs(joint_action[0]) * 0.03
+            t.linear.x = joint_action[0] * 0.03
             t.angular.z = joint_action[1] * 0.015
 
             self.husky_cmd_pub.publish(t)

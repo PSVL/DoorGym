@@ -3,8 +3,8 @@
 <launch>
 
   <arg name="ur5" default="true"/>
-  <arg name="3dof" default="true"/>
-  <arg name="state" default="true"/>
+  <arg name="3dof" default="false"/>
+  <arg name="state" default="false"/>
 
   <group if="$(arg state)">
     
@@ -22,7 +22,7 @@
         </group>
 
         <group unless="$(arg 3dof)">
-            <node pkg="doorgym" type="inference.py" name="husky_ur5_node"/>
+            <node pkg="doorgym" type="inference.py" name="husky_ur5_node" output="screen"/>
         </group>
     </group>
 

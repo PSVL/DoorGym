@@ -158,7 +158,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
     def step(self, a):
         
-        a = self.trans(a)
+        if(a.shape[0] != 8):
+            a = self.trans(a)
 
         if not self.unity and self.no_viewer:
             print("made mujoco viewer")
@@ -168,7 +169,6 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         reward_dist = -2*np.linalg.norm(self.get_dist_vec())
         reward_log_dist = -np.log(np.square(2*np.linalg.norm(reward_dist))+5e-3) - 5.0 
-        # reward_ori = - np.linalg.norm(self.get_ori_diff_no_xaxis())
         reward_ori = 0
         reward_door = abs(self.sim.data.get_joint_qpos("hinge0")) *30 #*30
 
@@ -179,7 +179,6 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         # position_ctrl = True
         if self.pos_control:
-            # print('entered pos_control')
             reward_ctrl = 0
 
         if self.xml_path.find("lever")>-1 or self.xml_path.find("round")>-1:
@@ -220,7 +219,6 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
             if self.init_done:
                 self.randomized_property()
             
-        # self.hooked = True
         hooked_chance = np.random.randint(100)
         untucked_chance = np.random.randint(100)
 
