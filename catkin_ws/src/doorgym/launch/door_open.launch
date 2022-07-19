@@ -22,7 +22,7 @@
         </group>
 
         <group unless="$(arg 3dof)">
-            <node pkg="doorgym" type="inference.py" name="husky_ur5_node" output="screen"/>
+            <node pkg="doorgym" type="inference.py" name="husky_ur5_node"/>
         </group>
     </group>
 

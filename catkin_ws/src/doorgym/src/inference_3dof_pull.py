@@ -19,6 +19,10 @@ from geometry_msgs.msg import Twist
 from arm_operation.srv import * 
 from arm_operation.msg import *
 from gazebo_msgs.srv import *
+from ur5_bringup.srv import *
+from gazebo_msgs.srv import *
+
+from scipy.spatial.transform import Rotation as R
 
 from curl_navi import DoorGym_gazebo_utils
 
@@ -28,17 +32,19 @@ class Inference:
         self.husky_vel_sub = rospy.Subscriber("/robot/cmd_vel", Twist, self.husky_vel_cb, queue_size=1)
         self.husky_cmd_pub = rospy.Publisher("/robot/cmd_vel", Twist, queue_size=1)
         self.get_knob_srv = rospy.ServiceProxy("/gazebo/get_link_state", GetLinkState)
-        self.goto_joint_srv = rospy.ServiceProxy("/robot/ur5_control_server/ur_control/goto_joint_pose", joint_pose)
-        self.get_door_angle_srv = rospy.ServiceProxy("/gazebo/get_joint_properties", GetJointProperties)
-        self.ran = rospy.ServiceProxy("husky_ur5/random", Trigger)
+        self.goto_pose_srv = rospy.ServiceProxy("/robot/ur5_control_server/ur_control/goto_pose", target_pose)
+        self.get_box_pos_srv = rospy.ServiceProxy("/gazebo/get_link_state", GetLinkState)
+        self.get_pose_srv = rospy.ServiceProxy("/robot/ur5/get_pose", cur_pose)
+        self.ran = rospy.ServiceProxy("husky_ur5/pull_random", Trigger)
         self.arm_go_home = rospy.ServiceProxy("/robot/ur5/go_home", Trigger)
+        self.gripper_close = rospy.ServiceProxy("/robot/gripper/close", Trigger)
+        self.gripper_open = rospy.ServiceProxy("/robot/gripper/open", Trigger)
         self.joint = np.zeros(23)
         self.dis = 0
         self.listener = tf.TransformListener()
         self.joint_value = joint_value()
 
-        model_path = DoorGym_gazebo_utils.download_model("1scp0n_AkGVTnCq80fenGHUfPdO9cwUJl", "../DoorGym", "husky_ur5_push")
-        # model_path = DoorGym_gazebo_utils.download_model("1Vy_MAXIizJzv6i3gFNypVEekIyhaEvCH", "../DoorGym", "ur5_push")
+        model_path = DoorGym_gazebo_utils.download_model("1_7QLXH7s6VgwktPWLVc0k5gzLFVla70T", "../DoorGym", "husky_ur5_pull_3dof")
         self.actor_critic = DoorGym_gazebo_utils.init_model(model_path, 23)
 
         self.actor_critic.to("cuda:0")
@@ -85,7 +91,7 @@ class Inference:
     def get_distance(self):
 
         req = GetLinkStateRequest()
-        req.link_name = "hinge_door_0::knob"
+        req.link_name = "pull_box::knob"
 
         pos = self.get_knob_srv(req)
 
@@ -98,62 +104,69 @@ class Inference:
         self.joint[1] = trans[1] - pos.link_state.pose.position.y
         self.joint[2] = trans[2] - pos.link_state.pose.position.z
 
+    def distance(self, x1, y1, x2 = 9.0, y2 = 12.45):
+
+        return ((x1-x2)**2 + (y1-y2)**2)**0.5
+
     def inference(self):
 
         begin = time.time()
+        closed = False
 
         while True: 
+
+            target_pose_req = target_poseRequest()
+            target_pose_req.factor = 0.8
+
+            res = self.get_pose_srv()
 
             self.get_distance()
             joint_pose_req = joint_poseRequest()
             joint = torch.from_numpy(self.joint).float().to("cuda:0")
             action, self.recurrent_hidden_states = DoorGym_gazebo_utils.inference(self.actor_critic, joint, self.recurrent_hidden_states)
             next_action = action.cpu().numpy()[0,1,0]
-            gripper_action = np.array([next_action[-1], -next_action[-1]])
-            joint_action = np.concatenate((next_action, gripper_action))
 
-            req = GetJointPropertiesRequest()
-            req.joint_name = "hinge_door_0::hinge"
-
-            res = self.get_door_angle_srv(req)
-
-            # ur5 push parameter
-            # self.joint_value.joint_value[0] += joint_action[2] * -0.009
-            # self.joint_value.joint_value[1] += joint_action[3] * 0.007
-            # self.joint_value.joint_value[2] += joint_action[4] * 0.007
-            # self.joint_value.joint_value[3] += joint_action[5] * 0.001
-            # self.joint_value.joint_value[4] += joint_action[6] * -0.001
-            # self.joint_value.joint_value[5] += joint_action[7] * 0.001
-
-            # husky ur5 push paramter
-            self.joint_value.joint_value[0] += joint_action[2] * -0.009
-            self.joint_value.joint_value[1] += joint_action[3] * 0.004
-            self.joint_value.joint_value[2] += joint_action[4] * 0.004
-            self.joint_value.joint_value[3] += joint_action[5] * 0.001
-            self.joint_value.joint_value[4] += joint_action[6] * -0.001
-            self.joint_value.joint_value[5] += joint_action[7] * 0.001
-
-            # husky ur5 pull parameter
-            # self.joint_value.joint_value[0] += joint_action[2] * 0.003
-            # self.joint_value.joint_value[1] += joint_action[3] * 0.004
-            # self.joint_value.joint_value[2] += joint_action[4] * 0.012
-            # self.joint_value.joint_value[3] += joint_action[5] * -0.003
-            # self.joint_value.joint_value[4] += joint_action[6] * -0.008
-            # self.joint_value.joint_value[5] += joint_action[7] * 0.001
-            
-            joint_pose_req.joints.append(self.joint_value)
-            res_ = self.goto_joint_srv(joint_pose_req)
-
+            target_pose_req.target_pose.position.x = res.pose.position.x + 0.001 * next_action[2]
+            target_pose_req.target_pose.position.y = res.pose.position.y - 0.0002 * next_action[3]
+            target_pose_req.target_pose.position.z = res.pose.position.z + 0.0007 * next_action[4]
+            target_pose_req.target_pose.orientation.x = res.pose.orientation.x
+            target_pose_req.target_pose.orientation.y = res.pose.orientation.y
+            target_pose_req.target_pose.orientation.z = res.pose.orientation.z
+            target_pose_req.target_pose.orientation.w = res.pose.orientation.w
+   
             # husky
             t = Twist()
 
-            # husky ur5 push parameter
-            t.linear.x = joint_action[0] * 0.03
-            t.angular.z = joint_action[1] * 0.015
+            # husky push parameter
+            
+            t.linear.x = abs(next_action[0]) * 0.023
+            t.angular.z = next_action[1] * 0.015
 
+            if(closed):
+                t.linear.x *= -1
+                t.linear.z *= -1
+
+            res_box = self.get_box_pos_srv("pull_box::link_0","")
+
+            if((self.joint[0] ** 2 + self.joint[1] **2) ** 0.5 <= 0.034 ):
+                self.gripper_close()
+                rospy.sleep(1)
+                if(not closed):
+                    target_pose_req.target_pose.position.x = res.pose.position.x 
+                    target_pose_req.target_pose.position.y = res.pose.position.y
+                    target_pose_req.target_pose.position.z = res.pose.position.z + 0.2
+                    self.goto_pose_srv(target_pose_req)
+                closed = True
+            else:
+                self.goto_pose_srv(target_pose_req)
+            
             self.husky_cmd_pub.publish(t)
             
-            if(res.position[0] <= -1.05):
+            if(self.distance(res_box.link_state.pose.position.x, res_box.link_state.pose.position.y) >= 2.0):
+                self.gripper_open()
+                self.arm_go_home()
+                t.linear.z = -10.0
+                self.husky_cmd_pub.publish(t)
                 break
 
         end = time.time()
@@ -161,6 +174,6 @@ class Inference:
         print("time", end - begin)
 
 if __name__ == '__main__':
-    rospy.init_node("husky_ur5_node", anonymous=False)
+    rospy.init_node("husky_ur5_3dof_pull_node", anonymous=False)
     inference = Inference()
     rospy.spin()

@@ -212,18 +212,6 @@ class open_door(smach.State):
         self.joint[11:13] = msg.position[2]
         self.joint[21:23] = msg.velocity[2]
 
-        try:
-            trans, rot = self.listener.lookupTransform("/base_link", "/odom", rospy.Time(0))
-        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
-            print("Service call failed: %s"%e)
-
-        _, _, yaw = euler_from_quaternion(rot)
-
-        self.joint[3] = trans[0] - self.dis
-        self.joint[4] = yaw
-        
-        self.dis = trans[0]
-
     def husky_vel_cb(self, msg):
 
         self.joint[13] = msg.linear.x
