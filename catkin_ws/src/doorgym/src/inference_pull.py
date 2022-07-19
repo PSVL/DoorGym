@@ -43,8 +43,8 @@ class Inference:
         self.listener = tf.TransformListener()
         self.joint_value = joint_value()
 
-        # model_path = DoorGym_gazebo_utils.download_model("1NQMtSp7tF8qy6RqbBvfk4GqOfN1J-Vo0", "../DoorGym", "husky_ur5_pull")
-        model_path = DoorGym_gazebo_utils.download_model("1oNRt9NG6_KVVaLtRprA0LW-jvEgJYBSf", "../DoorGym", "ur5_pull")
+        model_path = DoorGym_gazebo_utils.download_model("1NQMtSp7tF8qy6RqbBvfk4GqOfN1J-Vo0", "../DoorGym", "husky_ur5_pull")
+        # model_path = DoorGym_gazebo_utils.download_model("1oNRt9NG6_KVVaLtRprA0LW-jvEgJYBSf", "../DoorGym", "ur5_pull")
         self.actor_critic = DoorGym_gazebo_utils.init_model(model_path, 23)
         
         self.actor_critic.to("cuda:0")
