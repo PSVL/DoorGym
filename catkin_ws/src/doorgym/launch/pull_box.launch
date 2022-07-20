@@ -4,18 +4,15 @@
 
   <arg name="3dof" default="false"/>
 
+  <node pkg="husky_ur5_bringup" type="husky_ur5_control.py" name="husky_ur5_control_node"/>
+
+  <group if="$(arg 3dof)">
+          <node pkg="doorgym" type="inference_3dof_pull.py" name="husky_ur5_3dof_pull_node"/>
   </group>
 
-    <node pkg="husky_ur5_bringup" type="husky_ur5_control.py" name="husky_ur5_control_node"/>
-
-    <group if="$(arg 3dof)">
-            <node pkg="doorgym" type="inference_3dof_pull.py" name="husky_ur5_3dof_pull_node"/>
-    </group>
-
-    <group unless="$(arg 3dof)">
-            <node pkg="doorgym" type="inference_vx300s_3dof.py" name="husky_ur5_pull_node"/>
-    </group>
-
+  <group unless="$(arg 3dof)">
+          <node pkg="doorgym" type="inference_pull.py" name="husky_ur5_pull_node"/>
   </group>
+
 
 </launch>

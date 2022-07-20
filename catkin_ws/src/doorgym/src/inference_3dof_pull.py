@@ -104,7 +104,10 @@ class Inference:
         self.joint[1] = trans[1] - pos.link_state.pose.position.y
         self.joint[2] = trans[2] - pos.link_state.pose.position.z
 
-    def distance(self, x1, y1, x2 = 9.0, y2 = 12.45):
+    # box
+    # def distance(self, x1, y1, x2 = 9.0, y2 = 12.45):
+    # cardboard
+    def distance(self, x1, y1, x2 = 8.95, y2 = 12.10):
 
         return ((x1-x2)**2 + (y1-y2)**2)**0.5
 
