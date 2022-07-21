@@ -14,8 +14,6 @@
 
   <group unless="$(arg state)">
 
-    <node pkg="husky_ur5_bringup" type="husky_ur5_control.py" name="husky_ur5_control_node"/>
-
     <group if="$(arg ur5)">
         <group if="$(arg 3dof)">
             <node pkg="doorgym" type="inference_3dof.py" name="husky_ur5_3dof_node"/>

@@ -4,8 +4,6 @@
 
   <arg name="3dof" default="false"/>
 
-  <node pkg="husky_ur5_bringup" type="husky_ur5_control.py" name="husky_ur5_control_node"/>
-
   <group if="$(arg 3dof)">
           <node pkg="doorgym" type="inference_3dof_pull.py" name="husky_ur5_3dof_pull_node"/>
   </group>
