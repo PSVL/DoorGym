@@ -2,64 +2,45 @@
 
 ## Clone repo and Docker
 
-I released two version docker images, one is for developers that can modify other packages on this and compile by yourself, the other one is for user that easy to use without extra install other related libraries. 
+I released docker images for developers that can modify other packages on this and compile by yourself.
 
 ### Step1. Clone repo
 
 ```
-  git clone --recursive git@github.com:kuolunwang/DoorGym.git
+git clone --recursive git@github.com:kuolunwang/DoorGym.git
 ```
 
 ### Step2. Docker run
 
 Run this script to pull the docker image to your workstation.
-* For the development mode
 
-  ```
-  source docker_run.sh
-  ```
-
-* For the user mode
-  ```
-  source docker_run_user.sh
-  ```
+```
+source docker_run.sh
+```
 
 ### Step3. Docker join
 
 If you want to enter the same docker image, type below command.
 
-* For the development mode
-  ```
-  source docker_join.sh
-  ```
-
-* For the user mode
-
-  ```
-  source docker_join_user.sh
-  ```
+```
+source docker_join.sh
+```
 
 ### Step4. Catkin_make
 
 Execute the compile script at first time, then the other can ignore this step. 
 
 ```
-cd catkin_ws && catkin_make
+source catkine_make.sh
 ```
 
 ### Step5. Setup environment
 
-Make sure run this command when the terminal enter docker, for the user mode you can ignore install.sh.
+Make sure run this command when the terminal enter docker.
 
 ```
 source environment.sh
 ```
-
-* For the development mode
-
-  ```
-  source install.sh
-  ```
 
 ## Download dataset and knob model
 
