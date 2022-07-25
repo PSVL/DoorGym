@@ -130,4 +130,6 @@ Before ready for the above setting, then you can train a model or evaluate a pre
     source run_push.sh
   ```
 
-More detailed instruction [here](https://github.com/ARG-NCTU/curl_navi/blob/master/04_DoorGym.ipynb)
+If you want to train 6 joints control mode, please manual comment [doorenv.py](./envs/doorenv/envs/doorenv.py) 84 rows and uncomment 85 rows.
+
+More detailed parameters [here](https://github.com/ARG-NCTU/curl_navi/blob/master/04_DoorGym.ipynb)

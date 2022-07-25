@@ -65,7 +65,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                         self.nn = 8
 
         if self.xml_path.find("husky")>-1:
-            self.nn = 5
+            self.nn = 5 
 
         self.unity = unity
         if self.visionnet_input:
@@ -81,7 +81,8 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         mujoco_env.MujocoEnv.__init__(self, self.xml_path, frame_skip)
         gripper_space = self.gripper_action.shape[0]
         if self.xml_path.find("gripper")>-1 or self.xml_path.find('baxter')>-1 or self.xml_path.find("husky")>-1 or self.xml_path.find("ur5")>-1:
-            bounds = self.model.actuator_ctrlrange.copy()[:7]
+            bounds = self.model.actuator_ctrlrange.copy()[:7] # 3 dof
+            # bounds = self.model.actuator_ctrlrange.copy() # 6 joints
             low, high = bounds.T
             low, high = low[:-gripper_space], high[:-gripper_space] # four joints for finger is a dependant of finger inertial joint
             self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
@@ -157,10 +158,10 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         return action
 
     def step(self, a):
-        
+
         if(a.shape[0] != 8):
             a = self.trans(a)
-
+        
         if not self.unity and self.no_viewer:
             print("made mujoco viewer")
             self.viewer = self._get_viewer('human')

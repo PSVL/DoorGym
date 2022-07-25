@@ -117,14 +117,6 @@ class Inference:
 
             res = self.get_door_angle_srv(req)
 
-            # ur5 push parameter
-            # self.joint_value.joint_value[0] += joint_action[2] * -0.009
-            # self.joint_value.joint_value[1] += joint_action[3] * 0.007
-            # self.joint_value.joint_value[2] += joint_action[4] * 0.007
-            # self.joint_value.joint_value[3] += joint_action[5] * 0.001
-            # self.joint_value.joint_value[4] += joint_action[6] * -0.001
-            # self.joint_value.joint_value[5] += joint_action[7] * 0.001
-
             # husky ur5 push paramter
             self.joint_value.joint_value[0] += joint_action[2] * -0.009
             self.joint_value.joint_value[1] += joint_action[3] * 0.004
@@ -132,14 +124,6 @@ class Inference:
             self.joint_value.joint_value[3] += joint_action[5] * 0.001
             self.joint_value.joint_value[4] += joint_action[6] * -0.001
             self.joint_value.joint_value[5] += joint_action[7] * 0.001
-
-            # husky ur5 pull parameter
-            # self.joint_value.joint_value[0] += joint_action[2] * 0.003
-            # self.joint_value.joint_value[1] += joint_action[3] * 0.004
-            # self.joint_value.joint_value[2] += joint_action[4] * 0.012
-            # self.joint_value.joint_value[3] += joint_action[5] * -0.003
-            # self.joint_value.joint_value[4] += joint_action[6] * -0.008
-            # self.joint_value.joint_value[5] += joint_action[7] * 0.001
             
             joint_pose_req.joints.append(self.joint_value)
             res_ = self.goto_joint_srv(joint_pose_req)
