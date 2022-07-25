@@ -97,8 +97,6 @@ class DoorEnv_gym(mujoco_env.MujocoEnv, utils.EzPickle):
         self.change_model(self.xml_path)
 
     def step(self, a):
-
-        print("doorgym")
         
         if not self.unity and self.no_viewer:
             print("made mujoco viewer")

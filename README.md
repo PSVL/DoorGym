@@ -111,6 +111,28 @@ Before ready for the above setting, then you can train a model or evaluate a pre
     source run_push.sh
   ```
 
-If you want to train 6 joints control mode, please manual comment [doorenv.py](./envs/doorenv/envs/doorenv.py) 84 rows and uncomment 85 rows.
+If you want to train or evaluation baseline (DoorGym) or 6 joints environment, you need to edit training and evaluation script.
+
+For the trainging or evaluation
+
+  Edit train_pull.sh (run_pull.sh) or train_push.sh (run_push.sh) parameter.
+
+  * DoorGym baseline
+  
+    ```
+    --env-name doorenv_gym-v0
+    ```
+
+  * 6 joints
+  
+    ```
+    --env-name doorenv_6joints-v0
+    ```
+
+  * 3 DOF
+
+    ```
+    --env-name doorenv-V0
+    ```
 
 More detailed parameters [here](https://github.com/ARG-NCTU/curl_navi/blob/master/04_DoorGym.ipynb)
