@@ -8,10 +8,8 @@ import torch
 from mjremote import mjremote
 import time
 import matplotlib.pyplot as plt
-from scipy.spatial.transform import Rotation as R
-from ikfastpy import ikfastpy
 
-class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
+class DoorEnv_gym(mujoco_env.MujocoEnv, utils.EzPickle):
     static_nn = 0
     def __init__(self,
                 port=1050,
@@ -35,9 +33,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.gripper_action = np.zeros(2)
         self.path = world_path
         self.xml_path = self.random_world(self.path)
-        self.ur5_kin = ikfastpy.PyKinematics()   
-        self.n_joints = self.ur5_kin.getDOF()
-
+        
         if self.xml_path.find("baxter")>-1:
             if self.xml_path.find("botharm")>-1:
                 self.nn = 16
@@ -65,7 +61,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
                         self.nn = 8
 
         if self.xml_path.find("husky")>-1:
-            self.nn = 5 
+            self.nn = 10
 
         self.unity = unity
         if self.visionnet_input:
@@ -81,7 +77,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         mujoco_env.MujocoEnv.__init__(self, self.xml_path, frame_skip)
         gripper_space = self.gripper_action.shape[0]
         if self.xml_path.find("gripper")>-1 or self.xml_path.find('baxter')>-1 or self.xml_path.find("husky")>-1 or self.xml_path.find("ur5")>-1:
-            bounds = self.model.actuator_ctrlrange.copy()[:7] # 3 dof
+            bounds = self.model.actuator_ctrlrange.copy() # 6 joints
             low, high = bounds.T
             low, high = low[:-gripper_space], high[:-gripper_space] # four joints for finger is a dependant of finger inertial joint
             self.action_space = spaces.Box(low=low, high=high, dtype=np.float32)
@@ -100,66 +96,9 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
         self.unity_init(self.port + rank%8)
         self.change_model(self.xml_path)
 
-    def trans(self, action):
-
-        world = R.from_quat([0.0 , 0.0, 1.0, 0.0])
-        world_mat = world.as_matrix()
-        new_mat = np.identity(4)
-        new_mat[0:3,0:3] = world_mat
-
-        pos = self.sim.data.get_body_xpos("ur5/shoulder_link")
-        qua = self.sim.data.get_body_xquat("ur5/shoulder_link")
-        pos[2] -= 0.089159
-        pos_ee = self.sim.data.get_body_xpos("ee_link")        
-        qua_ee = self.sim.data.get_body_xquat("ee_link")
-        pos[0] += 0.18
-
-        if(np.all(qua == 0) == False):
-            # calculate relationship between bask_link and ee_pose
-            r = R.from_quat([qua])
-            x = r.as_matrix()
-            mat = np.identity(4)
-            mat[0:3,0:3] = x
-            mat[0:3,3] = pos
-            
-            r_ee = R.from_quat([qua_ee])
-            x_ee = r_ee.as_matrix()
-            mat_ee = np.identity(4)
-            mat_ee[0:3,0:3] = x_ee
-            mat_ee[0:3,3] = pos_ee
-   
-            ee_pose = np.dot(np.linalg.inv(mat), mat_ee)
-
-            # ee_pose + delta action
-
-            ee_pose[0:3,3] += 0.75 * action[2:]
-
-            # calculate ik
-
-            joint_configs = self.ur5_kin.inverse(ee_pose[0:3,:].reshape(-1).tolist())
-            n_solutions = int(len(joint_configs)/self.n_joints)
-
-            joint_configs = np.asarray(joint_configs).reshape(n_solutions, self.n_joints)
-
-            # pick one reasonable solution
-
-            state = self.sim.get_state()
-            ori = state.qpos[2:8]
-            dist = np.zeros(n_solutions)
-            for i in range(n_solutions):
-                dist[i] = np.sum((joint_configs[i][0:3] - ori[0:3]) * 1.5) ** 2 + np.sum((joint_configs[i][3:] - ori[3:]) * 0.5) ** 2
-
-            if(dist.size != 0):
-                index = np.argmin(dist)
-                return np.concatenate((action[0:2], joint_configs[index]))
-            else:
-                return np.concatenate((action[0:2], ori))
-        return action
-
     def step(self, a):
 
-        if(a.shape[0] != 8):
-            a = self.trans(a)
+        print("doorgym")
         
         if not self.unity and self.no_viewer:
             print("made mujoco viewer")
@@ -169,7 +108,7 @@ class DoorEnv(mujoco_env.MujocoEnv, utils.EzPickle):
 
         reward_dist = -2*np.linalg.norm(self.get_dist_vec())
         reward_log_dist = -np.log(np.square(2*np.linalg.norm(reward_dist))+5e-3) - 5.0 
-        reward_ori = 0
+        reward_ori = - np.linalg.norm(self.get_ori_diff_no_xaxis())
         reward_door = abs(self.sim.data.get_joint_qpos("hinge0")) *30 #*30
 
         if self.xml_path.find("gripper")>-1 or self.xml_path.find("husky")>-1:
