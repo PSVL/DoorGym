@@ -8,7 +8,7 @@
 
   <group if="$(arg state)">
     
-    <node pkg="doorgym" type="state_machine.py" name="doorgym_node"/>
+    <node pkg="doorgym" type="state_machine_ex1.py" name="doorgym_node"/>
 
   </group>
 
