@@ -110,7 +110,7 @@ Before ready for the above setting, then you can train a model or evaluate a pre
     source train_pull.sh
   ```
 
-* push task
+* Push task
 
   ```
     source train_push.sh
@@ -124,7 +124,7 @@ Before ready for the above setting, then you can train a model or evaluate a pre
     source run_pull.sh
   ```
 
-* push task
+* Push task
 
   ```
     source run_push.sh
