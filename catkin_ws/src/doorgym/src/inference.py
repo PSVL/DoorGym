@@ -145,6 +145,6 @@ class Inference:
         print("time", end - begin)
 
 if __name__ == '__main__':
-    rospy.init_node("husky_ur5_node", anonymous=False)
+    rospy.init_node("husky_ur5_push_node", anonymous=False)
     inference = Inference()
     rospy.spin()
