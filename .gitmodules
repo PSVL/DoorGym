@@ -1,6 +1,3 @@
-[submodule "DoorGym-Unity"]
-	path = DoorGym-Unity
-	url = https://github.com/PSVL/DoorGym-Unity.git
 [submodule "ikfastpy"]
 	path = ikfastpy
 	url = git@github.com:kuolunwang/ikfastpy.git
