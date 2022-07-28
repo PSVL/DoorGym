@@ -4,3 +4,6 @@
 [submodule "catkin_ws/src/husky_ur5"]
 	path = catkin_ws/src/husky_ur5
 	url = git@github.com:kuolunwang/husky_ur5.git
+[submodule "DoorGym-Unity"]
+	path = DoorGym-Unity
+	url = git@github.com:kuolunwang/DoorGym-Unity.git
