@@ -2,7 +2,7 @@
 
 ## Clone repo and Docker
 
-I released docker images for developers that can modify other packages on this and compile by yourself.
+I released docker images that can modify other packages on this and compile by yourself.
 
 ### Step1. Clone repo
 

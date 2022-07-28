@@ -126,7 +126,4 @@ devel/
 .catkin_workspace
 
 *.zip
-
-DoorGym-Unity/
-ikfastpy/
 envs/doorenv.egg-info
