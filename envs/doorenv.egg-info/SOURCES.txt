@@ -1,6 +1,0 @@
-setup.py
-doorenv.egg-info/PKG-INFO
-doorenv.egg-info/SOURCES.txt
-doorenv.egg-info/dependency_links.txt
-doorenv.egg-info/requires.txt
-doorenv.egg-info/top_level.txt

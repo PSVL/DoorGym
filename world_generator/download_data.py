@@ -4,9 +4,9 @@ import os
 import shutil
 
 # MuJoCo training and evaluation environment
-dataset_url = 'https://drive.google.com/u/1/uc?id=' + "1dF3eChgO0_S2MLdAxslGkLJtti79Ch1B"
+dataset_url = 'https://drive.google.com/u/1/uc?id=' + "1000pGwD9iM51FSeLDRfZi0LvdGGtqhdn"
 dataset_name = "./" + "MuJoCo_environment"+ ".zip"
-gdown.download(dataset_url, output = dataset_name, quiet=False)
+gdown.download(dataset_url, output = dataset_name, quiet=True)
 zip_file = ZipFile(dataset_name)
 zip_file.extractall() # depends on how to zip it
 zip_file.close()
