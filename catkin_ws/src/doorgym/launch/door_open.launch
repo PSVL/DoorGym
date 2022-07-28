@@ -3,35 +3,33 @@
 <launch>
 
   <arg name="ur5" default="true"/>
-  <arg name="3dof" default="false"/>
+  <arg name="dof" default="false"/>
   <arg name="state" default="false"/>
+  <arg name="method" default="DoorGym"/>
+  <arg name="times" default="10" />
 
   <group if="$(arg state)">
     
-    <node pkg="doorgym" type="state_machine_ex1.py" name="doorgym_node"/>
+    <node pkg="doorgym" type="state_machine_ex1.py" name="doorgym_node" output="screen">
+      <param name="method" value="$(arg method)"/>
+    </node>
 
   </group>
 
   <group unless="$(arg state)">
 
     <group if="$(arg ur5)">
-        <group if="$(arg 3dof)">
-            <node pkg="doorgym" type="inference_3dof.py" name="husky_ur5_3dof_node"/>
-        </group>
-
-        <group unless="$(arg 3dof)">
-            <node pkg="doorgym" type="inference.py" name="husky_ur5_push_node"/>
-        </group>
+      <node pkg="doorgym" type="inference.py" name="husky_ur5_push_node" output="screen">
+        <param name="times" value="$(arg times)" />
+        <param name="dof" value="$(arg dof)" />
+      </node>
     </group>
 
     <group unless="$(arg ur5)">
-        <group if="$(arg 3dof)">
-            <node pkg="doorgym" type="inference_vx300s_3dof.py" name="husky_vx300s_3dof_node"/>
-        </group>
-
-        <group unless="$(arg 3dof)">
-            <node pkg="doorgym" type="inference_vx300s.py" name="husky_vx300s_node"/>
-        </group>
+      <node pkg="doorgym" type="inference_vx300s.py" name="husky_vx300s_node" output="screen">
+        <param name="times" value="$(arg times)" />
+        <param name="dof" value="$(arg dof)" />
+      </node>
     </group>
 
   </group>

@@ -50,7 +50,6 @@ class Inference:
         self.actor_critic.to("cuda:0")
         self.recurrent_hidden_states = torch.zeros(1, self.actor_critic.recurrent_hidden_state_size)
         
-        self.arm_go_home()
         self.ran()
         self.inference()
 

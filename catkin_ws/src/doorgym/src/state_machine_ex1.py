@@ -31,16 +31,65 @@ from gazebo_msgs.srv import *
 from gazebo_msgs.msg import *
 
 from curl_navi import DoorGym_gazebo_utils
+import yaml
 
 pub_info = rospy.Publisher('/state', String, queue_size=10)
+goal_pub = rospy.Publisher("/tare/goal", PoseStamped, queue_size=1)
+
+my_dir = os.path.abspath(os.path.dirname(__file__))
+# read yaml
+with open(os.path.join(my_dir,"../goal.yaml"), 'r') as f:
+    data = yaml.load(f)
+
+goal_totoal = data['goal']
+goal = []
+
+# metric
+count = 0
+total = len(goal_totoal)
+success = 0
+coi = 0
+
+begin = time.time()
+
+class loop(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['loop_done', 'looping'])
+
+    def execute(self, userdata):
+
+        global count, total, success, coi
+
+        if(count == total):
+            # finish all goal
+
+            # calculate metric
+            s_r = (success/total) * 100
+            f_r = 100 - s_r
+            a_c = coi / total
+
+            # output result 
+            d = {'success_rate':s_r, "fail_rate":f_r, "average_coillision":a_c}
+
+            with open(os.path.join(my_dir,"../" + method + ".yaml"), "w") as f:
+                yaml.dump(d, f)
+            
+            rospy.loginfo('End')
+            return 'loop_done'
+        else:
+            goal = goal_totoal[count]
+            return 'looping'
 
 class init(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['init_done'])
         self.arm_home_srv = rospy.ServiceProxy("/robot/ur5/go_home", Trigger)
         self.set_init_pose_srv = rospy.ServiceProxy("/gazebo/set_model_state", SetModelState)
+        self.set_door_srv = rospy.ServiceProxy("/gazebo/set_model_configuration", SetModelConfiguration)
 
     def execute(self, userdata):
+
+        print("init")
         rospy.loginfo("init position")
 
         # req = SetModelStateRequest()
@@ -54,7 +103,14 @@ class init(smach.State):
         req.pose.orientation.z = -0.707
         req.pose.orientation.w = 0.707
 
+        # set robot
         self.set_init_pose_srv(req)
+
+        # set door 
+        self.set_door_srv("hinge_door_0", "", ["hinge"], [0])
+        
+        # arm go home
+        self.arm_home_srv()
 
         req = TriggerRequest()
 
@@ -68,7 +124,7 @@ class nav_to_door(smach.State):
         
     def execute(self, userdata):
 
-        pub_info.publish("nav_door")
+        pub_info.publish("nav")
         return 'navigating'
 
 class reach_door(smach.State):
@@ -79,7 +135,18 @@ class reach_door(smach.State):
         self.pub_cmd = rospy.Publisher("/robot/cmd_vel", Twist, queue_size=1)
         self.sub_goal = np.array([9.0, 13.0])
 
+        # publish goal to tare
+        pose = PoseStamped()
+
+        pose.header.frame_id = "map"
+        pose.pose.position.x = self.sub_goal[0]
+        pose.pose.position.y = self.sub_goal[1]
+
+        goal_pub.publish(pose)
+
     def execute(self, userdata):
+
+        global begin
 
         agent = self.get_model("robot", "")
 
@@ -111,6 +178,9 @@ class reach_door(smach.State):
         if(dis < 0.5 and yaw <= -1.45 and yaw >= -1.65):
             pub_info.publish("stop")
             return 'reached_door'
+        elif(time.time() - begin >= 180):
+            count += 1
+            return 'reached_door'
         else:
             return 'not_yet'
 
@@ -128,11 +198,19 @@ class open_door(smach.State):
         self.arm_go_home = rospy.ServiceProxy("/robot/ur5/go_home", Trigger)
         self.joint = np.zeros(23)
         self.dis = 0
+        self.cnt = 0
         self.listener = tf.TransformListener()
         self.joint_value = joint_value()
+        
+        self.collision_states = False
 
-        model_path = DoorGym_gazebo_utils.download_model("1scp0n_AkGVTnCq80fenGHUfPdO9cwUJl", "../DoorGym", "husky_ur5_push")
-        # model_path = DoorGym_gazebo_utils.download_model("1Vy_MAXIizJzv6i3gFNypVEekIyhaEvCH", "../DoorGym", "ur5_push")
+        if(method == "DoorGym"):
+            model_path = DoorGym_gazebo_utils.download_model("1Vy_MAXIizJzv6i3gFNypVEekIyhaEvCH", "../DoorGym", "ur5_push")
+            self.sub_collision_gym = rospy.Subscriber("/robot/bumper_states", ContactsState, self.cb_collision_gym, queue_size=1)
+        elif(method == "RL_mm"):
+            model_path = DoorGym_gazebo_utils.download_model("1scp0n_AkGVTnCq80fenGHUfPdO9cwUJl", "../DoorGym", "husky_ur5_push")
+            self.sub_collision = rospy.Subscriber("/robot/bumper_states", ContactsState, self.cb_collision, queue_size=1)
+        
         self.actor_critic = DoorGym_gazebo_utils.init_model(model_path, 23)
 
         self.actor_critic.to("cuda:0")
@@ -147,6 +225,7 @@ class open_door(smach.State):
         next_action = action.cpu().numpy()[0,1,0]
         gripper_action = np.array([next_action[-1], -next_action[-1]])
         joint_action = np.concatenate((next_action, gripper_action))
+        
 
         req = GetJointPropertiesRequest()
         req.joint_name = "hinge_door_0::hinge"
@@ -174,6 +253,35 @@ class open_door(smach.State):
         self.husky_cmd_pub.publish(t)
 
         return 'opening'
+
+    def cb_collision(self, msg):
+
+        global coi
+        count = 0
+        if self.collision_states == True:
+            if msg.states == [] and count > 1000:
+                self.collision_states = False
+            else:
+                count += 1
+        elif msg.states != [] and count == 0:
+            self.collision_states = True
+            coi += 1
+        else:
+            self.collision_states = False
+            count = 0
+
+    def cb_collision_gym(self, msg):
+        if self.collision_states == True:
+            if msg.states == [] and self.cnt > 1000:
+                self.collision_states = False
+            else:
+                self.cnt += 1
+        elif msg.states != [] and self.cnt == 0:
+            self.collision_states = True
+            self.coi += 1
+        else:
+            self.collision_states = False
+            self.cnt = 0
 
     def get_odom(self, msg):
 
@@ -240,6 +348,8 @@ class is_open(smach.State):
 
     def execute(self, userdata):
 
+        global begin
+
         req = GetJointPropertiesRequest()
         req.joint_name = "hinge_door_0::hinge"
 
@@ -251,34 +361,44 @@ class is_open(smach.State):
             self.pub_cmd.publish(cmd)
             self.arm_go_home()
             return 'opened'
+        elif(time.time() - begin >= 180):
+            count += 1
+            return 'opened'
         else:
             return 'not_yet'
-
-ran = random.uniform(0.0, 1.0)
 
 class Navigation(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['navigating'])
-        
+
     def execute(self, userdata):
 
-        if(ran <= 0.5):
-            pub_info.publish("nav_goal_1")
-        else: 
-            pub_info.publish("nav_goal_2")
+        global goal_totoal, count
+
+        # publish goal to tare
+        pose = PoseStamped()
+
+        pose.header.frame_id = "map"
+        pose.pose.position.x = goal_totoal[count][0]
+        pose.pose.position.y = goal_totoal[count][1]
+
+        goal_pub.publish(pose)
+
+        pub_info.publish("nav")
         return 'navigating'
 
 class is_goal(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['not_yet', 'navigated'])
-        if(ran <= 0.5):
-            self.goal = np.array([10.25, 8.52]) 
-        else:
-            self.goal = np.array([8.0, 8.52])
+        
         self.get_robot_pos = rospy.ServiceProxy("/gazebo/get_model_state", GetModelState)
     
     def execute(self, userdata):
 
+        global success, begin
+        global goal_totoal, count
+
+        self.goal = np.array([goal_totoal[count][0], goal_totoal[count][1]]) 
         robot_pose = self.get_robot_pos("robot","")
 
         x, y = robot_pose.pose.position.x, robot_pose.pose.position.y
@@ -286,6 +406,11 @@ class is_goal(smach.State):
 
         if(dis < 0.8):
             pub_info.publish("stop")
+            success += 1
+            count += 1
+            return 'navigated'
+        elif(time.time() - begin >= 180):
+            count += 1
             return 'navigated'
         else:
             return 'not_yet'
@@ -296,14 +421,19 @@ def main():
 
     sm = smach.StateMachine(outcomes=['end'])
 
+    global method
+
+    method = rospy.get_param("~method")
+
     with sm:
+        smach.StateMachine.add('loop', loop(), transitions={'looping':'init', 'loop_done':'end'})
         smach.StateMachine.add('init', init(), transitions={'init_done':'nav_to_door'})
         smach.StateMachine.add('nav_to_door', nav_to_door(), transitions={'navigating':'reach_door'})
         smach.StateMachine.add('reach_door', reach_door(), transitions={'reached_door':'open', 'not_yet':'nav_to_door'})
         smach.StateMachine.add('open', open_door(), transitions={'opening':'is_open'})
         smach.StateMachine.add('is_open', is_open(), transitions={'opened':'nav_to_goal', 'not_yet':'open'})
         smach.StateMachine.add('nav_to_goal', Navigation(), transitions={'navigating':'is_goal'})
-        smach.StateMachine.add('is_goal', is_goal(), transitions={'not_yet':'nav_to_goal', 'navigated':'end'})
+        smach.StateMachine.add('is_goal', is_goal(), transitions={'not_yet':'nav_to_goal', 'navigated':'loop'})
 
     # Create and start the introspection server
     sis = smach_ros.IntrospectionServer('my_smach_introspection_server', sm, '/SM_ROOT')
